@@ -97,8 +97,9 @@ def main():
             print(f"  {wname:28s} {variety:7s} -> growth {v['growth']:3d}  "
                   f"disease-risk {v['disease_risk']:3d} ({v['worst_disease']}, "
                   f"LWD {v['lwd_hours']}h)  => VIABILITY {v['viability']:3d}/100")
-    print("  (note how growth stays high but viability collapses in the wet window,")
-    print("   and the wet-tolerant Ganesh beats Bhagwa there -- the disease layer at work)")
+    print("  (after RH recalibration the wet window hurts pomegranate on BOTH axes --")
+    print("   humidity-driven growth loss AND disease -- so the dry-season bahar wins decisively;")
+    print("   per-variety disease risk still differs (see column) even when growth is floored)")
 
     # persist metrics
     with open(os.path.join(ARTIFACT_DIR, "loso_metrics.json"), "w") as f:

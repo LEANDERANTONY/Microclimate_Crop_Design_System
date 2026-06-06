@@ -15,8 +15,10 @@ def test_wet_window_raises_blight_risk():
     assert wet["max"] > dry["max"]
 
 
-def test_resistant_variety_has_lower_risk():
+def test_less_susceptible_variety_has_lower_risk():
+    # Per sourced ratings (ADR-003): Bhagwa is MS to blight, Ganesh is S, so
+    # Bhagwa carries the lower realized risk in the wet window.
     micro_wet = {"t_mean": 26, "t_max": 31, "rh": 88}
     bhagwa = crop_disease_risk("Pomegranate", micro_wet, variety="Bhagwa", rain_mm_day=8)
     ganesh = crop_disease_risk("Pomegranate", micro_wet, variety="Ganesh", rain_mm_day=8)
-    assert ganesh["max"] <= bhagwa["max"]
+    assert bhagwa["max"] <= ganesh["max"]
