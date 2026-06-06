@@ -51,3 +51,20 @@ Keep `site_id` as one id per spatial site so leave-one-site-out (and ideally
 leave-one-climate-zone-out) CV measures real transfer. Expect the borrowed,
 mostly-temperate labels to under-perform on tropical agroforestry until the
 year-2 local sensors fine-tune layer 1 -- that gap is itself a result.
+
+## Candidate open label datasets (scouted 2026-06)
+
+Open, CC-licensed, right-sized (MB, not GB) microclimate label sets for
+PRETRAINING the offset model. Temperate forest -- good for transfer pretraining;
+tropical/agroforestry labels still need the SoilTemp request or a targeted deposit.
+
+| Dataset | License | Size | Link |
+|---|---|---|---|
+| Forest microclimate data - 1st order sites | CC-BY-4.0 | 21 MB | https://zenodo.org/records/1228188 |
+| Forest microclimate data - 2nd order sites | CC-BY-4.0 | 176 MB | https://zenodo.org/records/1275137 |
+| High temporal resolution microclimate records | CC-BY-4.0 | 10 MB | https://zenodo.org/records/1216044 |
+| Microclimatic data - La Jarda, Spain 2004-06 | CC-BY-4.0 | 7 MB | https://zenodo.org/records/18913503 |
+
+NOTE: ForestTemp (figshare 14618235) is 219 GB of 25 m raster PREDICTIONS, not
+point labels -- do NOT bulk-download; sample specific pixels via GEE if a
+transfer benchmark is wanted.
