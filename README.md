@@ -26,7 +26,7 @@ Macroclimate + Farm design → Microclimate → Disease risk → Crop viability
 | Layer | What | Method | Status |
 |---|---|---|---|
 | 1 | Macroclimate + design → **microclimate** (incl. leaf-wetness) | Beer–Lambert + shelterbelt physics; XGBoost quantile models for temp/VPD offset | **Built** |
-| 2 | Microclimate + variety → **disease risk** | Mechanistic infection models × variety susceptibility | **Built** |
+| 2 | → **disease risk** (two axes: air-microclimate foliar + soil-water for soil-borne) | Mechanistic infection models × variety susceptibility; drainage a design lever | **Built** |
 | 3 | Growth fit + disease → **crop viability** | Fuzzy limiting-factor + two-axis `viability()` | **Built** |
 | 4 | Viability → **yield band** | reference-yield × suitability × (1−disease loss) | Designed (`docs/economics_layer.md`) |
 | 5 | Yield + price + market → **profitability** | trailing-price band + surplus/distance penalty | Designed |
@@ -57,12 +57,16 @@ artifacts (catalogs, dashboards, metrics) in `reports/`, roadmap in
 
 Physics layers (light, wind) are HIGH confidence. Temperature offset is MODERATE
 (borrowed-label ML, leave-one-site-out validated, conformal intervals).
-Humidity/VPD and the disease infection parameters are literature-*shaped*, not
-locally calibrated — treat **comparisons** (design A vs B, dry vs wet timing,
-variety A vs B) as reliable and absolute numbers as indicative. Local sensors
-(year 2) calibrate the MODERATE/LOW layers.
+Humidity/VPD and the disease parameters are LOW — now literature-*sourced*
+(ADR-003) and the soil-water/waterlogging axis data-calibrated from SoilGrids+CGWB
+(ADR-005), but still not locally field-calibrated. Treat **comparisons** (design
+A vs B, dry vs wet timing, variety A vs B, drainage on/off) as reliable and
+absolute numbers as indicative. Local sensors (year 2) calibrate the MODERATE/LOW
+layers. Decisions are recorded in `docs/architectural_decision_records/` (ADR-001–005).
 
 ## Status
 
-Active development. Layers 1–3 implemented and runnable; layers 4–5 designed and
-staged. Next: wire real SoilTemp/ForestTemp + Earth Engine data into layer 1.
+Active development. Layers 1–3 implemented, calibrated, and runnable (11 tests
+passing); layers 4–5 designed and staged. Earth Engine authenticated and the
+real-data scaffold is ready. Next: run the real-data fetch (Zenodo labels + Earth
+Engine features) into layer 1 and retrain with leave-one-site-out.

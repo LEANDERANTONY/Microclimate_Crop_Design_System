@@ -35,11 +35,19 @@ from RH/rain (the bridge into layer 2).
 
 ## Layer 2 — Disease (`disease.py`)
 
-The disease triangle: `realized_risk = environmental_pressure(microclimate) ×
-variety_susceptibility`. Environmental pressure comes from a generic temperature
-response × a leaf-wetness (or humidity) response, with a rain-splash factor.
-Variety enters as an ordinal susceptibility multiplier. No incidence data needed
-to start — parameters are literature-shaped (LOW confidence; calibrate later).
+The disease triangle: `realized_risk = environmental_pressure × variety_susceptibility`,
+across **two independent axes** (ADR-004):
+
+- **Air-microclimate axis** — foliar diseases, driven by a temperature response ×
+  leaf-wetness (`wetness`) or humidity (`humidity`), with a rain-splash factor.
+- **Soil-water axis** — soil-borne diseases (wilt, foot rot), driven by temperature
+  × **effective waterlogging** = site waterlogging × drainage-mitigation, *not* air
+  RH. Drainage is a design lever; waterlogging is data-calibrated and seasonal for
+  the delta site (wet 0.70 / dry 0.36 — ADR-005).
+
+Variety enters as an ordinal susceptibility multiplier. No incidence data needed to
+start — parameters are literature-*sourced* (ADR-003), still LOW confidence until
+field-calibrated.
 
 ## Layer 3 — Viability (`suitability.py`)
 

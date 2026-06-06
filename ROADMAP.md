@@ -12,17 +12,21 @@ Current baseline:
 - physics layer (Beer–Lambert light, shelterbelt wind) — mechanistic, HIGH confidence
 - XGBoost quantile models for temperature/VPD offsets with conformalised intervals
 - leave-one-site-out validation (transferability test)
-- disease layer (leaf-wetness + infection models × variety susceptibility)
+- disease layer on **two axes** (air-microclimate foliar + soil-water for soil-borne),
+  with drainage as a design lever (ADR-004)
+- envelopes + disease/variety params literature-calibrated (ADR-003); waterlogging
+  data-calibrated & seasonal from SoilGrids+CGWB (ADR-005)
 - two-axis suitability (`viability`) and inverse-design optimiser
-- crop/disease/variety catalog anchored to Pattukkottai
+- crop/disease/variety catalog anchored to Pattukkottai; ADRs 001–005
 
 Highest-priority remaining work:
 
-- keep documentation aligned with the repo's real state
-- expand the test baseline beyond the current smoke tests
-- keep the confidence labelling honest (physics HIGH, borrowed-ML MODERATE, infection LOW)
+- keep documentation aligned with the repo's real state (done through ADR-005)
+- expand the test baseline (now 11 tests) beyond smoke tests
+- keep the confidence labelling honest (physics HIGH, borrowed-ML MODERATE, disease LOW)
+- future extension: model coastal salinity (flagged in ADR-005)
 
-Status: Active delivery focus
+Status: Layer 1–3 core calibrated; pivoting to real data
 
 ## Next: Real data for layer 1
 

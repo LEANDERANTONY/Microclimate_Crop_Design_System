@@ -2,6 +2,30 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-07 — Calibration, two-axis disease, soil-water axis; Earth Engine set up
+
+- **Parallel research integrated** (3 sub-chats → `reports/`): applied
+  literature-sourced crop envelopes and disease/variety params to `config.py`
+  (**ADR-003**); fixed the inverted pomegranate Ganesh/Bhagwa blight ratings.
+  Key envelope fix: pomegranate RH-ideal 85→65% couples growth to disease reality
+  (monsoon humidity now correctly scores poor for growth, not just disease).
+- **Two-axis disease model (ADR-004):** soil-borne diseases (pomegranate wilt,
+  pepper foot rot) moved off the air-RH axis onto a new **soil-water axis** =
+  effective waterlogging (site × drainage-mitigation). Drainage added as a design
+  lever in the optimiser. Timing now fixes foliar disease, drainage fixes soil
+  disease — different levers, different diseases.
+- **Waterlogging data-calibrated (ADR-005):** sub-chat sourced SoilGrids clay
+  (~36%) + CGWB water table → validated the 0.70 default and added a seasonal split
+  (wet 0.70 / dry 0.36) plus a `waterlogging_index(clay, dtw)` formula. Dry-season
+  bahar eases the soil axis too. Salinity flagged as a future extension.
+- **Earth Engine authenticated** (project `microclimate-crop-design-sys`);
+  `earthengine-api` added; real-data scaffold (`fetch_earth_engine.py`, `load.py`,
+  `data_acquisition.md`) ready. `.env.example` added; token lives in `~/.config`.
+- Banana Sigatoka set to **yellow (*M. musicola*)** (local prevalence).
+- Repo renamed Agriculture → **Microclimate_Crop_Design_System**, pushed to GitHub.
+  Tests now **11 passing**. Docs (README, ROADMAP, architecture, AGENT, PROJECT_CONTEXT)
+  refreshed to match.
+
 ## 2026-06-06 — Repo aligned to house style; layer 1–3 core verified
 
 - Restructured into the standard `uv` + `src/` research-repo layout used across
