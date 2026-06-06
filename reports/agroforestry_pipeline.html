@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agroforestry Microclimate → Suitability → Design Pipeline</title>
+<style>
+  :root{
+    --bg:#faf8f4; --ink:#23291f; --muted:#6b7363; --line:#e0ddd2; --card:#ffffff;
+    --head:#2f3a28; --accent:#4a6b3a; --accent2:#7a5a2e;
+    --g:#3f8f4f; --gbg:#e3f2e4; --a:#b9852b; --abg:#fbf1dc; --r:#b3503f; --rbg:#f7e2dd;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:24px;line-height:1.45}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font-size:23px;margin:0 0 2px}
+  p.sub{color:var(--muted);margin:0 0 16px;font-size:13.5px}
+  .grid{display:grid;grid-template-columns:340px 1fr;gap:18px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+  h2{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);margin:0 0 12px;border-bottom:1px solid var(--line);padding-bottom:6px}
+  h3{font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);margin:16px 0 8px}
+  label{display:block;font-size:12.5px;font-weight:600;margin:10px 0 3px}
+  .val{float:right;font-weight:700;color:var(--accent)}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  select{width:100%;padding:6px;border:1px solid var(--line);border-radius:6px;font-size:13px;background:#fff}
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:6px}
+  .mc{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px}
+  .mc .lab{font-size:11px;color:var(--muted);font-weight:600}
+  .mc .num{font-size:22px;font-weight:700;margin-top:2px}
+  .mc .unit{font-size:12px;color:var(--muted);font-weight:500}
+  .badge{display:inline-block;font-size:9.5px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:5px;vertical-align:middle}
+  .b-hi{background:var(--gbg);color:var(--g)} .b-mod{background:var(--abg);color:var(--a)} .b-lo{background:var(--rbg);color:var(--r)}
+  .crop{margin:9px 0}
+  .crop .top{display:flex;justify-content:space-between;font-size:13px;font-weight:600;margin-bottom:3px}
+  .bar{height:16px;background:#eee;border-radius:8px;overflow:hidden}
+  .bar span{display:block;height:100%;border-radius:8px;transition:width .25s}
+  .lim{font-size:11px;color:var(--muted);margin-top:2px}
+  button{background:var(--accent);color:#fff;border:none;border-radius:7px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer}
+  button:hover{background:#3c5930}
+  .optrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .optout{margin-top:12px;font-size:13px;background:var(--gbg);border:1px solid var(--g);border-radius:8px;padding:12px;display:none}
+  .optout.show{display:block}
+  details{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px}
+  summary{font-weight:700;cursor:pointer;font-size:14px;color:var(--head)}
+  table{border-collapse:collapse;width:100%;font-size:12px;margin-top:10px}
+  th,td{border:1px solid var(--line);padding:5px 8px;text-align:left}
+  th{background:var(--head);color:#fff}
+  code{background:#f0efe7;padding:1px 5px;border-radius:4px;font-size:12px}
+  .disc{font-size:11.5px;color:var(--muted);margin-top:8px}
+  a{color:var(--accent)}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Agroforestry Pipeline — Microclimate → Suitability → Design</h1>
+<p class="sub">Full working pipeline: predict under-canopy microclimate from your design, score crop suitability, and optimise the design for a target crop. Coefficients are literature priors (Beer–Lambert, shelterbelt physics, De Frenne buffering) — recalibrate with local sensors next year. Confidence is labelled per variable.</p>
+
+<div class="grid">
+  <!-- CONTROLS -->
+  <div class="panel">
+    <h2>Design &amp; macroclimate inputs</h2>
+
+    <h3>Overstorey (main tree)</h3>
+    <select id="species" onchange="onSpecies()">
+      <option value="none">Open field (no canopy)</option>
+      <option value="coconut_wide" selected>Coconut — wide (≈7.5 m)</option>
+      <option value="coconut_close">Coconut — close / young</option>
+      <option value="silver_oak">Silver oak (Grevillea)</option>
+      <option value="mahogany">Mahogany / dense timber</option>
+      <option value="teak_leaf">Teak — in leaf (wet season)</option>
+      <option value="teak_bare">Teak — leafless (dry season)</option>
+    </select>
+
+    <label>Canopy LAI <span class="val" id="laiV">1.0</span></label>
+    <input type="range" id="lai" min="0" max="3.5" step="0.1" value="1.0" oninput="run()">
+
+    <h3>Windbreak (perimeter)</h3>
+    <label>Height (m) <span class="val" id="wbhV">10</span></label>
+    <input type="range" id="wbh" min="0" max="20" step="1" value="10" oninput="run()">
+    <label>Porosity <span class="val" id="wbpV">0.45</span></label>
+    <input type="range" id="wbp" min="0.1" max="0.9" step="0.05" value="0.45" oninput="run()">
+
+    <h3>Macroclimate baseline (ambient, open field)</h3>
+    <label>Mean air temp (°C) <span class="val" id="tV">28</span></label>
+    <input type="range" id="t" min="18" max="40" step="0.5" value="28" oninput="run()">
+    <label>Daily max temp (°C) <span class="val" id="tmaxV">34</span></label>
+    <input type="range" id="tmax" min="22" max="45" step="0.5" value="34" oninput="run()">
+    <label>Relative humidity (%) <span class="val" id="rhV">75</span></label>
+    <input type="range" id="rh" min="40" max="98" step="1" value="75" oninput="run()">
+    <label>Wind speed (m/s) <span class="val" id="wV">3.0</span></label>
+    <input type="range" id="w" min="0" max="10" step="0.5" value="3.0" oninput="run()">
+    <p class="disc">Defaults ≈ a humid tropical coconut belt (e.g. coastal S. India). Pull real values from ERA5 / NASA POWER / IMD for your site.</p>
+  </div>
+
+  <!-- OUTPUTS -->
+  <div>
+    <div class="panel">
+      <h2>1 · Predicted under-canopy microclimate</h2>
+      <div class="cards">
+        <div class="mc"><div class="lab">Shade <span class="badge b-hi">HIGH conf</span></div><div class="num" id="oShade">–<span class="unit">%</span></div></div>
+        <div class="mc"><div class="lab">Light at floor <span class="badge b-hi">HIGH</span></div><div class="num" id="oLight">–<span class="unit">%</span></div></div>
+        <div class="mc"><div class="lab">Under-canopy mean temp <span class="badge b-mod">MOD</span></div><div class="num" id="oTmean">–<span class="unit">°C</span></div></div>
+        <div class="mc"><div class="lab">Under-canopy max temp <span class="badge b-mod">MOD</span></div><div class="num" id="oTmax">–<span class="unit">°C</span></div></div>
+        <div class="mc"><div class="lab">Under-canopy RH <span class="badge b-lo">LOW</span></div><div class="num" id="oRH">–<span class="unit">%</span></div></div>
+        <div class="mc"><div class="lab">In-field wind <span class="badge b-hi">HIGH</span></div><div class="num" id="oWind">–<span class="unit">m/s</span></div></div>
+      </div>
+      <p class="disc">Confidence reflects how physics-grounded each prediction is. Light &amp; wind are mechanistic (high); temperature uses literature buffering priors (moderate); humidity is the least constrained (low) until local sensors arrive.</p>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2>2 · Crop suitability (limiting-factor scored)</h2>
+      <div id="crops"></div>
+      <p class="disc">Score = the <b>worst-matched</b> variable (Liebig's law of the minimum). The limiting factor is named so you know what to fix. Overall confidence = lowest confidence among the variables actually constraining the score.</p>
+    </div>
+
+    <div class="panel" style="margin-top:16px">
+      <h2>3 · Inverse design — optimise for a target crop</h2>
+      <div class="optrow">
+        <select id="target" style="width:auto">
+          <option>Vanilla</option><option>Cocoa</option><option>Black pepper</option><option>Nutmeg</option><option>Ginger</option>
+        </select>
+        <button onclick="optimise()">Find best design</button>
+        <span class="disc" style="margin:0">Searches overstorey × LAI × windbreak (≈800 designs) for max suitability.</span>
+      </div>
+      <div class="optout" id="optout"></div>
+    </div>
+  </div>
+</div>
+
+<details>
+<summary>Methodology, coefficients &amp; confidence — read before trusting numbers</summary>
+<p style="font-size:13px;margin-top:10px">Every layer below is implemented in this page. Coefficients are <b>literature priors</b>, not locally calibrated — they encode the right <i>physics and direction</i>, with magnitudes to be tightened by your TMS-4 sensors next year. This is the "sound methodology now, cross-verify later" design you asked for.</p>
+
+<h3 style="color:var(--accent)">Layer 1 — Prediction</h3>
+<table>
+<tr><th>Variable</th><th>Model</th><th>Equation</th><th>Confidence</th></tr>
+<tr><td>Shade / light</td><td>Beer–Lambert (physics)</td><td><code>light = e^(−k·LAI)</code>, k≈0.5–0.6 per species</td><td>HIGH — mechanistic</td></tr>
+<tr><td>In-field wind</td><td>Overstorey drag + shelterbelt</td><td><code>w·(1−drag·f)·(1−R<sub>wb</sub>)</code>, R<sub>wb</sub> from porosity (opt. 40–50%)</td><td>HIGH — established aerodynamics</td></tr>
+<tr><td>Temp offset</td><td>Canopy buffering (De Frenne priors)</td><td><code>ΔT<sub>max</sub>=−3.5f</code>, <code>ΔT<sub>mean</sub>=−1.2f</code> (f = canopy cover)</td><td>MODERATE — borrowed magnitudes</td></tr>
+<tr><td>Humidity</td><td>Cover→RH prior</td><td><code>ΔRH=+12f</code> (%), capped at 99</td><td>LOW — least constrained</td></tr>
+</table>
+
+<h3 style="color:var(--accent)">Layer 2 — Suitability scoring</h3>
+<p style="font-size:12.5px">Each predicted variable gets a trapezoidal membership (1 inside the crop's ideal band, ramping to 0 at its tolerance limits) against the envelopes from the reachability matrix. Crop score = <code>100 × min(memberships)</code> — the limiting factor governs, never an average. Wind is one-sided (lower better, scaled by crop sensitivity).</p>
+
+<h3 style="color:var(--accent)">Layer 3 — Inverse design</h3>
+<p style="font-size:12.5px">A grid search (this page) over overstorey × LAI (0.5–3.0) × windbreak height × porosity evaluates Layers 1–2 for every design and returns the highest-scoring one. In the research build this becomes Bayesian optimisation / NSGA-II — same objective, smarter search.</p>
+
+<p class="disc"><b>Honest limits.</b> (1) Coefficients are not locally validated — treat absolute numbers as indicative, comparisons between designs as more reliable than any single value. (2) Humidity/VPD is weak without sensors. (3) Suitability = "can grow," not yet "profitable/reliable." All three resolve with the year-2 sensor campaign.</p>
+<p class="disc">Sources: De Frenne et al. 2019/2021 (canopy buffering); Beer–Lambert k (Forest Science); shelterbelt porosity (UMCA); crop envelopes (FAO ECOCROP / extension). See data_source_catalog.html.</p>
+</details>
+
+<script>
+const SPECIES = {
+  none:        {lai:0.0, k:0.0,  drag:0.00, label:"Open field"},
+  coconut_wide:{lai:1.0, k:0.50, drag:0.10, label:"Coconut wide"},
+  coconut_close:{lai:1.7,k:0.50, drag:0.15, label:"Coconut close"},
+  silver_oak:  {lai:1.3, k:0.55, drag:0.20, label:"Silver oak"},
+  mahogany:    {lai:2.6, k:0.60, drag:0.25, label:"Mahogany"},
+  teak_leaf:   {lai:2.0, k:0.60, drag:0.22, label:"Teak (in leaf)"},
+  teak_bare:   {lai:0.3, k:0.60, drag:0.08, label:"Teak (leafless)"},
+};
+// crop envelopes: [idealLo, idealHi, tolLo, tolHi]; wind: max ideal, max tol (one-sided)
+const CROPS = {
+  "Vanilla":     {t:[20,30,15,33], shade:[50,60,35,78], rh:[70,90,55,100], wind:[1.5,3.0]},
+  "Cocoa":       {t:[21,32,18,35], shade:[25,50,10,65], rh:[70,90,55,100], wind:[1.5,3.0]},
+  "Black pepper":{t:[23,32,18,35], shade:[20,50,5,70],  rh:[70,90,55,100], wind:[2.5,4.5]},
+  "Nutmeg":      {t:[25,35,20,38], shade:[40,50,20,72], rh:[70,90,55,100], wind:[1.5,3.0]},
+  "Ginger":      {t:[20,30,16,35], shade:[25,50,0,70],  rh:[70,90,55,100], wind:[4.0,6.5]},
+};
+const CONF = {t:"MODERATE", shade:"HIGH", rh:"LOW", wind:"HIGH"};
+
+function trap(x, lo, hi, tlo, thi){
+  if(x>=lo && x<=hi) return 1;
+  if(x<tlo || x>thi) return 0;
+  if(x<lo) return (x-tlo)/(lo-tlo);
+  return (thi-x)/(thi-hi);
+}
+function oneSided(x, ideal, tol){ // lower better
+  if(x<=ideal) return 1;
+  if(x>=tol) return 0;
+  return (tol-x)/(tol-ideal);
+}
+
+function predict(sp, lai, wbh, wbp, T, Tmax, RH, W){
+  const k = SPECIES[sp].k, drag = SPECIES[sp].drag;
+  const light = Math.exp(-k*lai);           // fraction reaching floor
+  const f = 1 - light;                      // canopy cover fraction
+  const shade = 100*f;
+  // temperature buffering (De Frenne priors)
+  const tmean = T - 1.2*f;
+  const tmaxU = Tmax - 3.5*f;
+  // humidity
+  const rhU = Math.min(99, RH + 12*f);
+  // wind: overstorey drag + perimeter windbreak
+  // windbreak avg field reduction: best near porosity 0.45; height gates effectiveness
+  const porPenalty = 1 - Math.abs(wbp-0.45)*0.8;        // 1 at optimum, less if too dense/open
+  const heightFac = Math.min(1, wbh/10);                 // full effect ~>=10 m
+  const Rwb = 0.45*(1-wbp)*porPenalty*heightFac;         // up to ~0.45 reduction
+  const wind = W*(1-drag*f)*(1-Rwb);
+  return {shade, light:100*light, tmean, tmaxU, rhU, wind};
+}
+
+function score(cropName, p){
+  const c = CROPS[cropName];
+  const m = {
+    t:    trap(p.tmaxU, c.t[0], c.t[1], c.t[2], c.t[3]),       // use max temp (stress driver)
+    shade:trap(p.shade, c.shade[0], c.shade[1], c.shade[2], c.shade[3]),
+    rh:   trap(p.rhU, c.rh[0], c.rh[1], c.rh[2], c.rh[3]),
+    wind: oneSided(p.wind, c.wind[0], c.wind[1]),
+  };
+  let lim="t", min=2;
+  for(const k in m){ if(m[k]<min){min=m[k]; lim=k;} }
+  const names={t:"temperature", shade:"shade/light", rh:"humidity", wind:"wind"};
+  return {score:Math.round(min*100), lim:names[lim], conf:CONF[lim]};
+}
+
+function badge(conf){
+  const cls = conf=="HIGH"?"b-hi":conf=="MODERATE"?"b-mod":"b-lo";
+  return `<span class="badge ${cls}">${conf}</span>`;
+}
+function colorFor(s){ return s>=70?"var(--g)":s>=40?"var(--a)":"var(--r)"; }
+
+function getInputs(){
+  return {
+    sp:document.getElementById('species').value,
+    lai:+document.getElementById('lai').value,
+    wbh:+document.getElementById('wbh').value,
+    wbp:+document.getElementById('wbp').value,
+    T:+document.getElementById('t').value,
+    Tmax:+document.getElementById('tmax').value,
+    RH:+document.getElementById('rh').value,
+    W:+document.getElementById('w').value,
+  };
+}
+
+function run(){
+  // sync labels
+  laiV.textContent=(+lai.value).toFixed(1); wbhV.textContent=wbh.value;
+  wbpV.textContent=(+wbp.value).toFixed(2); tV.textContent=t.value;
+  tmaxV.textContent=tmax.value; rhV.textContent=rh.value; wV.textContent=(+w.value).toFixed(1);
+  const i=getInputs();
+  const p=predict(i.sp,i.lai,i.wbh,i.wbp,i.T,i.Tmax,i.RH,i.W);
+  oShade.innerHTML=p.shade.toFixed(0)+'<span class="unit">%</span>';
+  oLight.innerHTML=p.light.toFixed(0)+'<span class="unit">%</span>';
+  oTmean.innerHTML=p.tmean.toFixed(1)+'<span class="unit">°C</span>';
+  oTmax.innerHTML=p.tmaxU.toFixed(1)+'<span class="unit">°C</span>';
+  oRH.innerHTML=p.rhU.toFixed(0)+'<span class="unit">%</span>';
+  oWind.innerHTML=p.wind.toFixed(1)+'<span class="unit">m/s</span>';
+  let html="";
+  for(const name in CROPS){
+    const s=score(name,p);
+    html+=`<div class="crop"><div class="top"><span>${name} ${badge(s.conf)}</span><span>${s.score}/100</span></div>
+      <div class="bar"><span style="width:${s.score}%;background:${colorFor(s.score)}"></span></div>
+      <div class="lim">limiting factor: ${s.lim}</div></div>`;
+  }
+  document.getElementById('crops').innerHTML=html;
+}
+
+function onSpecies(){
+  const sp=document.getElementById('species').value;
+  document.getElementById('lai').value=SPECIES[sp].lai;
+  run();
+}
+
+function optimise(){
+  const tgt=document.getElementById('target').value;
+  const i=getInputs();
+  let best={score:-1};
+  const speciesList=Object.keys(SPECIES).filter(s=>s!=='none');
+  for(const sp of speciesList){
+    for(let lai=0.5; lai<=3.0; lai+=0.25){
+      for(const wbp of [0.3,0.4,0.45,0.5,0.6]){
+        for(const wbh of [5,10,15]){
+          const p=predict(sp,lai,wbh,wbp,i.T,i.Tmax,i.RH,i.W);
+          const s=score(tgt,p);
+          if(s.score>best.score){ best={score:s.score,sp,lai,wbp,wbh,p,lim:s.lim,conf:s.conf}; }
+        }
+      }
+    }
+  }
+  const o=document.getElementById('optout');
+  o.classList.add('show');
+  o.innerHTML=`<b>Best design for ${tgt}: ${best.score}/100</b> ${badge(best.conf)}<br>
+    Overstorey: <b>${SPECIES[best.sp].label}</b> · LAI <b>${best.lai.toFixed(2)}</b> (→ ${best.p.shade.toFixed(0)}% shade) ·
+    Windbreak <b>${best.wbh} m</b> @ porosity <b>${best.wbp}</b><br>
+    Predicted: max temp ${best.p.tmaxU.toFixed(1)}°C · RH ${best.p.rhU.toFixed(0)}% · wind ${best.p.wind.toFixed(1)} m/s ·
+    remaining limiting factor: ${best.lim}`;
+}
+
+run();
+</script>
+</div>
+</body>
+</html>

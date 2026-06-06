@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crop × Canopy Reachability Matrix</title>
+<style>
+  :root{
+    --bg:#faf8f4; --ink:#23291f; --muted:#6b7363; --line:#e0ddd2;
+    --green:#3f8f4f; --greenbg:#e3f2e4;
+    --amber:#b9852b; --amberbg:#fbf1dc;
+    --red:#b3503f; --redbg:#f7e2dd;
+    --head:#2f3a28; --accent:#4a6b3a;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);margin:0;padding:32px;line-height:1.5}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:24px;margin:0 0 4px}
+  h2{font-size:17px;margin:34px 0 10px;color:var(--head);border-bottom:2px solid var(--accent);padding-bottom:5px}
+  p.sub{color:var(--muted);margin:0 0 8px;font-size:14px}
+  table{border-collapse:collapse;width:100%;font-size:13px;background:#fff;
+        box-shadow:0 1px 3px rgba(0,0,0,.06);border-radius:6px;overflow:hidden}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  thead th{background:var(--head);color:#fff;font-weight:600;font-size:12.5px}
+  tbody th{background:#f0efe7;font-weight:600;white-space:nowrap}
+  .matrix td{text-align:center;font-weight:600;font-size:12px}
+  .g{background:var(--greenbg);color:var(--green)}
+  .a{background:var(--amberbg);color:var(--amber)}
+  .r{background:var(--redbg);color:var(--red)}
+  .cell-note{display:block;font-weight:400;color:var(--muted);font-size:10.5px;margin-top:2px}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0 0;font-size:12.5px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .chip{width:14px;height:14px;border-radius:3px;display:inline-block}
+  .note{background:#fff;border-left:4px solid var(--accent);padding:12px 16px;
+        margin:14px 0;font-size:13px;border-radius:0 6px 6px 0}
+  .small{font-size:11.5px;color:var(--muted)}
+  footer{margin-top:30px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Crop × Canopy Reachability Matrix</h1>
+<p class="sub">First-pass screen: which high-value crops are physically reachable under which canopy system, judged on the levers you can actually control — <b>shade/light</b> and <b>wind</b> — before any modeling. v1 · June 2026</p>
+
+<div class="note">
+<b>How to read this.</b> Temperature, humidity and rainfall here are treated as the <i>macroclimate baseline</i> your site already provides — a coconut-suitable tropical site (≈25–35&nbsp;°C, 2000–3000&nbsp;mm, RH 70–90%) comfortably covers the temperature/rainfall/humidity bands of all five crops. So the deciding question is <b>not</b> "is the climate right" but <b>"can the canopy + windbreak design bend light and wind into each crop's required window."</b> That is exactly the controllable-variable problem you defined. Soil moisture is assumed regulated by bores and is excluded as a driver.
+</div>
+
+<h2>1 · Crop ideal-condition envelopes</h2>
+<p class="sub">Target windows each crop wants. Shade % = fraction of full sun blocked; wind sensitivity = how much the crop needs a windbreak.</p>
+<table>
+<thead>
+<tr><th>Crop</th><th>Temp (°C)</th><th>Shade needed</th><th>RH (%)</th><th>Rainfall (mm/yr)</th><th>Wind sensitivity</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><th>Vanilla</th><td>20–30 (night 15–21)</td><td>~50–60% (steady, filtered)</td><td>70–90</td><td>1500–3000</td><td><b>High</b></td><td>Epiphytic vine; needs a living support + constant dappled light; sunburns in gaps, rots in deep shade.</td></tr>
+<tr><th>Cocoa</th><td>21–32 (avoid &lt;18.8 / &gt;32.2)</td><td>25–50% (more when young)</td><td>70–90</td><td>1300–2000</td><td><b>High</b></td><td>Understory tree; wind-sensitive; too much shade cuts yield, too little scorches leaves.</td></tr>
+<tr><th>Black pepper</th><td>23–32 (avg ~28)</td><td>~20–50%</td><td>70–90</td><td>2000–3000</td><td>Moderate</td><td>Climbs a standard (coconut/silver oak ideal); tolerates a fairly wide light range.</td></tr>
+<tr><th>Nutmeg</th><td>25–35</td><td>~50% young → less mature</td><td>70–90</td><td>1500–2500</td><td><b>High</b></td><td>Brittle branches; needs shade in establishment and shelter from wind.</td></tr>
+<tr><th>Ginger</th><td>20–35 (best 19–28)</td><td>~25–50% (also tolerates open)</td><td>70–90</td><td>1320–1520</td><td>Low</td><td>Herbaceous monsoon crop; the most forgiving on both light and wind.</td></tr>
+</tbody>
+</table>
+
+<h2>2 · What each canopy system can deliver</h2>
+<p class="sub">The supply side — shade and wind buffering you can produce by choosing the main tree and spacing. Ranges are indicative; spacing and age shift them.</p>
+<table>
+<thead>
+<tr><th>Canopy / structure</th><th>Shade delivered</th><th>Light quality</th><th>Wind buffering</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><th>Coconut — wide (≈7.5 m / 25 ft), mature</th><td>~30–50%</td><td>High, even, feathery dappled</td><td>Partial (tall, porous crown)</td><td>Classic intercrop overstorey; light at ground stays usable. Spacing is your main shade dial.</td></tr>
+<tr><th>Coconut — close / younger</th><td>~50–60%</td><td>Moderate dappled</td><td>Partial</td><td>Denser overlap 6–20 yr; more shade but less floor light.</td></tr>
+<tr><th>Silver oak (Grevillea)</th><td>~40–60%</td><td>Light, feathery</td><td>Good (upright, deep-rooted)</td><td>Proven shade + live standard for pepper/coffee; doubles as windbreak.</td></tr>
+<tr><th>Mahogany / dense timber</th><td>~60–75%</td><td>Low, heavy</td><td>Good</td><td>Heavy even shade; can over-shade light-hungry intercrops.</td></tr>
+<tr><th>Teak (deciduous)</th><td>~60–70% wet / ~10% dry</td><td>Strongly seasonal</td><td>Good in leaf only</td><td>Drops leaves in dry season → exposes shade crops exactly when sun stress peaks.</td></tr>
+<tr><th>Windbreak (perimeter, 40–60% porosity)</th><td>n/a</td><td>n/a</td><td>Shelters 10–20× tree height downwind</td><td>Near-rule-based; ~40–60% porosity gives the longest shelter zone without damaging turbulence.</td></tr>
+</tbody>
+</table>
+
+<h2>3 · Reachability matrix</h2>
+<p class="sub">Each cell: can this canopy bring this crop into its light + wind window (assuming a perimeter windbreak handles wind for the sensitive crops)?</p>
+<table class="matrix">
+<thead>
+<tr><th>Crop \ Canopy</th><th>Coconut<br>(wide, mature)</th><th>Coconut<br>(close/young)</th><th>Silver oak</th><th>Mahogany<br>(dense)</th><th>Teak<br>(deciduous)</th></tr>
+</thead>
+<tbody>
+<tr><th>Vanilla</th>
+  <td class="a">Marginal<span class="cell-note">a touch too light; needs closer spacing/support</span></td>
+  <td class="g">Reachable<span class="cell-note">~50–60% steady shade fits</span></td>
+  <td class="g">Reachable<span class="cell-note">shade + living support in one</span></td>
+  <td class="a">Marginal<span class="cell-note">slightly too dark</span></td>
+  <td class="r">Poor<span class="cell-note">dry-season exposure = sunburn</span></td></tr>
+<tr><th>Cocoa</th>
+  <td class="g">Reachable<span class="cell-note">classic coconut–cocoa system</span></td>
+  <td class="a">Marginal<span class="cell-note">can be too dark when young</span></td>
+  <td class="g">Reachable<span class="cell-note">good shade + shelter</span></td>
+  <td class="a">Marginal<span class="cell-note">over-shade cuts yield</span></td>
+  <td class="r">Poor<span class="cell-note">seasonal light swing</span></td></tr>
+<tr><th>Black pepper</th>
+  <td class="g">Reachable<span class="cell-note">trails up coconut, ideal</span></td>
+  <td class="g">Reachable<span class="cell-note">tolerant light range</span></td>
+  <td class="g">Reachable<span class="cell-note">classic pepper standard</span></td>
+  <td class="a">Marginal<span class="cell-note">heavy shade trims spikes</span></td>
+  <td class="a">Marginal<span class="cell-note">deciduous standard, seasonal</span></td></tr>
+<tr><th>Nutmeg</th>
+  <td class="g">Reachable<span class="cell-note">common coconut–nutmeg mix</span></td>
+  <td class="g">Reachable<span class="cell-note">shade good for establishment</span></td>
+  <td class="g">Reachable<span class="cell-note">shade + windbreak</span></td>
+  <td class="a">Marginal<span class="cell-note">tolerates but dark</span></td>
+  <td class="r">Poor<span class="cell-note">dry-season exposure + wind</span></td></tr>
+<tr><th>Ginger</th>
+  <td class="g">Reachable<span class="cell-note">very forgiving</span></td>
+  <td class="g">Reachable<span class="cell-note">fine</span></td>
+  <td class="g">Reachable<span class="cell-note">fine</span></td>
+  <td class="a">Marginal<span class="cell-note">deep shade reduces rhizome</span></td>
+  <td class="a">Marginal<span class="cell-note">monsoon timing partly offsets</span></td></tr>
+</tbody>
+</table>
+
+<div class="legend">
+  <span><span class="chip" style="background:var(--greenbg);border:1px solid var(--green)"></span> Reachable — design lands inside the crop's window</span>
+  <span><span class="chip" style="background:var(--amberbg);border:1px solid var(--amber)"></span> Marginal — needs active management (spacing, pruning)</span>
+  <span><span class="chip" style="background:var(--redbg);border:1px solid var(--red)"></span> Poor — structural mismatch, hard to fix</span>
+</div>
+
+<div class="note" style="margin-top:24px">
+<b>What this first screen already tells you.</b> Coconut (wide, mature) and silver oak are the two overstoreys that keep <i>every</i> candidate crop in-window — they're the safe structural backbone. Mahogany over-shades the light-sensitive crops, and <b>teak is the clear loser</b> for shade-dependent intercrops because its dry-season leaf drop exposes them at the worst moment. The three wind-sensitive crops (vanilla, cocoa, nutmeg) all flip to viable <i>only</i> with a perimeter windbreak — confirming windbreak design is a first-class decision, not an afterthought. Vanilla is the fussiest (narrow steady-shade band); ginger is the most forgiving fallback.
+</div>
+
+<footer>
+<b>Sources (envelopes & delivery ranges):</b>
+Vanilla — <a href="https://www.agrownet.com/contents/en-us/d340963_Vanilla_Climate_requirements.html">Agrownet</a>;
+Cocoa — <a href="https://maweb.org/which-climate-is-best-for-growing-cocoa-tree/">MAWEB</a>;
+Pepper — <a href="https://www.chineseherbshealing.com/black-pepper/climatic-requirements.html">Climatic Requirements</a>;
+Nutmeg — <a href="https://www.agrifarming.in/nutmeg-cultivation-information">Agri Farming</a>, <a href="https://kssdb.karnataka.gov.in/info-2/Package+of+Practices/Nutmeg/en">KSSDB</a>;
+Ginger — <a href="https://www.tandfonline.com/doi/full/10.1080/23311932.2024.2446653">Cogent Food &amp; Agriculture</a>;
+Coconut intercropping/PAR — <a href="https://link.springer.com/article/10.1007/s10457-024-00977-w">Agroforestry Systems</a>;
+Windbreaks — <a href="https://centerforagroforestry.org/wp-content/uploads/2024/04/06_Windbreaks_TrainingManual_2024Master_0410_Digital-7.pdf">UMCA Training Manual</a>.
+<br><span class="small">v1 indicative ranges for screening only; values to be tightened against FAO ECOCROP and local trial data before modeling.</span>
+</footer>
+
+</div>
+</body>
+</html>

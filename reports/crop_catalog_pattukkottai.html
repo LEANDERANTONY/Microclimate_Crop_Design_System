@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crop Catalog — Pattukkottai (growth · disease · variety · demand)</title>
+<style>
+  :root{
+    --bg:#faf8f4; --ink:#23291f; --muted:#6b7363; --line:#e0ddd2; --card:#fff;
+    --head:#2f3a28; --accent:#4a6b3a;
+    --g:#3f8f4f; --gbg:#e3f2e4; --a:#b9852b; --abg:#fbf1dc; --r:#b3503f; --rbg:#f7e2dd;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);margin:0;padding:26px;line-height:1.45}
+  .wrap{max-width:1280px;margin:0 auto}
+  h1{font-size:23px;margin:0 0 2px}
+  p.sub{color:var(--muted);margin:0 0 12px;font-size:13.5px}
+  h2{font-size:16px;margin:26px 0 8px;color:var(--head);border-bottom:2px solid var(--accent);padding-bottom:5px}
+  table{border-collapse:collapse;width:100%;font-size:12px;background:var(--card);box-shadow:0 1px 3px rgba(0,0,0,.05);border-radius:6px;overflow:hidden}
+  th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+  thead th{background:var(--head);color:#fff;font-weight:600;font-size:11.5px}
+  tbody td:first-child{font-weight:700;white-space:nowrap}
+  .v{font-weight:700;padding:2px 7px;border-radius:10px;font-size:11px;white-space:nowrap}
+  .v-d{background:var(--gbg);color:var(--g)} .v-e{background:var(--abg);color:var(--a)} .v-x{background:var(--rbg);color:var(--r)}
+  .note{background:var(--card);border-left:4px solid var(--accent);padding:11px 15px;margin:12px 0;font-size:13px;border-radius:0 6px 6px 0}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:8px 0;font-size:12.5px}
+  .small{font-size:11px;color:var(--muted)}
+  a{color:var(--accent)}
+  footer{margin-top:22px;font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Crop Catalog — Pattukkottai modelling set</h1>
+<p class="sub">Growth envelope · disease drivers · variety susceptibility · India demand · local suitability verdict. Anchored to Pattukkottai (Thanjavur): ~28&nbsp;°C mean (40&nbsp;°C May, 20&nbsp;°C Jan nights), RH ~70–73%, ~900–1000&nbsp;mm rain concentrated in the NE monsoon (Oct–Dec), hot dry summers, alluvial/clay delta soils. v1 · June 2026</p>
+
+<div class="note">
+<b>The point of this list.</b> Crops span a spectrum: some you can plant directly, some are <i>marginal-but-engineerable</i> (the whole thesis — microclimate/variety/timing tips them into viability), and a few are honestly not worth fighting your climate for. The disease column is deliberately prominent because, as we established, disease — not raw climate — is often what decides profitability here, and it's driven by the same microclimate variables you can engineer. The key local lever is that your humid risk window is the <b>NE monsoon (Oct–Dec)</b> while summers are hot/dry — so <b>flowering/fruiting timing (bahar)</b> is as powerful as canopy or windbreaks.
+</div>
+
+<div class="legend">
+  <span><span class="v v-d">Direct</span> plant with standard practice</span>
+  <span><span class="v v-e">Engineerable</span> marginal; microclimate/variety/timing makes it viable</span>
+  <span><span class="v v-x">Heavy / Avoid</span> needs major modification or wrong climate</span>
+</div>
+
+<h2>1 · Growth envelope, demand &amp; local suitability</h2>
+<table>
+<thead>
+<tr><th>Crop</th><th>Type</th><th>Temp °C (ideal)</th><th>Shade need</th><th>RH %</th><th>Rainfall mm/yr</th><th>India demand</th><th>Pattukkottai verdict</th><th>Key engineering lever</th></tr>
+</thead>
+<tbody>
+<tr><td>Guava</td><td>Fruit</td><td>23–28 (15–35)</td><td>Full sun</td><td>moderate</td><td>~1000</td><td>High, steady</td><td><span class="v v-d">Direct</span></td><td>Drainage (wilt); airflow vs anthracnose</td></tr>
+<tr><td>Sapota (chikoo)</td><td>Fruit</td><td>20–34 (11–38)</td><td>Full sun</td><td>~70</td><td>1250–2500 (survives 500)</td><td>Steady</td><td><span class="v v-d">Direct</span></td><td>Very hardy; minimal</td></tr>
+<tr><td>Custard apple</td><td>Fruit</td><td>20–35</td><td>Full sun</td><td>low–mod</td><td>dryland (irrig.)</td><td>Steady, rising</td><td><span class="v v-d">Direct</span></td><td>Dryland star; APK(Ca)1 variety</td></tr>
+<tr><td>Mango</td><td>Fruit</td><td>24–30</td><td>Full sun</td><td>low at flowering</td><td>Very high</td><td>Very high</td><td><span class="v v-d">Direct</span></td><td>Dry air at flowering (anthracnose/mildew)</td></tr>
+<tr><td>Moringa (drumstick)</td><td>Veg/fruit</td><td>25–35</td><td>Full sun</td><td>tolerant</td><td>drought-tolerant</td><td>High (TN staple)</td><td><span class="v v-d">Direct</span></td><td>PKM-1 (disease-resistant); minimal</td></tr>
+<tr><td>Amla (aonla)</td><td>Fruit</td><td>25–40 (hardy)</td><td>Full sun</td><td>tolerant</td><td>hardy</td><td>Steady (processing)</td><td><span class="v v-d">Direct</span></td><td>Very hardy; rust in humid spells</td></tr>
+<tr><td>Acid lime</td><td>Fruit</td><td>20–35</td><td>Full sun</td><td>moderate</td><td>tolerant</td><td>High, steady</td><td><span class="v v-d">Direct</span></td><td>Windbreak cuts canker spread</td></tr>
+<tr><td>Banana</td><td>Fruit</td><td>25–35</td><td>Full sun (some shade)</td><td>high</td><td>high water need</td><td>Very high</td><td><span class="v v-d">Direct</span></td><td>Spacing/airflow (Sigatoka); water</td></tr>
+<tr><td>Papaya</td><td>Fruit</td><td>22–32</td><td>Full sun</td><td>moderate</td><td>moderate</td><td>High</td><td><span class="v v-d">Direct</span></td><td>Vector control (ringspot virus)</td></tr>
+<tr><td>Fig</td><td>Fruit</td><td>15–38 (hot dry)</td><td>Full sun</td><td>low preferred</td><td>dryland</td><td>Niche premium</td><td><span class="v v-d">Direct</span></td><td>Dryland fit; rust if humid</td></tr>
+<tr><td>Dragon fruit</td><td>Fruit</td><td>20–35 (burns &gt;38)</td><td><b>Light shade in summer</b></td><td>moderate</td><td>500–600</td><td>High, premium</td><td><span class="v v-e">Engineerable</span></td><td>Shade-net / light canopy vs &gt;38°C sunburn; drainage</td></tr>
+<tr><td>Pomegranate</td><td>Fruit</td><td>25–35 (semi-arid)</td><td>Full sun</td><td>low preferred</td><td>dryland (irrig.)</td><td>High, premium</td><td><span class="v v-e">Engineerable</span></td><td><b>Bahar timing</b> to dry season; airflow; Ganesh/Bhagwa</td></tr>
+<tr><td>Grapes</td><td>Fruit</td><td>15–35 (dry ripening)</td><td>Full sun (trained)</td><td>low at ripening</td><td>dry preferred</td><td>High, premium</td><td><span class="v v-e">Engineerable</span></td><td>Canopy airflow + timing vs mildew (hard)</td></tr>
+<tr><td>Ginger</td><td>Spice</td><td>20–30</td><td>25–50%</td><td>70–90</td><td>~1500</td><td>High, steady</td><td><span class="v v-e">Engineerable</span></td><td>Partial shade + monsoon timing; drainage</td></tr>
+<tr><td>Black pepper</td><td>Spice</td><td>23–32</td><td>20–50%</td><td>70–90</td><td>2000–3000</td><td>High, steady</td><td><span class="v v-e">Engineerable</span></td><td>Under coconut/silver oak + irrigation</td></tr>
+<tr><td>Cocoa</td><td>Spice</td><td>21–32</td><td>25–50%</td><td>70–90</td><td>1300–2000</td><td>Rising</td><td><span class="v v-x">Heavy</span></td><td>Coconut canopy + irrigation + humidity</td></tr>
+<tr><td>Nutmeg</td><td>Spice</td><td>25–35</td><td>40–50% (young)</td><td>70–90</td><td>1500–2500</td><td>Premium</td><td><span class="v v-x">Heavy</span></td><td>Dense canopy + irrigation; slow</td></tr>
+<tr><td>Vanilla</td><td>Spice</td><td>20–30</td><td>50–60%</td><td>70–90</td><td>1500–3000</td><td>Premium, volatile</td><td><span class="v v-x">Heavy</span></td><td>Shade + constant humidity + support</td></tr>
+<tr><td>Avocado</td><td>Fruit</td><td>20–30 (needs cool)</td><td>Full sun</td><td>moderate</td><td>well-distributed</td><td>Premium (₹350–450/kg)</td><td><span class="v v-x">Avoid (plains)</span></td><td>Needs Nilgiris/Kodai altitude — plains too hot</td></tr>
+</tbody>
+</table>
+
+<h2>2 · Disease profile &amp; variety susceptibility (the new modelling dimension)</h2>
+<table>
+<thead>
+<tr><th>Crop</th><th>Key disease(s)</th><th>Microclimate driver</th><th>Variety susceptibility note</th></tr>
+</thead>
+<tbody>
+<tr><td>Pomegranate</td><td>Bacterial blight (<i>Xanthomonas</i>); Ceratocystis wilt</td><td>High RH + rainfall + leaf wetness; optimum 29±3°C, <b>suppressed &gt;34°C</b>; rain-splash</td><td>None resistant; <b>Ganesh</b> more wet-tolerant; <b>Bhagwa</b> less fruit-spot/thrips</td></tr>
+<tr><td>Guava</td><td>Wilt (soil); Anthracnose (<i>Colletotrichum</i>)</td><td>Wilt: waterlogging. Anthracnose: humidity + leaf wetness</td><td>Cultivar screening exists; Allahabad Safeda fairly susceptible; Lalit/Arka Mridula differ</td></tr>
+<tr><td>Mango</td><td>Anthracnose; Powdery mildew</td><td>Humidity + dew at flowering/fruit set; rain</td><td>Strong cultivar variation in anthracnose tolerance</td></tr>
+<tr><td>Banana</td><td>Sigatoka leaf spot; Panama wilt</td><td>Sigatoka: humidity + leaf wetness; <b>worsened by close, still planting</b></td><td>Resistant clones exist; tissue-culture selections vary</td></tr>
+<tr><td>Grapes</td><td>Downy mildew; Powdery mildew</td><td>Downy: leaf wetness + rain (severe in monsoon); powdery: moderate temp, humid</td><td>Wide varietal resistance differences; table varieties mostly susceptible</td></tr>
+<tr><td>Papaya</td><td>Ringspot virus; Anthracnose</td><td>Virus: aphid vector (warm). Anthracnose: humidity</td><td>Some tolerant lines; Red Lady widely grown</td></tr>
+<tr><td>Acid lime</td><td>Citrus canker (bacterial)</td><td>Warm + humid; <b>wind-driven rain spreads it</b> (windbreaks help)</td><td>Limited resistance; manage via shelter + hygiene</td></tr>
+<tr><td>Dragon fruit</td><td>Stem/soft rot, anthracnose; sunburn (abiotic)</td><td>Excess moisture/poor drainage; sunburn &gt;38°C</td><td>Few disease issues; red-flesh types premium</td></tr>
+<tr><td>Fig / Amla</td><td>Rust</td><td>Humidity / leaf wetness</td><td>Hardy; cultivar differences minor for your scale</td></tr>
+<tr><td>Cocoa / Pepper / Vanilla / Nutmeg</td><td>Pod rot / foot rot / stem rot (<i>Phytophthora</i> spp.)</td><td>Waterlogging + high humidity + leaf wetness</td><td>Some tolerant clones (esp. pepper Panniyur lines)</td></tr>
+<tr><td>Avocado</td><td>Phytophthora root rot</td><td>Poor drainage / waterlogging; heat stress in plains</td><td>Rootstock tolerance varies; not the limiting issue here (climate is)</td></tr>
+<tr><td>Sapota / Custard apple / Moringa</td><td>Relatively disease-light</td><td>Minor leaf spots in humid spells</td><td>Moringa PKM-1 bred for resistance</td></tr>
+</tbody>
+</table>
+
+<div class="note" style="margin-top:18px">
+<b>What this catalog tells you for modelling.</b> Three groups emerge. (1) <b>Direct fruits</b> (guava, sapota, custard apple, mango, moringa, amla, lime, banana, papaya, fig) — robust to your climate; modelling mostly adds disease-timing value. (2) <b>Engineerable</b> (pomegranate, dragon fruit, grapes, ginger, pepper) — these are where your system earns its keep: e.g. <i>dragon fruit</i> needs light summer shade against &gt;38°C sunburn (a canopy/shade-net design problem), and <i>pomegranate/grapes</i> live or die by whether fruiting is kept out of the humid NE-monsoon window (a timing + airflow problem). (3) <b>Heavy/Avoid</b> (vanilla, cocoa, nutmeg; avocado) — either demand year-round shade+humidity your semi-arid site lacks, or need an altitude you don't have. Start the serious modelling on group 2 — maximum decision value, clearest microclimate levers.
+</div>
+
+<footer>
+<b>Sources:</b>
+Pattukkottai/Thanjavur climate (<a href="https://en.climate-data.org/asia/india/tamil-nadu/thanjavur-24024/">climate-data</a>);
+Pomegranate &amp; blight (<a href="https://www.actahort.org/books/818/818_43.htm">ActaHort</a>, <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7981347/">variety pathogenesis</a>);
+Guava (<a href="https://link.springer.com/article/10.1007/s42360-025-00821-w">anthracnose cultivar screening</a>);
+Mango anthracnose (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10484599/">Frontiers</a>);
+Sapota / custard apple / fig dryland (<a href="https://currenthorticulture.com/index.php/CURHOR/article/download/251/106/522">semi-arid fruits</a>, <a href="https://agritech.tnau.ac.in/horticulture/horti_TNAU_varieties_fc_capple.html">TNAU</a>);
+Dragon fruit (<a href="https://www.rehobothorganicfarms.com/dragonfruit">TN cultivation</a>);
+Avocado suitability (<a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0338518">PLOS One niche modelling</a>);
+Moringa/banana (<a href="https://agritech.tnau.ac.in/horticulture/pdf/Moringa%20English%20book.pdf">TNAU</a>).
+<br><span class="small">v1 indicative — envelope/disease/variety values for screening; tighten against FAO ECOCROP, TNAU package-of-practices, and cultivar trial data before modelling.</span>
+</footer>
+
+</div>
+</body>
+</html>

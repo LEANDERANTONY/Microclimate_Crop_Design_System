@@ -1,0 +1,25 @@
+[project]
+name = "agroforestry-microclimate-suitability"
+version = "0.1.0"
+description = "Microclimate-aware, disease-coupled crop suitability and farm-design optimisation for agroforestry systems."
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+    "numpy>=1.24,<2.2",
+    "pandas>=1.5,<3.0",
+    "scikit-learn>=1.1",
+    "xgboost>=2.0",
+    "pyarrow>=10.0",          # real-data parquet loader (src/agroforestry/data/load.py)
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0,<9.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

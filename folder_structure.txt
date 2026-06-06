@@ -1,0 +1,64 @@
+Microclimate_Crop_Design_System/  (agroforestry-microclimate-suitability)
+|-- README.md
+|-- ROADMAP.md
+|-- DEVLOG.md
+|-- AGENT.md                     # local-only agent briefing (gitignored)
+|-- folder_structure.txt
+|-- LICENSE
+|-- .gitignore
+|-- .python-version              # 3.11
+|-- pyproject.toml               # uv-managed; deps + pytest config
+|-- uv.lock
+|
+|-- docs/
+|   |-- architecture.md          # the five-layer system, in prose
+|   |-- modeling_blueprint.md     # model-selection rationale per layer
+|   |-- economics_layer.md        # staged yield/price/profit design (layers 4-5)
+|   `-- architectural_decision_records/
+|       |-- README.md
+|       |-- ADR-001-offset-and-physics.md
+|       `-- ADR-002-disease-layer.md
+|
+|-- reports/                     # tracked lightweight artifacts
+|   |-- agroforestry_pipeline.html        # interactive predict/score/optimise demo
+|   |-- crop_canopy_reachability.{html,csv}
+|   |-- crop_catalog_pattukkottai.html
+|   |-- crop_catalog_register.csv
+|   |-- data_source_catalog.html
+|   |-- data_source_register.csv
+|   `-- loso_metrics.json          # written by the pipeline run
+|
+|-- figures/                     # tracked curated figures
+|-- results/                     # heavier run outputs (.gitkeep)
+|-- notebooks/                   # exploratory analysis
+|-- scripts/
+|   `-- run_pipeline.py          # thin runner (adds src/ to path)
+|
+|-- data/                        # local-only, ignored
+|   |-- raw/
+|   `-- processed/
+|
+|-- src/
+|   `-- agroforestry/
+|       |-- __init__.py
+|       |-- config.py            # features, targets, crop envelopes, diseases, varieties
+|       |-- physics.py           # Beer-Lambert light + shelterbelt wind (HIGH conf)
+|       |-- features.py          # feature engineering
+|       |-- models.py            # XGBoost quantile regressors + CQR conformal
+|       |-- validation.py        # leave-one-site-out CV
+|       |-- predict.py           # unify ML offsets + physics -> microclimate
+|       |-- suitability.py       # fuzzy limiting-factor + two-axis viability
+|       |-- disease.py           # leaf-wetness + infection models x variety
+|       |-- optimize.py          # inverse-design search (growth | viability)
+|       |-- data/
+|       |   |-- synth.py         # synthetic borrowed-label generator
+|       |   `-- load.py          # real-data loader (SoilTemp/ForestTemp/GEE)
+|       |-- cli/
+|       |   `-- run_pipeline.py  # end-to-end runner (main)
+|       `-- utils/
+|           `-- repro.py         # seeding / reproducibility helpers
+|
+`-- tests/
+    |-- test_physics.py
+    |-- test_suitability.py
+    `-- test_disease.py

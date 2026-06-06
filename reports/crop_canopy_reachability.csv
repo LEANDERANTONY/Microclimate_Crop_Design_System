@@ -1,0 +1,21 @@
+section,crop,temp_min_C,temp_max_C,shade_min_pct,shade_max_pct,RH_min_pct,RH_max_pct,rainfall_min_mm,rainfall_max_mm,wind_sensitivity,notes
+crop_envelope,Vanilla,20,30,50,60,70,90,1500,3000,High,"Epiphytic vine; steady filtered light; needs living support"
+crop_envelope,Cocoa,21,32,25,50,70,90,1300,2000,High,"Understory tree; wind-sensitive"
+crop_envelope,Black pepper,23,32,20,50,70,90,2000,3000,Moderate,"Climbs a standard; tolerant light range"
+crop_envelope,Nutmeg,25,35,30,50,70,90,1500,2500,High,"Brittle; needs shade young + shelter"
+crop_envelope,Ginger,20,35,25,50,70,90,1320,1520,Low,"Herbaceous; most forgiving"
+
+section,canopy_system,shade_min_pct,shade_max_pct,light_quality,wind_buffering,notes
+canopy_delivery,Coconut wide mature,30,50,High even dappled,Partial,"Spacing ~7.5m; spacing is main shade dial"
+canopy_delivery,Coconut close young,50,60,Moderate dappled,Partial,"Denser overlap 6-20yr"
+canopy_delivery,Silver oak,40,60,Light feathery,Good,"Shade + live standard + windbreak"
+canopy_delivery,Mahogany dense timber,60,75,Low heavy,Good,"Can over-shade intercrops"
+canopy_delivery,Teak deciduous,10,70,Strongly seasonal,Good in leaf only,"Dry-season leaf drop exposes shade crops"
+canopy_delivery,Windbreak perimeter,NA,NA,NA,Shelters 10-20x height downwind,"40-60pct porosity optimal"
+
+section,crop,coconut_wide_mature,coconut_close_young,silver_oak,mahogany_dense,teak_deciduous
+reachability,Vanilla,Marginal,Reachable,Reachable,Marginal,Poor
+reachability,Cocoa,Reachable,Marginal,Reachable,Marginal,Poor
+reachability,Black pepper,Reachable,Reachable,Reachable,Marginal,Marginal
+reachability,Nutmeg,Reachable,Reachable,Reachable,Marginal,Poor
+reachability,Ginger,Reachable,Reachable,Reachable,Marginal,Marginal

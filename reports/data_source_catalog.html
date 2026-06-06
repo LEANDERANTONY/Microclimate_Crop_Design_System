@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Data Source Catalog — Microclimate Predictor</title>
+<style>
+  :root{
+    --bg:#faf8f4; --ink:#23291f; --muted:#6b7363; --line:#e0ddd2;
+    --head:#2f3a28; --accent:#4a6b3a; --accent2:#7a5a2e;
+    --inbg:#e7f0e3; --tgtbg:#f6e7df; --ancbg:#eef0e4;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);margin:0;padding:30px;line-height:1.5}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font-size:24px;margin:0 0 4px}
+  p.sub{color:var(--muted);margin:0 0 6px;font-size:14px}
+  h2{font-size:17px;margin:30px 0 4px;color:var(--head)}
+  .tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:20px;margin-bottom:8px}
+  .t-in{background:var(--inbg);color:var(--accent)}
+  .t-tgt{background:var(--tgtbg);color:var(--accent2)}
+  .t-anc{background:var(--ancbg);color:var(--head)}
+  table{border-collapse:collapse;width:100%;font-size:12.5px;background:#fff;
+        box-shadow:0 1px 3px rgba(0,0,0,.06);border-radius:6px;overflow:hidden;margin-bottom:6px}
+  th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+  thead th{background:var(--head);color:#fff;font-weight:600;font-size:12px}
+  tbody td:first-child{font-weight:600;white-space:nowrap}
+  .free{color:var(--accent);font-weight:600}
+  .paid{color:var(--accent2);font-weight:600}
+  .note{background:#fff;border-left:4px solid var(--accent);padding:11px 15px;margin:12px 0;font-size:13px;border-radius:0 6px 6px 0}
+  .small{font-size:11.5px;color:var(--muted)}
+  a{color:var(--accent)}
+  footer{margin-top:26px;font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Data Source Catalog — Microclimate Predictor (Step 1)</h1>
+<p class="sub">Extensive sourcing for "macroclimate + farm structure → microclimate." Cast wide now; feature-engineer and prune later. v1 · June 2026</p>
+
+<div class="note">
+<b>How the columns map to the model.</b> <b>Inputs (green)</b> are predictors the model reads. <b>Targets (orange)</b> are the microclimate labels the model learns to reproduce — the scarce, valuable part. <b>Ancillary (olive)</b> are modifiers (soil, terrain) that condition the offset. Almost everything here is <span class="free">free</span> and pullable through <b>Google Earth Engine</b> in one place; the few <span class="paid">paid/effort</span> items are flagged. Resolutions span 1&nbsp;m → 30&nbsp;km on purpose — you downscale/aggregate to a common grid during feature engineering.
+</div>
+
+<!-- A -->
+<h2>A · Macroclimate inputs — the ambient "above-canopy" drivers</h2>
+<span class="tag t-in">INPUT</span>
+<table>
+<thead><tr><th>Dataset</th><th>Variables</th><th>Resolution</th><th>Cadence</th><th>Coverage</th><th>Access / cost</th></tr></thead>
+<tbody>
+<tr><td>ERA5 / ERA5-Land</td><td>Air temp, dewpoint→RH, wind u/v, solar radiation, precip, pressure</td><td>31 km / 9 km</td><td>Hourly</td><td>Global, 1950–now</td><td><span class="free">Free</span> — Copernicus CDS, GEE</td></tr>
+<tr><td>NASA POWER</td><td>Ag-tuned T, RH, wind, solar, precip, PET</td><td>~0.5°</td><td>Daily/hourly</td><td>Global, 1981–now</td><td><span class="free">Free</span> — API, point</td></tr>
+<tr><td>IMD gridded</td><td>Rainfall; max/min temp</td><td>0.25° rain / 1° temp</td><td>Daily</td><td>India, 1901–</td><td><span class="free">Free</span> — IMD CDSP</td></tr>
+<tr><td>CHIRPS</td><td>Rainfall (gauge+satellite)</td><td>0.05° (~5 km)</td><td>Daily/pentad</td><td>50°N–50°S, 1981–</td><td><span class="free">Free</span> — GEE</td></tr>
+<tr><td>GSMaP_ISRO</td><td>Rainfall, gauge-corrected</td><td>0.1°</td><td>Hourly</td><td>India region, 2000–</td><td><span class="free">Free</span> — MOSDAC</td></tr>
+<tr><td>TerraClimate</td><td>T, precip, VPD, PET, soil moisture, water balance</td><td>~4 km</td><td>Monthly</td><td>Global, 1958–</td><td><span class="free">Free</span> — GEE</td></tr>
+<tr><td>WorldClim 2 / CHELSA</td><td>19 bioclim variables (climatology baselines)</td><td>~1 km</td><td>Long-term normals</td><td>Global</td><td><span class="free">Free</span> — download/GEE</td></tr>
+</tbody>
+</table>
+
+<!-- B -->
+<h2>B · Vegetation &amp; canopy structure — the design + state features (the heart)</h2>
+<span class="tag t-in">INPUT</span>
+<table>
+<thead><tr><th>Dataset</th><th>Variable</th><th>Resolution</th><th>Cadence</th><th>Access / cost</th><th>Pipeline role</th></tr></thead>
+<tbody>
+<tr><td>Sentinel-2 (SNAP biophysical)</td><td>LAI, FAPAR, FVC, canopy cover</td><td>10–20 m</td><td>~5 day</td><td><span class="free">Free</span> — CDSE/GEE</td><td>Core canopy density driver</td></tr>
+<tr><td>Copernicus Global Land</td><td>LAI, FAPAR, FCover</td><td>300 m</td><td>10 day</td><td><span class="free">Free</span></td><td>Smoothed regional LAI</td></tr>
+<tr><td>MODIS MOD15</td><td>LAI, FPAR</td><td>500 m</td><td>8 day</td><td><span class="free">Free</span> — GEE/AppEEARS</td><td>Long time-series LAI</td></tr>
+<tr><td>GEDI L2A/L2B</td><td>Canopy top height, vertical profile, PAI</td><td>25 m footprints</td><td>Sampled (ISS)</td><td><span class="free">Free</span> — Earthdata/GEE</td><td>Spaceborne LiDAR height truth</td></tr>
+<tr><td>ETH Global Canopy Height (Lang 2020)</td><td>Canopy top height (GEDI×S2 deep-learning)</td><td>10 m</td><td>2020 snapshot</td><td><span class="free">Free</span> — GEE community</td><td>Wall-to-wall tree height</td></tr>
+<tr><td>Meta / WRI Canopy Height</td><td>Canopy height</td><td>1 m</td><td>2009–2020 snapshot</td><td><span class="free">Free</span></td><td>Individual-tree-scale height</td></tr>
+<tr><td>Hansen Global Forest Change</td><td>Tree cover %, loss/gain</td><td>30 m</td><td>Annual</td><td><span class="free">Free</span> — GEE</td><td>Canopy cover baseline</td></tr>
+<tr><td>ESA WorldCover</td><td>Land cover incl. tree cover</td><td>10 m</td><td>2020/2021</td><td><span class="free">Free</span></td><td>Cover classification</td></tr>
+<tr><td>Sentinel-2 NDVI/EVI</td><td>Greenness indices</td><td>10 m</td><td>~5 day</td><td><span class="free">Free</span></td><td>Vigour / phenology</td></tr>
+<tr><td>MODIS MOD13</td><td>NDVI/EVI</td><td>250 m</td><td>16 day</td><td><span class="free">Free</span></td><td>Long NDVI series</td></tr>
+<tr><td>Sentinel-1 (C-band SAR)</td><td>Backscatter VV/VH (structure, cloud-free)</td><td>10 m</td><td>~6–12 day</td><td><span class="free">Free</span></td><td>Structure when cloudy</td></tr>
+<tr><td>ALOS-2 PALSAR (L-band)</td><td>Woody biomass / structure</td><td>25 m</td><td>Annual mosaic</td><td><span class="free">Free</span> — JAXA/GEE</td><td>Better woody-structure proxy</td></tr>
+<tr><td>PlanetScope</td><td>VHR optical (spacing, crowns)</td><td>3 m</td><td>~Daily</td><td><span class="paid">Paid</span> (research tiers exist)</td><td>Tree spacing / counting</td></tr>
+<tr><td>UAV / drone (your own)</td><td>RGB+multispectral, photogrammetric LAI, crown maps</td><td>cm</td><td>On demand</td><td><span class="paid">Effort</span> — own kit</td><td>Farm-specific structure ground truth</td></tr>
+</tbody>
+</table>
+
+<!-- B2 thermal -->
+<h2>C · Thermal &amp; water-flux layers — surface temperature, ET (offset signal)</h2>
+<span class="tag t-in">INPUT</span>
+<table>
+<thead><tr><th>Dataset</th><th>Variable</th><th>Resolution</th><th>Cadence</th><th>Access / cost</th><th>Why useful</th></tr></thead>
+<tbody>
+<tr><td>ECOSTRESS</td><td>Land surface temp, ET</td><td>70 m</td><td>~4 day, varied times</td><td><span class="free">Free</span> — Earthdata</td><td>High-res thermal; multiple times of day</td></tr>
+<tr><td>Landsat 8/9 TIRS</td><td>LST</td><td>100 m (resampled 30 m)</td><td>16 day</td><td><span class="free">Free</span> — GEE</td><td>Long thermal record</td></tr>
+<tr><td>MODIS MOD11/MYD11</td><td>LST (day &amp; night)</td><td>1 km</td><td>Daily ×4 overpasses</td><td><span class="free">Free</span></td><td>Diurnal temp signal</td></tr>
+<tr><td>ASTER</td><td>LST, emissivity</td><td>90 m</td><td>On request</td><td><span class="free">Free</span></td><td>Fine thermal snapshots</td></tr>
+<tr><td>MODIS MCD43 Albedo</td><td>Surface albedo</td><td>500 m</td><td>Daily (16-day window)</td><td><span class="free">Free</span></td><td>Energy-balance term</td></tr>
+<tr><td>MOD16 / PML_V2</td><td>Evapotranspiration</td><td>500 m</td><td>8 day</td><td><span class="free">Free</span> — GEE</td><td>Water-flux / VPD context</td></tr>
+</tbody>
+</table>
+
+<!-- D target -->
+<h2>D · Microclimate labels — the target to predict (scarce &amp; valuable)</h2>
+<span class="tag t-tgt">TARGET</span>
+<table>
+<thead><tr><th>Source</th><th>Variables</th><th>Nature</th><th>Access / cost</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>SoilTemp database</td><td>Near-surface / soil temp time series (7,500+ sensors, 51 countries)</td><td>In-situ network</td><td><span class="free">Free</span> — contribute/request</td><td>Borrowed labels for pretraining</td></tr>
+<tr><td>ForestTemp</td><td>Modeled monthly sub-canopy temp offsets (min/mean/max)</td><td>Gridded model</td><td><span class="free">Free</span> — figshare</td><td>Benchmark / transfer baseline</td></tr>
+<tr><td>Cocoa agroforestry microclimate (Zenodo)</td><td>Canopy openness, light, throughfall, temp, RH</td><td>Field dataset</td><td><span class="free">Free</span></td><td>Agroforestry-specific labels</td></tr>
+<tr><td>FLUXNET / ICOS / AmeriFlux</td><td>Above- &amp; sometimes sub-canopy met (T, RH, wind, radiation)</td><td>Tower network</td><td><span class="free">Free</span></td><td>Paired ambient↔canopy</td></tr>
+<tr><td><b>TMS-4 (TOMST) loggers — your own</b></td><td>Air +15 cm, surface 0 cm, soil −8 cm temp + soil moisture; 15-min; ~10-yr battery</td><td>In-situ (you deploy)</td><td><span class="paid">Buy</span> — ~standard microclimate logger</td><td><b>Fills the tropical-agroforestry gap</b></td></tr>
+<tr><td>PAR/lux + RH + anemometer sensors</td><td>Under-canopy light, humidity, wind</td><td>In-situ (you deploy)</td><td><span class="paid">Buy</span></td><td>Labels for light/VPD/wind offsets</td></tr>
+</tbody>
+</table>
+
+<!-- E ancillary -->
+<h2>E · Soil &amp; terrain — ancillary offset modifiers</h2>
+<span class="tag t-anc">ANCILLARY</span>
+<table>
+<thead><tr><th>Dataset</th><th>Variables</th><th>Resolution</th><th>Access / cost</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>SoilGrids 2.0 (ISRIC)</td><td>Texture, organic carbon, pH, bulk density, CEC, N — 6 depths</td><td>250 m</td><td><span class="free">Free</span> — REST/GEE</td><td>Soil thermal/moisture buffering</td></tr>
+<tr><td>Copernicus DEM (GLO-30)</td><td>Elevation</td><td>30 m</td><td><span class="free">Free</span></td><td>Base for terrain derivatives</td></tr>
+<tr><td>SRTM / NASADEM / ALOS AW3D30</td><td>Elevation (alternatives)</td><td>30 m</td><td><span class="free">Free</span> — GEE</td><td>Cross-check DEM</td></tr>
+<tr><td>Terrain derivatives (computed)</td><td>Slope, aspect, curvature, TWI, insolation/hillshade</td><td>30 m</td><td><span class="free">Free</span> — derive in GEE</td><td>Cold-air pooling, sun exposure</td></tr>
+</tbody>
+</table>
+
+<!-- F crop ref -->
+<h2>F · Crop envelope references — for the scoring layer (Step 2, not the predictor)</h2>
+<span class="tag t-anc">REFERENCE</span>
+<table>
+<thead><tr><th>Source</th><th>Content</th><th>Access / cost</th></tr></thead>
+<tbody>
+<tr><td>FAO ECOCROP</td><td>Per-crop environmental requirement ranges (temp, rainfall, etc.)</td><td><span class="free">Free</span></td></tr>
+<tr><td>FAO GAEZ v4</td><td>Agro-ecological suitability layers &amp; methodology</td><td><span class="free">Free</span></td></tr>
+<tr><td>ICAR / Spices Board / State POP</td><td>Local package-of-practices thresholds (pepper, nutmeg, vanilla, cocoa, ginger)</td><td><span class="free">Free</span></td></tr>
+</tbody>
+</table>
+
+<!-- platforms -->
+<h2>G · Access platforms — how to actually pull it</h2>
+<table>
+<thead><tr><th>Platform</th><th>What it gives you</th><th>Cost</th></tr></thead>
+<tbody>
+<tr><td>Google Earth Engine</td><td>Most RS layers (A–E) in one API + compute; sampling to points/grids</td><td><span class="free">Free</span> (research)</td></tr>
+<tr><td>Copernicus Data Space (CDSE)</td><td>Sentinel-1/2/3, processing</td><td><span class="free">Free</span></td></tr>
+<tr><td>Microsoft Planetary Computer</td><td>STAC catalog + hosted compute</td><td><span class="free">Free</span></td></tr>
+<tr><td>NASA Earthdata / AppEEARS</td><td>MODIS, GEDI, ECOSTRESS point/area extraction</td><td><span class="free">Free</span></td></tr>
+<tr><td>Climate Data Store (CDS)</td><td>ERA5 / ERA5-Land</td><td><span class="free">Free</span></td></tr>
+<tr><td>ISRO Bhuvan / VEDAS / MOSDAC</td><td>India EO, GSMaP rain, ag products</td><td><span class="free">Free</span></td></tr>
+</tbody>
+</table>
+
+<div class="note">
+<b>Feature-engineering reminders for later (don't prune yet).</b> From these raw layers you'll derive a lot: <b>temporal stats</b> (monthly/seasonal min/mean/max, growing-degree-days, dry-spell length), <b>diurnal range</b> from day/night LST, <b>VPD</b> from temp+RH, <b>canopy-structure composites</b> (LAI × height × cover interaction terms — the physical drivers of buffering), <b>texture/structure</b> from Sentinel-1, and <b>topographic indices</b>. The model predicts the <i>offset</i> (sub-canopy − ambient), so always pair every canopy feature with the matching ambient macroclimate value.
+</div>
+
+<footer>
+<b>Key sources:</b>
+<a href="https://langnico.github.io/globalcanopyheight/">ETH Global Canopy Height</a> ·
+<a href="https://developers.google.com/earth-engine/datasets/catalog/LARSE_GEDI_GEDI02_A_002_MONTHLY">GEDI on GEE</a> ·
+<a href="https://land.copernicus.eu/en/news/new-on-the-platform-the-lai-fapar-mosaics">Copernicus LAI/FAPAR</a> ·
+ECOSTRESS 70 m LST (<a href="https://www.sciencedirect.com/science/article/pii/S0034425720305629">ScienceDirect</a>) ·
+<a href="https://isric.org/explore/soilgrids">SoilGrids 2.0</a> ·
+<a href="https://tomst.com/web/en/systems/tms/tms-4/">TMS-4 logger</a> ·
+<a href="https://www.soiltempproject.com/soiltemp-maps/">SoilTemp</a> ·
+<a href="https://www.imdpune.gov.in/Clim_Pred_LRF_New/Grided_Data_Download.html">IMD gridded</a> ·
+<a href="https://bhuvan.nrsc.gov.in/">ISRO Bhuvan</a>
+<br><span class="small">v1 — cast deliberately wide. Prune by feature importance + leave-one-site-out validation once a first model runs.</span>
+</footer>
+
+</div>
+</body>
+</html>

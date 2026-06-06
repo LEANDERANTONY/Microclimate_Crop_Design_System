@@ -1,0 +1,41 @@
+category,role,dataset,variables,resolution,cadence,coverage,access,cost
+macroclimate,input,ERA5 / ERA5-Land,"air temp, dewpoint->RH, wind u/v, solar radiation, precip, pressure",31km / 9km,hourly,global 1950-now,Copernicus CDS / GEE,free
+macroclimate,input,NASA POWER,"T, RH, wind, solar, precip, PET",~0.5deg,daily/hourly,global 1981-now,API,free
+macroclimate,input,IMD gridded,"rainfall; max/min temp",0.25deg rain / 1deg temp,daily,India 1901-,IMD CDSP,free
+macroclimate,input,CHIRPS,rainfall,0.05deg,daily/pentad,50N-50S 1981-,GEE,free
+macroclimate,input,GSMaP_ISRO,rainfall gauge-corrected,0.1deg,hourly,India region 2000-,MOSDAC,free
+macroclimate,input,TerraClimate,"T, precip, VPD, PET, soil moisture, water balance",~4km,monthly,global 1958-,GEE,free
+macroclimate,input,WorldClim2 / CHELSA,19 bioclim variables,~1km,climatology,global,download/GEE,free
+canopy_structure,input,Sentinel-2 SNAP biophysical,"LAI, FAPAR, FVC, canopy cover",10-20m,~5day,global,CDSE/GEE,free
+canopy_structure,input,Copernicus Global Land,"LAI, FAPAR, FCover",300m,10day,global,Copernicus,free
+canopy_structure,input,MODIS MOD15,"LAI, FPAR",500m,8day,global,GEE/AppEEARS,free
+canopy_structure,input,GEDI L2A/L2B,"canopy top height, vertical profile, PAI",25m footprints,sampled,global (ISS band),Earthdata/GEE,free
+canopy_structure,input,ETH Global Canopy Height (Lang2020),canopy top height,10m,2020 snapshot,global,GEE community,free
+canopy_structure,input,Meta/WRI Canopy Height,canopy height,1m,snapshot,global,download,free
+canopy_structure,input,Hansen Global Forest Change,"tree cover %, loss/gain",30m,annual,global,GEE,free
+canopy_structure,input,ESA WorldCover,land cover incl tree cover,10m,2020/2021,global,download,free
+canopy_structure,input,Sentinel-2 NDVI/EVI,greenness indices,10m,~5day,global,GEE,free
+canopy_structure,input,MODIS MOD13,NDVI/EVI,250m,16day,global,GEE,free
+canopy_structure,input,Sentinel-1 SAR,backscatter VV/VH structure,10m,~6-12day,global,GEE,free
+canopy_structure,input,ALOS-2 PALSAR L-band,woody biomass/structure,25m,annual mosaic,global,JAXA/GEE,free
+canopy_structure,input,PlanetScope,VHR optical spacing/crowns,3m,~daily,global,Planet,paid
+canopy_structure,input,UAV/drone (own),"RGB+multispectral, photogrammetric LAI, crown maps",cm,on demand,farm,own kit,effort
+thermal_flux,input,ECOSTRESS,"LST, ET",70m,~4day,global,Earthdata,free
+thermal_flux,input,Landsat 8/9 TIRS,LST,100m (30m resampled),16day,global,GEE,free
+thermal_flux,input,MODIS MOD11/MYD11,LST day&night,1km,daily x4,global,GEE,free
+thermal_flux,input,ASTER,"LST, emissivity",90m,on request,global,Earthdata,free
+thermal_flux,input,MODIS MCD43 Albedo,surface albedo,500m,daily,global,GEE,free
+thermal_flux,input,MOD16 / PML_V2,evapotranspiration,500m,8day,global,GEE,free
+microclimate_label,target,SoilTemp database,near-surface/soil temp time series,in-situ network,15-60min,51 countries,contribute/request,free
+microclimate_label,target,ForestTemp,monthly sub-canopy temp offsets,gridded,monthly,Europe,figshare,free
+microclimate_label,target,Cocoa agroforestry (Zenodo),"canopy openness, light, throughfall, temp, RH",field,sub-daily,Bolivia,Zenodo,free
+microclimate_label,target,FLUXNET/ICOS/AmeriFlux,"above/sub-canopy T, RH, wind, radiation",tower,30min,global,networks,free
+microclimate_label,target,TMS-4 TOMST loggers (own),"air+15cm, surface, soil-8cm temp + soil moisture",in-situ,15min,farm,buy,paid
+microclimate_label,target,PAR/lux + RH + anemometer (own),"under-canopy light, humidity, wind",in-situ,sub-hourly,farm,buy,paid
+soil_terrain,ancillary,SoilGrids 2.0,"texture, SOC, pH, bulk density, CEC, N (6 depths)",250m,static,global,REST/GEE,free
+soil_terrain,ancillary,Copernicus DEM GLO-30,elevation,30m,static,global,download/GEE,free
+soil_terrain,ancillary,SRTM/NASADEM/ALOS AW3D30,elevation,30m,static,global,GEE,free
+soil_terrain,ancillary,Terrain derivatives (computed),"slope, aspect, curvature, TWI, insolation",30m,static,global,derive in GEE,free
+crop_reference,reference,FAO ECOCROP,per-crop environmental requirement ranges,n/a,static,global,FAO,free
+crop_reference,reference,FAO GAEZ v4,agro-ecological suitability layers,n/a,static,global,FAO,free
+crop_reference,reference,ICAR/Spices Board/State POP,local crop threshold practices,n/a,static,India,gov,free

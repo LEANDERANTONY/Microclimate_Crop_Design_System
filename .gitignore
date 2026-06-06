@@ -1,0 +1,55 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# ---- Environments ----
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# ---- uv ----
+# uv.lock IS committed (version control of deps). Nothing to ignore here.
+
+# ---- Local-only agent briefing (operational, not public) ----
+AGENT.md
+
+# ---- Heavy / local-only data & model assets (regenerable or private) ----
+data/raw/
+data/processed/
+embeddings/
+models/
+*.parquet
+*.tif
+*.tiff
+*.nc
+*.h5
+*.pkl
+*.joblib
+
+# ---- Run logs / scratch ----
+run_out.log
+run_err.log
+*.log
+tmp/
+scratch/
+
+# ---- Tracked-lightweight exceptions ----
+!reports/*.csv
+!reports/*.html
+!reports/*.json
+!figures/*.png
+!figures/*.svg
+!**/.gitkeep
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
