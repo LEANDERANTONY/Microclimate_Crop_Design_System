@@ -26,6 +26,14 @@ def test_drainage_mitigation_lowers_soil_disease():
     assert drained["per_disease"]["Wilt"] < undrained["per_disease"]["Wilt"]
 
 
+def test_waterlogging_index_formula():
+    from agroforestry.config import waterlogging_index
+    # shallower water table and higher clay -> higher index; output bounded 0..1
+    assert waterlogging_index(36, 1.0) > waterlogging_index(36, 5.0)
+    assert waterlogging_index(50, 0.0) >= waterlogging_index(10, 5.0)
+    assert 0.0 <= waterlogging_index(36, 1.0) <= 1.0
+
+
 def test_less_susceptible_variety_has_lower_risk():
     # Per sourced ratings (ADR-003): Bhagwa is MS to blight, Ganesh is S, so
     # Bhagwa carries the lower realized risk in the wet window.

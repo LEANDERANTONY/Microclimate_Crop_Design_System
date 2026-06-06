@@ -7,7 +7,8 @@ SoilTemp / ForestTemp / GEE exports.
 import os, json
 import numpy as np
 
-from agroforestry.config import TARGETS, GROUP_COL, ARTIFACT_DIR, CROPS
+from agroforestry.config import (TARGETS, GROUP_COL, ARTIFACT_DIR, CROPS,
+                                 WATERLOGGING_WET, WATERLOGGING_DRY)
 from agroforestry.features import engineer
 from agroforestry.models import QuantileModel
 from agroforestry.validation import loso
@@ -92,9 +93,10 @@ def main():
     rain_for = {"Dry bahar (summer)": 0.0, "Wet bahar (NE-monsoon)": 8.0}
     for wname, wmacro in windows.items():
         micro = predictor.predict_micro(sun_design, wmacro, context)
+        wl = WATERLOGGING_DRY if "Dry" in wname else WATERLOGGING_WET   # seasonal soil baseline (ADR-005)
         for drn in ["none", "raised_beds+drains"]:
             v = viability("Pomegranate", micro, variety="Bhagwa",
-                          rain_mm_day=rain_for[wname], drainage=drn)
+                          rain_mm_day=rain_for[wname], waterlogging=wl, drainage=drn)
             print(f"  {wname:22s} drainage={drn:18s} -> growth {v['growth']:3d}  "
                   f"disease {v['disease_risk']:3d} ({v['worst_disease']}, wl_eff {v['waterlogging_eff']})"
                   f"  => VIABILITY {v['viability']:3d}/100")

@@ -123,6 +123,26 @@ DRAINAGE_MITIGATION = {
 # disease. The optimiser treats this as the band to design/manage into.
 WATERLOGGING_TARGET = 0.35
 
+# Seasonal site baselines for the Pattukkottai delta clay, validated from data
+# (SoilGrids clay 36% + CGWB depth-to-water-table) -- see ADR-005:
+#   wet season  (Oct-Jan): post-monsoon table ~1 m  -> WLI ~0.70
+#   dry season  (Feb-Sep): pre-monsoon table  ~3 m  -> WLI ~0.36 (near target)
+# This is WHY dry-season bahar also eases the SOIL axis, not just the foliar one.
+WATERLOGGING_WET = 0.70   # == WATERLOGGING_DEFAULT (conservative wet-season baseline)
+WATERLOGGING_DRY = 0.36
+
+
+def waterlogging_index(clay_pct, dtw_m):
+    """Site waterlogging index (0..1) from clay % and depth-to-water-table (m).
+
+    WLI = 0.5*min(1, clay/50) + 0.5*max(0, 1 - dtw/3).  Equal weighting pending
+    local calibration; 50% clay = fully waterlogging-prone; capillary rise stops
+    reaching the root zone by ~3 m. See ADR-005 for provenance (SoilGrids + CGWB).
+    """
+    wli_tex = min(1.0, max(0.0, clay_pct) / 50.0)
+    wli_wt = max(0.0, 1.0 - max(0.0, dtw_m) / 3.0)
+    return round(0.5 * wli_tex + 0.5 * wli_wt, 3)
+
 # variety -> {disease: ordinal rating}. Sparse on purpose; flag low confidence.
 VARIETY_SUSCEPTIBILITY = {   # ratings sourced -- see ADR-003; *(no data)* pairs dropped to DEFAULT
     "Pomegranate": {

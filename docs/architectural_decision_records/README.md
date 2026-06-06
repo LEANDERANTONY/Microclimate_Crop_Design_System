@@ -10,3 +10,4 @@ change a decision, write a new ADR that supersedes the old one.
 | [002](ADR-002-disease-layer.md) | Add a mechanistic disease layer between microclimate and viability | Accepted |
 | [003](ADR-003-sourced-calibration.md) | Apply literature-sourced envelopes and disease parameters | Accepted |
 | [004](ADR-004-soil-water-axis.md) | Two-axis disease model: separate soil-water axis from air microclimate | Accepted |
+| [005](ADR-005-waterlogging-calibration.md) | Data-calibrated seasonal waterlogging index (SoilGrids + CGWB) | Accepted |
