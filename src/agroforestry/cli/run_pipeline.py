@@ -82,24 +82,25 @@ def main():
               f"windbreak {d['wb_height']}m@{d['wb_porosity']} | "
               f"limiting {best['limiting']}")
 
-    # ---- Disease layer demo: pomegranate bahar timing + variety ----
-    print("\n=== Disease layer: pomegranate, timing (bahar) x variety ===")
+    # ---- Disease layer demo: pomegranate two axes (air-timing x soil-drainage) ----
+    print("\n=== Disease layer: pomegranate -- air-timing (bahar) x soil-drainage ===")
     sun_design = {"species": "none", "lai": 0.0, "wb_height": 0, "wb_porosity": 0.45}
     windows = {
-        "Dry bahar (summer fruiting)":   dict(t_mean=30, t_max=37, t_min=23, rh=58, wind=3, solar=26, rainfall=2500),
-        "Wet bahar (NE-monsoon)":        dict(t_mean=26, t_max=31, t_min=22, rh=88, wind=2, solar=18, rainfall=2500),
+        "Dry bahar (summer)":     dict(t_mean=30, t_max=37, t_min=23, rh=58, wind=3, solar=26, rainfall=2500),
+        "Wet bahar (NE-monsoon)": dict(t_mean=26, t_max=31, t_min=22, rh=88, wind=2, solar=18, rainfall=2500),
     }
-    rain_for = {"Dry bahar (summer fruiting)": 0.0, "Wet bahar (NE-monsoon)": 8.0}
+    rain_for = {"Dry bahar (summer)": 0.0, "Wet bahar (NE-monsoon)": 8.0}
     for wname, wmacro in windows.items():
         micro = predictor.predict_micro(sun_design, wmacro, context)
-        for variety in ["Bhagwa", "Ganesh"]:
-            v = viability("Pomegranate", micro, variety=variety, rain_mm_day=rain_for[wname])
-            print(f"  {wname:28s} {variety:7s} -> growth {v['growth']:3d}  "
-                  f"disease-risk {v['disease_risk']:3d} ({v['worst_disease']}, "
-                  f"LWD {v['lwd_hours']}h)  => VIABILITY {v['viability']:3d}/100")
-    print("  (after RH recalibration the wet window hurts pomegranate on BOTH axes --")
-    print("   humidity-driven growth loss AND disease -- so the dry-season bahar wins decisively;")
-    print("   per-variety disease risk still differs (see column) even when growth is floored)")
+        for drn in ["none", "raised_beds+drains"]:
+            v = viability("Pomegranate", micro, variety="Bhagwa",
+                          rain_mm_day=rain_for[wname], drainage=drn)
+            print(f"  {wname:22s} drainage={drn:18s} -> growth {v['growth']:3d}  "
+                  f"disease {v['disease_risk']:3d} ({v['worst_disease']}, wl_eff {v['waterlogging_eff']})"
+                  f"  => VIABILITY {v['viability']:3d}/100")
+    print("  (two axes, two levers: dry-season TIMING cuts foliar blight, but soil WILT persists on")
+    print("   the delta's waterlogging-prone clay until DRAINAGE is added -- different diseases need")
+    print("   different fixes. waterlogging default = delta clay (ADR-004); calibrate w/ CGWB+SoilGrids)")
 
     # persist metrics
     with open(os.path.join(ARTIFACT_DIR, "loso_metrics.json"), "w") as f:

@@ -56,15 +56,15 @@ ARTIFACT_DIR = "reports"   # where models / plots / metrics are written
 # Each disease is a mechanistic infection model (no incidence data needed yet):
 #   type "wetness"  -> driven by leaf wetness duration (LWD) + temperature
 #   type "humidity" -> driven by RH + temperature (e.g. powdery mildew)
-#   type "soil"     -> driven by waterlogging proxy (high RH/rain) + temperature
+#   type "soil"     -> driven by the SOIL-WATER (waterlogging) axis + temperature (NOT air RH; see ADR-004)
 #   type "heat"     -> abiotic stress above a threshold (e.g. dragon-fruit sunburn)
 # rain_driven: splash-dispersed pathogens need rain to spread (risk cut if dry).
 DISEASES = {   # infection parameters sourced from literature -- see ADR-003
     "Pomegranate": [
         # blight active 9-43C (t_max raised 34->42); LWD values remain unsourced placeholders
         {"name": "Bacterial blight", "type": "wetness", "t_min": 10, "t_opt": 30, "t_max": 42, "lwd_min": 4, "lwd_sat": 12, "rain_driven": True},
-        # wilt peak 25C (t_opt 28->25); driven by SOIL moisture (bores) not air RH -- RH is a weak proxy, see ADR-003
-        {"name": "Wilt",             "type": "soil",    "t_min": 15, "t_opt": 25, "t_max": 38, "rh_min": 75, "rh_sat": 95, "rain_driven": False},
+        # wilt: SOIL-borne -> driven by the soil-water (waterlogging) axis, NOT air RH (ADR-004)
+        {"name": "Wilt", "type": "soil", "t_min": 15, "t_opt": 25, "t_max": 38, "rain_driven": False},
     ],
     "Grapes": [
         {"name": "Downy mildew",   "type": "wetness",  "t_min": 10, "t_opt": 23, "t_max": 30, "lwd_min": 6, "lwd_sat": 10, "rain_driven": True},
@@ -82,8 +82,8 @@ DISEASES = {   # infection parameters sourced from literature -- see ADR-003
         {"name": "Sigatoka", "type": "wetness", "t_min": 16, "t_opt": 27, "t_max": 35, "lwd_min": 8, "lwd_sat": 16, "rain_driven": True},
     ],
     "Black pepper": [
-        # foot rot (Phytophthora capsici); dual soil+aerial, soil-moisture driver is bore-controlled -- see ADR-003
-        {"name": "Foot rot", "type": "wetness", "t_min": 18, "t_opt": 26, "t_max": 32, "lwd_min": 8, "lwd_sat": 16, "rain_driven": True},
+        # foot rot (Phytophthora capsici): soil-borne root/collar rot -> soil-water axis; rain worsens it (ADR-004)
+        {"name": "Foot rot", "type": "soil", "t_min": 18, "t_opt": 26, "t_max": 32, "rain_driven": True},
     ],
     "Dragon fruit": [
         {"name": "Sunburn", "type": "heat", "t_threshold": 38},
@@ -95,6 +95,33 @@ DISEASES = {   # infection parameters sourced from literature -- see ADR-003
 # Ordinal resistance -> susceptibility multiplier (Resistant..Susceptible)
 RESISTANCE_SCALE = {"R": 0.2, "MR": 0.5, "MS": 0.8, "S": 1.0}
 DEFAULT_SUSCEPTIBILITY = 0.8   # used when a variety/disease pair is not catalogued
+
+# ---------------------------------------------------------------------------
+# Soil-water axis (drives soil-borne disease; SEPARATE from the air microclimate)
+# ---------------------------------------------------------------------------
+# Soil-borne pathogens (Phytophthora foot rot, Ceratocystis wilt) respond to
+# root-zone WATERLOGGING -- prolonged saturation -- not to canopy-driven air RH.
+# Waterlogging tendency = f(soil texture, depth to water table, irrigation + rain
+# load) MINUS drainage mitigation. It is partly a site property (mostly fixed) and
+# partly a design/management lever. 0 = free-draining, 1 = chronically saturated.
+#
+# DEFAULT reflects the Cauvery-delta clay context (Pattukkottai/Thanjavur): heavy
+# alluvial clay + seasonally shallow groundwater = waterlogging-prone. MANUAL /
+# LOW confidence until calibrated from SoilGrids clay + CGWB water-table data.
+WATERLOGGING_DEFAULT = 0.70                       # Med-High for delta clay site
+
+# Drainage mitigation (a design/management lever) -> multiplier on waterlogging.
+DRAINAGE_MITIGATION = {
+    "none":                1.00,
+    "organic_matter":      0.85,
+    "ridges":              0.70,
+    "raised_beds":         0.55,
+    "subsurface_drains":   0.45,
+    "raised_beds+drains":  0.30,
+}
+# Agronomic target: keep EFFECTIVE waterlogging at/below this to suppress soil
+# disease. The optimiser treats this as the band to design/manage into.
+WATERLOGGING_TARGET = 0.35
 
 # variety -> {disease: ordinal rating}. Sparse on purpose; flag low confidence.
 VARIETY_SUSCEPTIBILITY = {   # ratings sourced -- see ADR-003; *(no data)* pairs dropped to DEFAULT

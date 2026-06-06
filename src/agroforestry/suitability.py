@@ -47,16 +47,19 @@ def score_all(micro):
     return {crop: score_crop(crop, micro) for crop in CROPS}
 
 
-def viability(crop, micro, variety=None, rain_mm_day=0.0):
+def viability(crop, micro, variety=None, rain_mm_day=0.0,
+              waterlogging=None, drainage="none"):
     """Two-axis crop assessment: growth fit AND disease risk -> viability.
 
     viability = growth_score * (1 - disease_risk). A crop can have ideal growth
     conditions but collapse to low viability under high disease pressure -- the
-    pomegranate-in-the-monsoon case.
+    pomegranate-in-the-monsoon case. Disease spans two axes: foliar (air
+    microclimate) and soil-borne (waterlogging x drainage mitigation).
     """
     from agroforestry.disease import crop_disease_risk     # local import to avoid cycles
     g = score_crop(crop, micro)
-    dr = crop_disease_risk(crop, micro, variety=variety, rain_mm_day=rain_mm_day)
+    dr = crop_disease_risk(crop, micro, variety=variety, rain_mm_day=rain_mm_day,
+                           waterlogging=waterlogging, drainage=drainage)
     penalty = dr["max"]
     return {
         "growth": g["score"],
@@ -65,5 +68,6 @@ def viability(crop, micro, variety=None, rain_mm_day=0.0):
         "disease_risk": round(100 * penalty),
         "worst_disease": dr["worst"],
         "lwd_hours": dr.get("lwd_hours"),
+        "waterlogging_eff": dr.get("waterlogging_eff"),
         "viability": round(g["score"] * (1 - penalty)),
     }

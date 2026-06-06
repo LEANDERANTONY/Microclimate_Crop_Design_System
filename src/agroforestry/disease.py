@@ -9,7 +9,7 @@ Treat comparisons (wet vs dry timing, variety A vs B) as more reliable than any
 absolute probability. Calibrate against observed incidence later.
 """
 from agroforestry.config import (DISEASES, VARIETY_SUSCEPTIBILITY, RESISTANCE_SCALE,
-                    DEFAULT_SUSCEPTIBILITY)
+                    DEFAULT_SUSCEPTIBILITY, WATERLOGGING_DEFAULT, DRAINAGE_MITIGATION)
 
 
 def _clamp(x, lo=0.0, hi=1.0):
@@ -39,8 +39,15 @@ def _temp_response(T, tmin, topt, tmax):
     return _clamp(a * (b ** expo))
 
 
-def disease_pressure(d, T, lwd, rh, rain_mm_day):
-    """Environmental favourability for one disease, 0..1 (variety-independent)."""
+def disease_pressure(d, T, lwd, rh, rain_mm_day, waterlogging):
+    """Environmental favourability for one disease, 0..1 (variety-independent).
+
+    Driver depends on the disease type:
+      wetness  -> leaf wetness duration (foliar, air-microclimate axis)
+      humidity -> relative humidity     (foliar, air-microclimate axis)
+      soil     -> effective waterlogging (soil-water axis; NOT air RH)
+      heat     -> abiotic temperature threshold
+    """
     if d["type"] == "heat":
         thr = d["t_threshold"]
         return _clamp((T - (thr - 4)) / 4.0)      # ramps up approaching/over threshold
@@ -49,13 +56,15 @@ def disease_pressure(d, T, lwd, rh, rain_mm_day):
     if d["type"] == "wetness":
         wr = _clamp((lwd - d["lwd_min"]) / (d["lwd_sat"] - d["lwd_min"]))
         p = tr * wr
-    else:  # humidity or soil
+    elif d["type"] == "soil":
+        p = tr * _clamp(waterlogging)              # soil-water axis (already drainage-adjusted)
+    else:  # humidity
         rh_min, rh_sat = d.get("rh_min", 60), d.get("rh_sat", 90)
         wr = _clamp((rh - rh_min) / (rh_sat - rh_min))
         p = tr * wr
 
     if d.get("rain_driven") and rain_mm_day <= 0:
-        p *= 0.6                                   # splash dispersal reduced when dry
+        p *= 0.6                                   # splash/saturation reduced when dry
     return _clamp(p)
 
 
@@ -67,26 +76,35 @@ def _susceptibility(crop, variety, disease_name):
     return RESISTANCE_SCALE[rating]
 
 
-def crop_disease_risk(crop, micro, variety=None, rain_mm_day=0.0):
-    """Realized risk per disease for a crop under a microclimate.
+def crop_disease_risk(crop, micro, variety=None, rain_mm_day=0.0,
+                      waterlogging=None, drainage="none"):
+    """Realized risk per disease for a crop, across both disease axes.
 
-    micro must provide t_mean (infection temp proxy, often the cool wet period)
-    and rh. Returns dict: per-disease realized risk + the worst one.
+    Foliar diseases use the air microclimate (micro: t_mean, rh) + leaf wetness.
+    Soil-borne diseases use the soil-water axis: effective waterlogging =
+    site waterlogging x drainage-mitigation multiplier (a design lever).
+
+    waterlogging: 0..1 site tendency (defaults to WATERLOGGING_DEFAULT).
+    drainage:     key into DRAINAGE_MITIGATION (the mitigation design choice).
     """
     diseases = DISEASES.get(crop, [])
     if not diseases:
-        return {"per_disease": {}, "max": 0.0, "worst": None}
+        return {"per_disease": {}, "max": 0.0, "worst": None,
+                "lwd_hours": 0.0, "waterlogging_eff": 0.0}
 
     T = micro.get("t_mean", micro.get("t_max"))
     rh = micro["rh"]
     lwd = estimate_lwd(rh, rain_mm_day)
+    wl = WATERLOGGING_DEFAULT if waterlogging is None else waterlogging
+    eff_wl = _clamp(wl * DRAINAGE_MITIGATION.get(drainage, 1.0))
 
     per = {}
     for d in diseases:
-        pressure = disease_pressure(d, T, lwd, rh, rain_mm_day)
+        pressure = disease_pressure(d, T, lwd, rh, rain_mm_day, eff_wl)
         susc = _susceptibility(crop, variety, d["name"])
         per[d["name"]] = _clamp(pressure * susc)
 
     worst = max(per, key=per.get) if per else None
     return {"per_disease": per, "max": per[worst] if worst else 0.0,
-            "worst": worst, "lwd_hours": round(lwd, 1)}
+            "worst": worst, "lwd_hours": round(lwd, 1),
+            "waterlogging_eff": round(eff_wl, 2)}
