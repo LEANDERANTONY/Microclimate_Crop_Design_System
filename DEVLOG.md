@@ -18,8 +18,13 @@ Chronological build log. Newest first.
   from real data. **ADR-006** records it.
 - **Ambient reference fixed:** ERA5-Land (canopy-coupled, ~2-3 °C too cool) → ERA5
   atmospheric free-air. Offsets now physically correct: dT_max **−2.3 °C**, dT_mean
-  **−1.0 °C** (canopy cooling, matches De Frenne). Single landscape remains the
-  limitation → SoilTemp multi-landscape is the next data source.
+  **−1.0 °C** (canopy cooling, matches De Frenne).
+- **Second climate added (cross-macroclimate transfer demonstrated):** La Jarda,
+  Cádiz, Spain (Mediterranean, Zenodo 18913503) via `build_lajarda_labels.py`.
+  Combined = **2,444 rows / 276 plots across two climates** (t_max 14–34 °C). LOSO
+  across both: **dT_mean MAE 0.28 °C**, intervals 0.80–0.84 — the offset relationship
+  transfers across climates on real data (NDVI/canopy height dominant). SoilTemp
+  proposal emailed for broader multi-landscape breadth.
 
 ## 2026-06-07 — Calibration, two-axis disease, soil-water axis; Earth Engine set up
 

@@ -17,7 +17,7 @@ import pandas as pd
 
 ee.Initialize(project="microclimate-crop-design-sys")
 
-labels = pd.read_csv("data/processed/safe_label_sites.csv")
+labels = pd.read_csv("data/processed/all_label_sites.csv")
 labels["date"] = pd.to_datetime(labels["date"])
 labels["ym"] = labels["date"].dt.strftime("%Y-%m")
 plots = labels.drop_duplicates("site_id")[["site_id", "lat", "lon"]].reset_index(drop=True)
@@ -54,35 +54,34 @@ print("fetching static features ...")
 sf = static.reduceRegions(fc, ee.Reducer.mean(), 250).getInfo()
 stat = {f["properties"]["site_id"]: f["properties"] for f in sf["features"]}
 
-# ---- ERA5 (atmospheric) monthly ambient at the landscape centroid ----
+# ---- ERA5 (atmospheric) monthly ambient, PER PLOT PER MONTH ----
 # Use ERA5 (not ERA5-Land): over dense forest ERA5-Land 2 m is canopy-coupled and
 # ~2-3 C too cool, biasing offsets positive. ERA5 ~31 km is the free-air reference
 # (ForestTemp/De Frenne pair sub-canopy vs free-air macroclimate). ADR-006.
-cen = ee.Geometry.Point([float(plots.lon.mean()), float(plots.lat.mean())])
+# reduceRegions over the plot FC handles multiple far-apart landscapes in one call.
 era_bands = ["mean_2m_air_temperature", "maximum_2m_air_temperature",
              "minimum_2m_air_temperature", "dewpoint_2m_temperature",
              "u_component_of_wind_10m", "v_component_of_wind_10m", "total_precipitation"]
-era = {}
+era = {}                                          # (ym, site_id) -> band dict
 for ym in sorted(labels["ym"].unique()):
     y, m = map(int, ym.split("-"))
     start = ee.Date.fromYMD(y, m, 1)
     end = start.advance(1, "month")
     img = (ee.ImageCollection("ECMWF/ERA5/DAILY")
            .filterDate(start, end).select(era_bands).mean())
-    e = img.reduceRegion(ee.Reducer.mean(), cen, 1000).getInfo()
-    # solar: ERA5-Land (radiation is top-of-canopy, not canopy-coupled)
     sol = (ee.ImageCollection("ECMWF/ERA5_LAND/DAILY_AGGR").filterDate(start, end)
-           .select("surface_solar_radiation_downwards_sum").mean())
-    e["solar_jm2"] = sol.reduceRegion(ee.Reducer.mean(), cen, 1000).getInfo().get(
-        "surface_solar_radiation_downwards_sum")
-    era[ym] = e
-    print(f"  ERA5 {ym}: tmax={round(e.get('maximum_2m_air_temperature')-273.15,2)}C")
+           .select("surface_solar_radiation_downwards_sum").mean().rename("solar_jm2"))
+    stack = img.addBands(sol)
+    res = stack.reduceRegions(fc, ee.Reducer.mean(), 1000).getInfo()
+    for f in res["features"]:
+        era[(ym, f["properties"]["site_id"])] = f["properties"]
+    print(f"  ERA5 {ym}: fetched {len(res['features'])} plots")
 
 # ---- assemble rows ----
 out = []
 for r in labels.itertuples():
     s = stat.get(r.site_id, {})
-    e = era.get(r.ym, {})
+    e = era.get((r.ym, r.site_id), {})
     if not e or e.get("mean_2m_air_temperature") is None:
         continue
     amb_tmean = e["mean_2m_air_temperature"] - 273.15

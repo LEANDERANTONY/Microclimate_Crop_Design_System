@@ -36,10 +36,13 @@ genuine measurements.
    are now physically correct: **dT_max ≈ −2.3 °C, dT_mean ≈ −1.0 °C** (canopy cooling,
    matching De Frenne's global ~−1 °C mean buffering). Note `ECMWF/ERA5/DAILY` ends
    2020-07, so post-2020 datasets will need ERA5/HOURLY aggregation.
-2. **Single landscape** (~5 km, one ERA5 pixel) → rich canopy-structure / temporal
-   variation but ~no cross-macroclimate spread. LOSO here tests transfer to a
-   held-out plot in the same climate, not across climates. Breadth needs multiple
-   landscapes (SoilTemp network — next data source).
+2. **Cross-macroclimate spread — now partially addressed.** Added a second climate:
+   **La Jarda, Cádiz, Spain** (Mediterranean, 2004–2006; Zenodo 18913503) via
+   `build_lajarda_labels.py`. Combined set = **2,444 rows / 276 plots across two
+   macroclimates** (t_max 14–34 °C). LOSO across both holds: **dT_mean MAE 0.28 °C**,
+   intervals calibrated (0.80–0.84) — the canopy→offset relationship **transfers
+   across climates** on real data (NDVI / canopy height dominant in both). More
+   climates (SoilTemp, proposal sent) will broaden this further.
 3. The crop-suitability demo under `DATA_SOURCE=real` mixes real offset models with
    a synthetic macro context, so those crop scores are not recommendations — only
    the offset models + LOSO are the real result here.
