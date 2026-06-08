@@ -16,7 +16,7 @@ from agroforestry.predict import Predictor
 from agroforestry.suitability import score_all, viability
 from agroforestry.optimize import optimise
 
-DATA_SOURCE = "synthetic"     # "synthetic" | "real"
+DATA_SOURCE = os.environ.get("DATA_SOURCE", "synthetic")   # "synthetic" | "real"
 MAX_FOLDS = 25                # cap LOSO folds for speed; set None for all
 
 

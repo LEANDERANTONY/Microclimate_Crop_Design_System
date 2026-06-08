@@ -11,3 +11,4 @@ change a decision, write a new ADR that supersedes the old one.
 | [003](ADR-003-sourced-calibration.md) | Apply literature-sourced envelopes and disease parameters | Accepted |
 | [004](ADR-004-soil-water-axis.md) | Two-axis disease model: separate soil-water axis from air microclimate | Accepted |
 | [005](ADR-005-waterlogging-calibration.md) | Data-calibrated seasonal waterlogging index (SoilGrids + CGWB) | Accepted |
+| [006](ADR-006-real-data-safe.md) | First real-data integration: SAFE Project (Borneo) microclimate via Earth Engine | Accepted |

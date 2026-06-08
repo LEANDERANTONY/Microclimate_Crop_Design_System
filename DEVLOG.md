@@ -2,6 +2,22 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-07 (later) — First REAL data: SAFE Borneo microclimate trained end-to-end
+
+- Verified the Earth Engine fetch (`scripts/ee_smoke_test.py`): ERA5, MODIS,
+  Copernicus DEM, SoilGrids, Sentinel-2 all resolve; SoilGrids clay 36% matched
+  the ADR-005 soil-water report independently.
+- Pulled real labels: **SAFE Project** sub-canopy microclimate (Zenodo 1228188,
+  Borneo) + the SAFE Gazetteer for coordinates (Zenodo 3906082), via the browser.
+  `build_safe_labels.py` → 2,202 plot-month rows over 245 plots.
+- `build_real_dataset.py` fetched ERA5-Land ambient + canopy/terrain/soil features
+  via EE, computed offsets → `data/processed/labelled_offsets.parquet`.
+- `DATA_SOURCE=real` (env-switchable) LOSO over 245 sites: **dT_mean MAE 0.29 °C,
+  dT_max MAE 1.13 °C, dVPD MAE 0.085 kPa**, conformal coverage 0.83–0.86. Top
+  dT_max feature = **lai_x_height** — canopy structure drives the offset, recovered
+  from real data. **ADR-006** records it + caveats (ERA5-Land ambient bias toward
+  zero offset; single landscape → no cross-climate spread; SoilTemp next).
+
 ## 2026-06-07 — Calibration, two-axis disease, soil-water axis; Earth Engine set up
 
 - **Parallel research integrated** (3 sub-chats → `reports/`): applied
