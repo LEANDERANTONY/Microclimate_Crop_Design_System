@@ -28,13 +28,14 @@ genuine measurements.
 
 ## Known limitations (important)
 
-1. **Ambient reference is ERA5-Land 2 m**, which over dense rainforest is itself
-   canopy-influenced and runs cool (~27.5 °C monthly max vs a true ~32 °C free-air
-   max). So `dT_max` comes out near-zero/positive instead of the expected negative
-   cooling offset. **The next refinement: pair against a true free-air macroclimate
-   reference (CHELSA, or ERA5 — not ERA5-Land — at reference height), as ForestTemp
-   does.** Until then, absolute offset magnitudes are biased; the canopy→offset
-   *relationship* and the pipeline mechanics are sound.
+1. **Ambient reference — RESOLVED.** Initially used ERA5-Land 2 m, which over dense
+   rainforest is canopy-coupled and ~2-3 °C too cool (28 °C vs 30.4 °C max at the
+   SAFE centroid), giving spurious positive offsets. Switched the temperature/wind/
+   precip reference to **ERA5 atmospheric (`ECMWF/ERA5/DAILY`, ~31 km free-air)**;
+   solar kept from ERA5-Land (radiation is top-of-canopy, not canopy-coupled). Offsets
+   are now physically correct: **dT_max ≈ −2.3 °C, dT_mean ≈ −1.0 °C** (canopy cooling,
+   matching De Frenne's global ~−1 °C mean buffering). Note `ECMWF/ERA5/DAILY` ends
+   2020-07, so post-2020 datasets will need ERA5/HOURLY aggregation.
 2. **Single landscape** (~5 km, one ERA5 pixel) → rich canopy-structure / temporal
    variation but ~no cross-macroclimate spread. LOSO here tests transfer to a
    held-out plot in the same climate, not across climates. Breadth needs multiple

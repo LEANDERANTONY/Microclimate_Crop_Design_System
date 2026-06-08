@@ -15,8 +15,11 @@ Chronological build log. Newest first.
 - `DATA_SOURCE=real` (env-switchable) LOSO over 245 sites: **dT_mean MAE 0.29 °C,
   dT_max MAE 1.13 °C, dVPD MAE 0.085 kPa**, conformal coverage 0.83–0.86. Top
   dT_max feature = **lai_x_height** — canopy structure drives the offset, recovered
-  from real data. **ADR-006** records it + caveats (ERA5-Land ambient bias toward
-  zero offset; single landscape → no cross-climate spread; SoilTemp next).
+  from real data. **ADR-006** records it.
+- **Ambient reference fixed:** ERA5-Land (canopy-coupled, ~2-3 °C too cool) → ERA5
+  atmospheric free-air. Offsets now physically correct: dT_max **−2.3 °C**, dT_mean
+  **−1.0 °C** (canopy cooling, matches De Frenne). Single landscape remains the
+  limitation → SoilTemp multi-landscape is the next data source.
 
 ## 2026-06-07 — Calibration, two-axis disease, soil-water axis; Earth Engine set up
 

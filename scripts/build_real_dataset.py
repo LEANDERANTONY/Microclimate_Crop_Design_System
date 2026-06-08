@@ -54,36 +54,45 @@ print("fetching static features ...")
 sf = static.reduceRegions(fc, ee.Reducer.mean(), 250).getInfo()
 stat = {f["properties"]["site_id"]: f["properties"] for f in sf["features"]}
 
-# ---- ERA5-Land monthly ambient at the landscape centroid ----
+# ---- ERA5 (atmospheric) monthly ambient at the landscape centroid ----
+# Use ERA5 (not ERA5-Land): over dense forest ERA5-Land 2 m is canopy-coupled and
+# ~2-3 C too cool, biasing offsets positive. ERA5 ~31 km is the free-air reference
+# (ForestTemp/De Frenne pair sub-canopy vs free-air macroclimate). ADR-006.
 cen = ee.Geometry.Point([float(plots.lon.mean()), float(plots.lat.mean())])
-era_bands = ["temperature_2m", "temperature_2m_max", "temperature_2m_min",
-             "dewpoint_temperature_2m", "u_component_of_wind_10m",
-             "v_component_of_wind_10m", "surface_solar_radiation_downwards_sum",
-             "total_precipitation_sum"]
+era_bands = ["mean_2m_air_temperature", "maximum_2m_air_temperature",
+             "minimum_2m_air_temperature", "dewpoint_2m_temperature",
+             "u_component_of_wind_10m", "v_component_of_wind_10m", "total_precipitation"]
 era = {}
 for ym in sorted(labels["ym"].unique()):
     y, m = map(int, ym.split("-"))
     start = ee.Date.fromYMD(y, m, 1)
-    img = (ee.ImageCollection("ECMWF/ERA5_LAND/DAILY_AGGR")
-           .filterDate(start, start.advance(1, "month")).select(era_bands).mean())
-    era[ym] = img.reduceRegion(ee.Reducer.mean(), cen, 1000).getInfo()
-    print(f"  ERA5 {ym}: t2m={era[ym].get('temperature_2m')}")
+    end = start.advance(1, "month")
+    img = (ee.ImageCollection("ECMWF/ERA5/DAILY")
+           .filterDate(start, end).select(era_bands).mean())
+    e = img.reduceRegion(ee.Reducer.mean(), cen, 1000).getInfo()
+    # solar: ERA5-Land (radiation is top-of-canopy, not canopy-coupled)
+    sol = (ee.ImageCollection("ECMWF/ERA5_LAND/DAILY_AGGR").filterDate(start, end)
+           .select("surface_solar_radiation_downwards_sum").mean())
+    e["solar_jm2"] = sol.reduceRegion(ee.Reducer.mean(), cen, 1000).getInfo().get(
+        "surface_solar_radiation_downwards_sum")
+    era[ym] = e
+    print(f"  ERA5 {ym}: tmax={round(e.get('maximum_2m_air_temperature')-273.15,2)}C")
 
 # ---- assemble rows ----
 out = []
 for r in labels.itertuples():
     s = stat.get(r.site_id, {})
     e = era.get(r.ym, {})
-    if not e or e.get("temperature_2m") is None:
+    if not e or e.get("mean_2m_air_temperature") is None:
         continue
-    amb_tmean = e["temperature_2m"] - 273.15
-    amb_tmax = e["temperature_2m_max"] - 273.15
-    amb_tmin = e["temperature_2m_min"] - 273.15
-    amb_td = e["dewpoint_temperature_2m"] - 273.15
+    amb_tmean = e["mean_2m_air_temperature"] - 273.15
+    amb_tmax = e["maximum_2m_air_temperature"] - 273.15
+    amb_tmin = e["minimum_2m_air_temperature"] - 273.15
+    amb_td = e["dewpoint_2m_temperature"] - 273.15
     amb_rh = rh_from(amb_tmean, amb_td)
     wind = math.hypot(e["u_component_of_wind_10m"], e["v_component_of_wind_10m"])
-    solar = e["surface_solar_radiation_downwards_sum"] / 1e6          # J/m2/day -> MJ/m2/day
-    rainfall = max(0.0, e["total_precipitation_sum"]) * 1000 * 365    # m/day -> mm/yr
+    solar = (e.get("solar_jm2") or 0.0) / 1e6                       # J/m2/day -> MJ/m2/day
+    rainfall = max(0.0, e["total_precipitation"]) * 1000 * 365       # m/day -> mm/yr
     slope_deg = s.get("slope") or 0.0
     twi = math.log(1.0 / (math.tan(math.radians(slope_deg)) + 0.01))   # local wetness proxy
     sub_rh = r.sub_rh if pd.notna(r.sub_rh) else amb_rh
