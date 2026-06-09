@@ -2,6 +2,26 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-09 (later) — Anaikadu point run + regional-transfer data sourcing
+
+- Ran the real pipeline at the **exact Anaikadu plot** (GD Home Stay pin,
+  10.4019 N, 79.3545 E) via a new parametrized `scripts/run_site.py`. ERA5 climate
+  is identical to Pattukkottai (same ~31 km pixel); only SoilGrids differs at the
+  village point (clay 355 g/kg, SOC 328). Confirms satellite/reanalysis can't resolve
+  village-scale climate — ground sensors needed.
+- **Sourced regional data to narrow the Borneo/Spain gap (ADR-009).** Verified the
+  **SoilTemp global soil-temperature maps are live on Earth Engine**
+  (`crowtherlab/soil_bioclim/SBIO_v2`) — integrated as a regional reference
+  (`scripts/region_reference.py`), not as air labels (soil≠canopy-air mismatch).
+  Quantified the gap: Anaikadu near-surface annual mean **29.4 °C** / cold-month min
+  **25.2 °C** vs Borneo 21.8/19.6 and Spain 14.2/5.8 — Anaikadu's warm regime sits
+  well above both training regions.
+- Identified the **pan-tropical understory air-temp maps** (Ismaeel & Maeda 2024,
+  Fairdata) as the variable-correct next ingestion — open but 38 GB tiled; plan is the
+  South-India tile only / 30 m subset on request. SoilTemp raw loggers remain the
+  gold standard (access pending).
+
+
 ## 2026-06-09 — Oil-palm open-canopy regime added (SAFE landscape rasters)
 
 - **Got the palm data.** Downloaded the SAFE landscape microclimate rasters (Zenodo
