@@ -2,6 +2,23 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-08 — Coconut OOD handling + real Pattukkottai end-to-end (option 3)
+
+- **Coconut canopy concern (user-raised):** forest-trained model extrapolates to
+  coconut (tall + sparse, unlike closed forest; Hardwick 2015: oil palm +6.5 °C vs
+  forest). Added an **OOD flag** (`QuantileModel.ood_score`, `Predictor` returns
+  `extrapolating` / `offset_confidence`) — ADR-007. Gave each overstorey a realistic
+  `height_m`; OOD then reflects genuine canopy novelty and exposed a context-scale
+  mismatch (clay % vs g/kg).
+- **Option 3 — real Pattukkottai run** (`scripts/pattukkottai_run.py`): fetched the
+  site's REAL features (ERA5 2019 macro: 29.3 °C mean / 34.3 °C max / 71% RH /
+  926 mm; SoilGrids clay 361 g/kg; DEM 23 m), trained offsets on the real labelled
+  data, predicted under-canopy microclimate per overstorey, and scored intercrops.
+  Physics shade reliable (coconut wide 39%, close 57%); temp offset flagged LOW
+  (extrapolation). Intercrop ranking under coconut: **nutmeg 63, pepper 36, banana
+  32** (matches real Kerala coconut-agroforestry practice); pomegranate correctly
+  excluded (wants full sun). Honest end-to-end real-site output with confidence flags.
+
 ## 2026-06-07 (later) — First REAL data: SAFE Borneo microclimate trained end-to-end
 
 - Verified the Earth Engine fetch (`scripts/ee_smoke_test.py`): ERA5, MODIS,
