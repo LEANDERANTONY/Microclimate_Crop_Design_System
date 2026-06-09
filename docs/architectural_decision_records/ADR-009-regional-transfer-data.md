@@ -69,8 +69,25 @@ Also present: a 0.6 MB `Index_map/Tile_Index.shp`, 24 calibration sensor CSVs +
 
 Blocker: the Fairdata **download endpoint requires their tokenized authorization flow**
 (plain GET to `download.fairdata.fi` returns 400) — not a one-line urlretrieve like
-Zenodo. Options for the actual pull: (a) script the Fairdata authorize→download flow,
-(b) browser "Download" on the `South_asia` Daily+Daytime tiles, or (c) request the 30 m
-South-Asia subset from the authors. Variable note: these are *daytime/daily/nighttime
-MEAN* understory temps (not Tmax), so they map to `dT_mean`/night offsets cleanly and to
-`dT_max` only as a daytime-mean proxy. Deferred as a scoped, ready-to-run next step.
+Zenodo. Variable note: these are *daytime/daily/nighttime MEAN* understory temps (not
+Tmax), so they map to `dT_mean`/night offsets cleanly and to `dT_max` only as a
+daytime-mean proxy.
+
+## Update 2 — download flow investigated; scripted bulk pull not worthwhile (2026-06-09)
+
+Probed the download service (`scripts/probe_fairdata_api.py`, `fairdata_download.py`):
+root REST paths (`/authorize`, `/requests`) return **404**; only a `/download` endpoint
+exists and needs a token. The Etsin UI reveals why — downloading requires **server-side
+"package generation"** ("may take minutes or even hours", with optional email-notify),
+generated per folder, *then* a tokenized download. There is **no clean per-file API** to
+script cheaply. Combined with: 38 GB folder (or ~3.7 GB per product even for `South_asia`
+alone), a slow link, and the *humid-forest-understory* variable being only a partial fit
+for semi-arid Tamil Nadu — a scripted bulk pull is **not worth it**.
+
+**Decision:** route (a) supersedes (b). A data-request email to the corresponding author
+(Dr Eduardo Maeda, eduardo.maeda@helsinki.fi) for the **30 m South-Asia subset** was
+drafted (Gmail draft, 2026-06-09) — that yields strictly better data than the 300 m bulk
+tiles and avoids the package-generation/download burden. The downloader scaffold
+(`fairdata_download.py`) is kept for the day a direct package URL is available. If the
+300 m tiles are ever wanted before the author replies, generate a `South_asia`-only
+package via the Etsin UI with email-notify, then point `fairdata_download.py` at the URL.

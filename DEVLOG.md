@@ -2,6 +2,18 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-09 (later 2) — Understory data: author request drafted; Fairdata flow probed
+
+- **(a)** Drafted a data-request email (Gmail draft) to Dr Eduardo Maeda
+  (corresponding author) for the **30 m South-Asia subset** of the Tropical Forest
+  Microclimate Maps — the data-availability note says 30 m is available on request.
+- **(b)** Probed the Fairdata download service (`scripts/fairdata_files.py`,
+  `fairdata_download.py`, `probe_fairdata_api.py`): the file API lists all 154 files
+  and confirms a dedicated **`South_asia`** tile (309 MB/month × Daily/Daytime/Nighttime),
+  but downloads require Etsin **server-side package generation** ("minutes to hours" +
+  email-notify), not a clean file URL (root REST paths 404). Scripted bulk pull judged
+  not worthwhile vs the 30 m request; scaffold kept for when a package URL exists. ADR-009.
+
 ## 2026-06-09 (later) — Anaikadu point run + regional-transfer data sourcing
 
 - Ran the real pipeline at the **exact Anaikadu plot** (GD Home Stay pin,
