@@ -57,3 +57,20 @@ regions, confirming the gap with real regional data.
   (b) the user's own plot sensors.
 - Concrete next ingestion: South-India tile of the Ismaeel/Maeda understory maps
   (index map → one tile), sampled into offset rows like the SAFE raster (ADR-008).
+
+## Update — understory maps scoped precisely (2026-06-09)
+
+The Fairdata Metax file API (`scripts/fairdata_files.py`) lists all 154 files. The set
+is tiled **by continent** and there is a dedicated **`South_asia`** tile (covers Tamil
+Nadu), in three products — `Data_Daily`, `Data_Daytime`, `Data_Nighttime` — at **309 MB
+per month** (12 months each). So the relevant subset is ~3.7 GB per product, not 38 GB.
+Also present: a 0.6 MB `Index_map/Tile_Index.shp`, 24 calibration sensor CSVs +
+`Sensor_location.shp`, and predictor rasters (`Codes/02ImageData`).
+
+Blocker: the Fairdata **download endpoint requires their tokenized authorization flow**
+(plain GET to `download.fairdata.fi` returns 400) — not a one-line urlretrieve like
+Zenodo. Options for the actual pull: (a) script the Fairdata authorize→download flow,
+(b) browser "Download" on the `South_asia` Daily+Daytime tiles, or (c) request the 30 m
+South-Asia subset from the authors. Variable note: these are *daytime/daily/nighttime
+MEAN* understory temps (not Tmax), so they map to `dT_mean`/night offsets cleanly and to
+`dT_max` only as a daytime-mean proxy. Deferred as a scoped, ready-to-run next step.
