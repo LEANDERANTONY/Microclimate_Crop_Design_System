@@ -12,3 +12,4 @@ change a decision, write a new ADR that supersedes the old one.
 | [004](ADR-004-soil-water-axis.md) | Two-axis disease model: separate soil-water axis from air microclimate | Accepted |
 | [005](ADR-005-waterlogging-calibration.md) | Data-calibrated seasonal waterlogging index (SoilGrids + CGWB) | Accepted |
 | [006](ADR-006-real-data-safe.md) | First real-data integration: SAFE Project (Borneo) microclimate via Earth Engine | Accepted |
+| [007](ADR-007-ood-extrapolation.md) | Out-of-distribution flag for off-canopy-type designs (coconut) | Accepted |

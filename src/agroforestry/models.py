@@ -42,10 +42,14 @@ class QuantileModel:
         self.models = {}
         self.conformal_offset = 0.0
         self.feature_names = None
+        self.feat_lo = None       # training feature ranges, for OOD detection
+        self.feat_hi = None
 
     def fit(self, X, y, feature_names=None, groups=None, calib_frac=0.2, seed=0):
         self.feature_names = feature_names
         X = np.asarray(X); y = np.asarray(y)
+        self.feat_lo = X.min(axis=0)
+        self.feat_hi = X.max(axis=0)
         rng = np.random.default_rng(seed)
         n = len(y)
         # Conformal calibration on held-out SITES when groups are given, so the
@@ -83,6 +87,18 @@ class QuantileModel:
         lo = self.models[self.quantiles[0]].predict(X) - self.conformal_offset
         hi = self.models[self.quantiles[-1]].predict(X) + self.conformal_offset
         return {"median": med, "lower": lo, "upper": hi}
+
+    def ood_score(self, X):
+        """Out-of-distribution score per row: fraction of features falling outside
+        the training feature range. ~0 = in-distribution; high = extrapolation
+        (e.g. a coconut design's tall-but-sparse canopy vs forest training data),
+        where the learned offset should NOT be trusted.
+        """
+        X = np.asarray(X)
+        if self.feat_lo is None:
+            return np.zeros(len(X))
+        outside = (X < self.feat_lo) | (X > self.feat_hi)
+        return outside.mean(axis=1)
 
     def importances(self):
         m = self.models.get(0.5) or list(self.models.values())[0]

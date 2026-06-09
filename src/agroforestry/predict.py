@@ -38,6 +38,12 @@ class Predictor:
         Xv = X[self.feature_names].values
         out = {t: self.models[t].predict(Xv) for t in self.models}
 
+        # out-of-distribution check: is this design's canopy/feature combo within
+        # the training cloud? (e.g. coconut = tall + sparse, unlike forest training)
+        ood = float(next(iter(self.models.values())).ood_score(Xv)[0])
+        extrapolating = ood > 0.15
+        offset_conf = "LOW (extrapolation)" if extrapolating else "MODERATE"
+
         # physics layer
         sp = SPECIES[design["species"]]
         shade = shade_pct(design["lai"], sp["k"])
@@ -56,6 +62,9 @@ class Predictor:
         return {
             "t_max": t_max_u, "t_mean": t_mean_u, "shade": shade,
             "rh": rh_u, "wind": wind, "vpd": vpd_u,
+            "ood_score": round(ood, 2),
+            "extrapolating": extrapolating,        # learned offset off-distribution?
+            "offset_confidence": offset_conf,      # physics (light/wind) stays HIGH regardless
             "intervals": {
                 "dT_max": (float(out["dT_max"]["lower"][0]), float(out["dT_max"]["upper"][0])),
                 "dVPD":   (float(out["dVPD"]["lower"][0]),   float(out["dVPD"]["upper"][0])),
