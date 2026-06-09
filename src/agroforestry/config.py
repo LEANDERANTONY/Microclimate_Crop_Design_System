@@ -19,14 +19,16 @@ GROUP_COL = "site_id"   # used for leave-one-site-out CV
 QUANTILES = [0.1, 0.5, 0.9]   # lower / median / upper
 
 # ---- Beer-Lambert extinction coefficients per overstorey (physics layer) ----
+# height_m = typical canopy/crown height per overstorey, used for realistic
+# design->feature mapping (predict.build_feature_row) instead of a crude LAI proxy.
 SPECIES = {
-    "none":          {"lai": 0.0, "k": 0.00, "drag": 0.00, "label": "Open field"},
-    "coconut_wide":  {"lai": 1.0, "k": 0.50, "drag": 0.10, "label": "Coconut wide"},
-    "coconut_close": {"lai": 1.7, "k": 0.50, "drag": 0.15, "label": "Coconut close"},
-    "silver_oak":    {"lai": 1.3, "k": 0.55, "drag": 0.20, "label": "Silver oak"},
-    "mahogany":      {"lai": 2.6, "k": 0.60, "drag": 0.25, "label": "Mahogany"},
-    "teak_leaf":     {"lai": 2.0, "k": 0.60, "drag": 0.22, "label": "Teak (in leaf)"},
-    "teak_bare":     {"lai": 0.3, "k": 0.60, "drag": 0.08, "label": "Teak (leafless)"},
+    "none":          {"lai": 0.0, "k": 0.00, "drag": 0.00, "height_m": 0.0,  "label": "Open field"},
+    "coconut_wide":  {"lai": 1.0, "k": 0.50, "drag": 0.10, "height_m": 16.0, "label": "Coconut wide"},
+    "coconut_close": {"lai": 1.7, "k": 0.50, "drag": 0.15, "height_m": 16.0, "label": "Coconut close"},
+    "silver_oak":    {"lai": 1.3, "k": 0.55, "drag": 0.20, "height_m": 12.0, "label": "Silver oak"},
+    "mahogany":      {"lai": 2.6, "k": 0.60, "drag": 0.25, "height_m": 18.0, "label": "Mahogany"},
+    "teak_leaf":     {"lai": 2.0, "k": 0.60, "drag": 0.22, "height_m": 15.0, "label": "Teak (in leaf)"},
+    "teak_bare":     {"lai": 0.3, "k": 0.60, "drag": 0.08, "height_m": 15.0, "label": "Teak (leafless)"},
 }
 
 # ---- Crop envelopes: [ideal_lo, ideal_hi, tol_lo, tol_hi]; wind = [ideal_max, tol_max] ----

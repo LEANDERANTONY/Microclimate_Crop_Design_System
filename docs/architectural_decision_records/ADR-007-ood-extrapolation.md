@@ -32,6 +32,15 @@ cover), while the model learned from **real satellite features** (forest canopy
 *hypothetical designs* until the design→feature mapping emits realistic per-canopy
 values.
 
+Fixing the height proxy (realistic per-species `height_m`) keeps coconut flagged
+(genuine: sparse low-LAI palm, ood ≈ 0.5) but exposed a second mismatch: the
+**synthetic demo context is on different scales than the real training features** —
+most concretely `clay` is passed as percent (~35) while the SoilGrids training
+feature is g/kg (281–419); `soc`, `elevation`, `wind` likewise. So real-trained
+models require **real, correctly-scaled Pattukkottai inputs** (ERA5 macro, SoilGrids
+clay in g/kg, real elevation, realistic canopy) — not the synthetic demo defaults.
+That is the precondition for the Pattukkottai end-to-end ("option 3") run.
+
 ## Consequences
 
 - The LOSO result (predicting at observed sites) stands — that validation is sound.

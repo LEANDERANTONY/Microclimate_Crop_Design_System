@@ -22,7 +22,7 @@ def build_feature_row(design, macro, context):
     row = dict(macro)
     row.update(context)
     row["lai"] = lai
-    row["canopy_height"] = lai * 5.0          # crude proxy; replaced by GEDI/Meta height later
+    row["canopy_height"] = sp.get("height_m") or (lai * 5.0)   # realistic per-species height (ADR-007)
     row["ndvi"] = float(np.clip(0.3 + 0.6 * cover, 0, 1))
     row["fapar"] = float(np.clip(0.9 * cover, 0, 1))
     return pd.DataFrame([{k: row[k] for k in RAW_FEATURES}])
