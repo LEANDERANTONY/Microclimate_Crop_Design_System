@@ -2,6 +2,30 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-09 — Oil-palm open-canopy regime added (SAFE landscape rasters)
+
+- **Got the palm data.** Downloaded the SAFE landscape microclimate rasters (Zenodo
+  7893600; Jucker/Hardwick lineage): modelled daily sub-canopy T_max/T_mean/VPD_max at
+  50 m over Borneo, spanning forest → logged → **oil palm** → cleared. ~950 MB, resumable
+  parallel fetch (`scripts/fetch_safe_rasters.py`).
+- `scripts/build_oilpalm_labels.py`: sampled a UTM grid (356 valid pts → 320), took each
+  point's **period-mean** sub-canopy value (668 daily bands, nodata-masked), attached
+  real EE canopy/terrain/soil + ERA5 free-air macro, computed offsets. VPD raster found
+  to be **hPa** (physics check: VPD > es(T) impossible in kPa) → /10. Integrated
+  idempotently: forest backed up to `labelled_offsets_forest.parquet`; canonical
+  dataset now **2,444 forest + 320 palm = 2,764 rows**. **ADR-008.**
+- Palm regime carries **real open-canopy offsets up to dT_max +6.6 °C** (matches
+  Hardwick "+6.5 °C oil palm vs forest") and extends the canopy axis to **LAI 1.6 /
+  height 9 m**.
+- **Key honest finding** (`scripts/diag_ood.py`): coconut OOD barely fell (0.58→0.54).
+  Decomposition shows the dominant driver is **Pattukkottai's macroclimate/soil**
+  (warm tropical nights t_min 25.9 / t_mean 29.3, low elevation/SOC) having **no analog
+  in humid Borneo or Med Spain** — a climate-transfer gap, not a canopy gap. Coconut
+  (LAI 1.0) is also still below the palm min (1.61; MODIS 500 m mixed-pixel inflation).
+  Palm data was necessary but not sufficient; next priority is a **warm-night tropical
+  training site** (SoilTemp India). Physics (light/wind) stays the trustworthy lever.
+- 12 tests still pass.
+
 ## 2026-06-08 — Coconut OOD handling + real Pattukkottai end-to-end (option 3)
 
 - **Coconut canopy concern (user-raised):** forest-trained model extrapolates to
