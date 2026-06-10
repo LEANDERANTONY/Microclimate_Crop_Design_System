@@ -2,6 +2,31 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-09 (later 3) — Sensitivity + economics (layers 4-5) + profit inverse design
+
+- **Sensitivity (`scripts/sensitivity_coconut.py`, `reports/sensitivity_coconut.md`):**
+  swept the LOW-confidence coconut temperature offset across its band at Anaikadu. The
+  intercrop **shortlist (nutmeg/pepper/banana) is robust**; only the absolute viability
+  level moves. So the pending data changes *how well*, not *what* to plant — decision is
+  actionable now. Physics (shade) favours the cooler, more-viable end.
+- **Economics layer (`src/agroforestry/economics.py`):** staged, banded, NOT trained
+  (per docs/economics_layer.md). `attainable_yield = ref x growth x (1-disease)`;
+  `crop_margin` (expected/downside/upside); `overstorey_margin` for coconut (annual nuts)
+  and **timber** (teak/mahogany/silver oak, annualised over rotation, LOW conf);
+  `system_margin` = overstorey + intercrop. Crop bands from economics_inputs_sourced.md;
+  coconut + timber web-sourced (TN).
+- **Findings at Anaikadu:** coconut nuts alone ~break-even (~Rs 8k/acre/yr); the
+  **intercrop is the margin** — coconut+**nutmeg** ~Rs 92k/yr with a *positive downside*
+  (robust), coconut+pepper ~Rs 26k (riskier: foot-rot + price), coconut+banana negative
+  (low-margin/heat-limited). Timber overstorey shows large *annualised* Rs but is a
+  15-18 yr cash lock-up (flagged).
+- **Profit inverse design (`optimize.py` objective="profit"; `scripts/inverse_anaikadu.py`):**
+  risk-aware (0.7 expected + 0.3 downside) search over overstorey/canopy/windbreak/drainage.
+  Full-space optimum favours timber (annualised Rs dominates); coconut-constrained row is
+  the trustworthy annual-cash design. Recommendation: **coconut + nutmeg for yearly income,
+  a teak/mahogany block or boundary for long-horizon capital + windbreak.** Timber is fully
+  wired as overstorey AND windbreak (config SPECIES + economics). 12 tests pass.
+
 ## 2026-06-09 (later 2) — Understory data: author request drafted; Fairdata flow probed
 
 - **(a)** Drafted a data-request email (Gmail draft) to Dr Eduardo Maeda

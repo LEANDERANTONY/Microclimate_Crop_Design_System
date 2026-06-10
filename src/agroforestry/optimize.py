@@ -6,6 +6,7 @@ NSGA-II later for larger design spaces -- same objective function.
 import numpy as np
 from agroforestry.config import SPECIES
 from agroforestry.suitability import score_crop, viability
+from agroforestry.economics import system_margin
 
 
 def optimise(predictor, crop, macro, context,
@@ -27,7 +28,7 @@ def optimise(predictor, crop, macro, context,
         lai_grid = np.arange(0.5, 3.01, 0.25)
     drainages = drainage_grid if objective == "viability" else ("none",)
 
-    best = {"score": -1}
+    best = {"score": float("-inf")}
     for sp in species_list:
         for lai in lai_grid:
             for por in porosity_grid:
@@ -35,7 +36,23 @@ def optimise(predictor, crop, macro, context,
                     design = {"species": sp, "lai": float(lai),
                               "wb_height": h, "wb_porosity": por}
                     micro = predictor.predict_micro(design, macro, context)
-                    if objective == "viability":
+                    if objective == "profit":
+                        for drn in drainages:
+                            v = viability(crop, micro, variety=variety,
+                                          rain_mm_day=rain_mm_day,
+                                          waterlogging=waterlogging, drainage=drn)
+                            m = system_margin(sp, crop, v["growth"], v["disease_risk"])
+                            # risk-aware: weight expected with the downside (don't reward brittle plans)
+                            obj = 0.7 * m["system_expected"] + 0.3 * m["system_downside"]
+                            if obj > best["score"]:
+                                best = {"score": obj, "design": {**design, "drainage": drn},
+                                        "micro": micro, "growth": v["growth"],
+                                        "disease_risk": v["disease_risk"],
+                                        "system_expected": m["system_expected"],
+                                        "system_downside": m["system_downside"],
+                                        "overstorey_income": m["overstorey"]["expected"],
+                                        "intercrop_margin": m["intercrop"]["expected"]}
+                    elif objective == "viability":
                         for drn in drainages:
                             v = viability(crop, micro, variety=variety,
                                           rain_mm_day=rain_mm_day,
