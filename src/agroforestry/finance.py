@@ -1,0 +1,133 @@
+"""Layer 5b -- multi-year financial model: cash-flow, NPV, IRR, payback.
+
+Upgrades the single-year `economics.crop_margin` into a proper financial comparison
+that respects TIMING: crops have a gestation (no income for N years) and a bearing
+ramp; timber pays a single lump at harvest. This is what makes coconut (steady annual
+cash) vs timber (one far-off payout) an honest comparison rather than naive annualising.
+
+All money INR per acre. Profiles (gestation / full-bearing / economic life / costs) are
+standard horticulture figures (TNAU/ICAR/NHB) -- editable, MODERATE confidence. Revenue
+magnitudes reuse `economics` (site-adjusted yield x price band).
+"""
+import numpy as np
+from agroforestry.economics import (CROP_ECON, OVERSTOREY_ECON, SPECIES_TO_OVERSTOREY,
+                                     attainable_yield)
+
+DISCOUNT = 0.08      # real discount rate (editable); India farm hurdle ~8-12% real
+HORIZON = 25         # years
+
+# crop financial timing/costs (Rs/acre). establish = yr1 planting; maintain = annual.
+# gestation = first-yield year; full = full-bearing year; life = economic life (yrs).
+CROP_FIN = {
+    "Black pepper": {"establish": 60000,  "maintain": 25000, "gestation": 3, "full": 7,  "life": 20},
+    "Nutmeg":       {"establish": 50000,  "maintain": 20000, "gestation": 7, "full": 15, "life": 40},
+    "Cocoa":        {"establish": 45000,  "maintain": 25000, "gestation": 3, "full": 7,  "life": 30},
+    "Vanilla":      {"establish": 80000,  "maintain": 40000, "gestation": 3, "full": 6,  "life": 12},
+    "Pomegranate":  {"establish": 90000,  "maintain": 45000, "gestation": 3, "full": 5,  "life": 18},
+    "Guava":        {"establish": 50000,  "maintain": 25000, "gestation": 2, "full": 5,  "life": 20},
+    "Mango":        {"establish": 40000,  "maintain": 20000, "gestation": 5, "full": 10, "life": 40},
+    "Grapes":       {"establish": 200000, "maintain": 90000, "gestation": 2, "full": 4,  "life": 20},
+    "Dragon fruit": {"establish": 150000, "maintain": 40000, "gestation": 2, "full": 4,  "life": 18},
+    # annual / quick-cycle crops: bear every year, no gestation lock-up
+    "Ginger":       {"establish": 0, "maintain": 120000, "gestation": 1, "full": 1, "life": HORIZON, "annual": True},
+    "Banana":       {"establish": 0, "maintain": 90000,  "gestation": 1, "full": 1, "life": HORIZON, "annual": True},
+}
+
+# overstorey financial timing. coconut = annual income; timber = lump at harvest.
+OVERSTOREY_FIN = {
+    "coconut":    {"kind": "annual", "establish": 50000, "maintain": 38000, "gestation": 6, "full": 10, "life": HORIZON},
+    "silver_oak": {"kind": "timber", "establish": 15000, "maintain": 3000,  "harvest": 18},
+    "mahogany":   {"kind": "timber", "establish": 20000, "maintain": 4000,  "harvest": 15},
+    "teak":       {"kind": "timber", "establish": 20000, "maintain": 4000,  "harvest": 18},
+    "none":       {"kind": "none"},
+}
+
+
+def _ramp(t, gestation, full, life):
+    """Bearing fraction in year t (1-indexed)."""
+    if t < gestation or t > life:
+        return 0.0
+    if t >= full:
+        return 1.0
+    return (t - gestation + 1) / (full - gestation + 1)
+
+
+def crop_cashflow(crop, growth, disease, horizon=HORIZON):
+    """Year-by-year net cash (Rs/acre) for an intercrop at this site."""
+    fin = CROP_FIN[crop]
+    _, yc, _ = attainable_yield(crop, growth, disease)     # site-adjusted central yield
+    plo, phi = CROP_ECON[crop]["price"]
+    full_rev = yc * (plo + phi) / 2
+    cf = np.zeros(horizon)
+    for i in range(horizon):
+        t = i + 1
+        rev = full_rev * _ramp(t, fin["gestation"], fin["full"], fin["life"])
+        cost = (fin["establish"] if t == 1 else 0) + (fin["maintain"] if t <= fin["life"] else 0)
+        cf[i] = rev - cost
+    return cf
+
+
+def overstorey_cashflow(species_key, horizon=HORIZON, trees_acre=None):
+    ok = SPECIES_TO_OVERSTOREY.get(species_key, "none")
+    fin = OVERSTOREY_FIN[ok]
+    cf = np.zeros(horizon)
+    if fin["kind"] == "none":
+        return cf
+    if fin["kind"] == "annual":   # coconut
+        e = OVERSTOREY_ECON["coconut"]
+        nlo, nc, nhi = e["nuts_acre"]; plo, phi = e["price_per_nut"]
+        full_rev = nc * (plo + phi) / 2
+        for i in range(horizon):
+            t = i + 1
+            rev = full_rev * _ramp(t, fin["gestation"], fin["full"], fin["life"])
+            cost = (fin["establish"] if t == 1 else 0) + (fin["maintain"] if t <= fin["life"] else 0)
+            cf[i] = rev - cost
+        return cf
+    # timber: maintain each year, lump revenue at harvest year(s) within horizon
+    e = OVERSTOREY_ECON[ok]
+    n = trees_acre or e["trees_acre"]
+    clo, cc, chi = e["cft_tree"]; plo, phi = e["price_cft"]
+    lump = n * cc * (plo + phi) / 2
+    for i in range(horizon):
+        t = i + 1
+        cost = (fin["establish"] if t == 1 else 0) + fin["maintain"]
+        rev = lump if (t % fin["harvest"] == 0) else 0.0   # replanting cycle within horizon
+        cf[i] = rev - cost
+    return cf
+
+
+def npv(cf, rate=DISCOUNT):
+    return float(sum(c / (1 + rate) ** (i + 1) for i, c in enumerate(cf)))
+
+
+def irr(cf):
+    """Internal rate of return via bisection; None if no sign change / no root."""
+    if npv(cf, 0.0) <= 0:           # never profitable undiscounted -> no positive IRR
+        return None
+    lo, hi = 0.0, 2.0
+    if npv(cf, hi) > 0:             # extremely profitable; cap
+        return hi
+    for _ in range(100):
+        mid = (lo + hi) / 2
+        (lo, hi) = (mid, hi) if npv(cf, mid) > 0 else (lo, mid)
+    return round((lo + hi) / 2, 4)
+
+
+def payback(cf):
+    """Simple (undiscounted) payback year; None if never recovers."""
+    cum = np.cumsum(cf)
+    idx = np.where(cum >= 0)[0]
+    return int(idx[0] + 1) if len(idx) else None
+
+
+def system_finance(species_key, intercrop, growth, disease, horizon=HORIZON,
+                   rate=DISCOUNT, trees_acre=None):
+    ov = overstorey_cashflow(species_key, horizon, trees_acre)
+    ic = crop_cashflow(intercrop, growth, disease, horizon) if intercrop else np.zeros(horizon)
+    sys = ov + ic
+    return {
+        "cashflow": sys, "overstorey_cf": ov, "intercrop_cf": ic,
+        "npv": round(npv(sys, rate)), "irr": irr(sys), "payback_yr": payback(sys),
+        "npv_overstorey": round(npv(ov, rate)), "npv_intercrop": round(npv(ic, rate)),
+        "rate": rate, "horizon": horizon,
+    }

@@ -2,6 +2,25 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-09 (later 4) — Financial model (NPV / IRR / payback)
+
+- **`src/agroforestry/finance.py`:** multi-year cash-flow that respects TIMING —
+  gestation + bearing ramp per crop, coconut annual income, timber single harvest lump.
+  `npv` (8% real default), `irr` (bisection), `payback`, `system_finance`. Profiles
+  (gestation/full/life/cost) are standard TNAU/ICAR horticulture, editable. 7 new tests
+  (19 total pass).
+- **Anaikadu finance (`scripts/finance_anaikadu.py`):** at a conservative nut price
+  (Rs 9.5) + 8% hurdle, **coconut monoculture is NPV-negative (-Rs 190k, never pays back)**
+  — nut income alone can't cover its 6-yr gestation drag. Coconut+nutmeg lifts NPV by
+  +Rs 83k but stays marginal (IRR 5%). **Nut-price sensitivity:** coconut+nutmeg NPV goes
+  -107k (Rs9.5) -> +44k (Rs15) -> +127k (Rs18); break-even ~Rs 13-14/nut, i.e. positive at
+  2024-25 prices. **Timber** (mahogany+nutmeg NPV +Rs1.31M, IRR 28%; teak block +Rs885k,
+  IRR 31%) dominates on paper but is LOW confidence and concentrates all risk in one
+  harvest spike at yr 15-18 (cash-flow timeline makes this explicit).
+- Honest takeaways: coconut viability hinges on the volatile nut price; the intercrop is
+  essential, not optional; timber is a high-return but high-concentration, long-lock-up,
+  low-confidence play. The model now compares them on sound financial footing.
+
 ## 2026-06-09 (later 3) — Sensitivity + economics (layers 4-5) + profit inverse design
 
 - **Sensitivity (`scripts/sensitivity_coconut.py`, `reports/sensitivity_coconut.md`):**
