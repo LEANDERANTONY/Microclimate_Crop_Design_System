@@ -52,12 +52,14 @@ def _ramp(t, gestation, full, life):
     return (t - gestation + 1) / (full - gestation + 1)
 
 
-def crop_cashflow(crop, growth, disease, horizon=HORIZON):
-    """Year-by-year net cash (Rs/acre) for an intercrop at this site."""
+def crop_cashflow(crop, growth, disease, horizon=HORIZON, full_rev=None):
+    """Year-by-year net cash (Rs/acre) for an intercrop at this site.
+    full_rev overrides the full-bearing gross revenue (used by Monte Carlo)."""
     fin = CROP_FIN[crop]
-    _, yc, _ = attainable_yield(crop, growth, disease)     # site-adjusted central yield
-    plo, phi = CROP_ECON[crop]["price"]
-    full_rev = yc * (plo + phi) / 2
+    if full_rev is None:
+        _, yc, _ = attainable_yield(crop, growth, disease)     # site-adjusted central yield
+        plo, phi = CROP_ECON[crop]["price"]
+        full_rev = yc * (plo + phi) / 2
     cf = np.zeros(horizon)
     for i in range(horizon):
         t = i + 1
@@ -67,7 +69,10 @@ def crop_cashflow(crop, growth, disease, horizon=HORIZON):
     return cf
 
 
-def overstorey_cashflow(species_key, horizon=HORIZON, trees_acre=None):
+def overstorey_cashflow(species_key, horizon=HORIZON, trees_acre=None,
+                        nut_price=None, timber_cft=None, timber_price=None):
+    """Overstorey net cash. Optional overrides (nut_price Rs/nut; timber_cft per tree;
+    timber_price Rs/cft) let Monte Carlo sample the price/volume bands."""
     ok = SPECIES_TO_OVERSTOREY.get(species_key, "none")
     fin = OVERSTOREY_FIN[ok]
     cf = np.zeros(horizon)
@@ -76,7 +81,7 @@ def overstorey_cashflow(species_key, horizon=HORIZON, trees_acre=None):
     if fin["kind"] == "annual":   # coconut
         e = OVERSTOREY_ECON["coconut"]
         nlo, nc, nhi = e["nuts_acre"]; plo, phi = e["price_per_nut"]
-        full_rev = nc * (plo + phi) / 2
+        full_rev = nc * (nut_price if nut_price is not None else (plo + phi) / 2)
         for i in range(horizon):
             t = i + 1
             rev = full_rev * _ramp(t, fin["gestation"], fin["full"], fin["life"])
@@ -87,7 +92,9 @@ def overstorey_cashflow(species_key, horizon=HORIZON, trees_acre=None):
     e = OVERSTOREY_ECON[ok]
     n = trees_acre or e["trees_acre"]
     clo, cc, chi = e["cft_tree"]; plo, phi = e["price_cft"]
-    lump = n * cc * (plo + phi) / 2
+    cft = timber_cft if timber_cft is not None else cc
+    pcft = timber_price if timber_price is not None else (plo + phi) / 2
+    lump = n * cft * pcft
     for i in range(horizon):
         t = i + 1
         cost = (fin["establish"] if t == 1 else 0) + fin["maintain"]

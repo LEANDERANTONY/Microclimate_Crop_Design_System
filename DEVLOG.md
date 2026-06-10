@@ -2,6 +2,23 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-09 (later 5) — Monte Carlo uncertainty (layer 6)
+
+- **`src/agroforestry/monte_carlo.py`:** propagates the genuinely-uncertain inputs —
+  canopy temperature offset (the LOW-conf band), attainable yield, crop price, coconut
+  nut price, timber volume+price — through microclimate->viability->yield/price->finance,
+  n=3000 draws, to an **NPV distribution** per design (P10/P50/P90, mean, P(loss),
+  P(>250k)). `finance` got optional sampled overrides (backward-compatible). matplotlib
+  added; histogram -> `reports/monte_carlo_npv.png`. 3 tests (22 total pass).
+- **Anaikadu result (8% real, 25 yr):** coconut-only P(loss) **100%**. **Coconut+nutmeg**
+  is **bimodal** — P10 -465k / P50 -98k / P90 +951k, mean +84k, **P(loss) 54%**: a near
+  coin-flip whose two regimes are the hot-temp draws (nutmeg fails) vs cool draws (it
+  pays well). Coconut+pepper worse (P(loss) 74%). Timber shows P(loss) 0% / mean ~+Rs1.3M
+  **but only because its bands omit market/mortality/harvest-timing risk** (flagged
+  optimistic). The dominant swing factor for the coconut systems is the nut price + the
+  uncertain temp offset — i.e. exactly the data we're waiting on -> quantifies the value
+  of the year-1 sensor.
+
 ## 2026-06-09 (later 4) — Financial model (NPV / IRR / payback)
 
 - **`src/agroforestry/finance.py`:** multi-year cash-flow that respects TIMING —
