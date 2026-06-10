@@ -22,19 +22,24 @@ JUVENILE_MAINT_FRAC = 0.3
 
 # crop financial timing/costs (Rs/acre). establish = yr1 planting; maintain = annual.
 # gestation = first-yield year; full = full-bearing year; life = economic life (yrs).
+# Costs VALIDATED June 2026 (NHB DPRs, agrifarming/croplibrary project reports, TN
+# district studies). For crops grown here as a COCONUT INTERCROP (pepper, nutmeg,
+# cocoa, vanilla) establishment uses the palms as standards + shared irrigation, so it
+# is far below standalone (pepper standalone ~Rs 1-1.5L vs intercrop ~Rs 30k). Full-sun
+# crops (pomegranate, grapes, dragon) carry their own drip/trellis/fencing. See ADR-011.
 CROP_FIN = {
-    "Black pepper": {"establish": 60000,  "maintain": 25000, "gestation": 3, "full": 7,  "life": 20},
-    "Nutmeg":       {"establish": 50000,  "maintain": 20000, "gestation": 7, "full": 15, "life": 40},
-    "Cocoa":        {"establish": 45000,  "maintain": 25000, "gestation": 3, "full": 7,  "life": 30},
-    "Vanilla":      {"establish": 80000,  "maintain": 40000, "gestation": 3, "full": 6,  "life": 12},
-    "Pomegranate":  {"establish": 90000,  "maintain": 45000, "gestation": 3, "full": 5,  "life": 18},
+    "Black pepper": {"establish": 30000,  "maintain": 35000, "gestation": 3, "full": 7,  "life": 20},  # intercrop
+    "Nutmeg":       {"establish": 50000,  "maintain": 40000, "gestation": 7, "full": 15, "life": 40},  # intercrop
+    "Cocoa":        {"establish": 35000,  "maintain": 30000, "gestation": 3, "full": 7,  "life": 30},  # intercrop
+    "Vanilla":      {"establish": 80000,  "maintain": 60000, "gestation": 3, "full": 6,  "life": 12},  # labour-intensive
+    "Pomegranate":  {"establish": 180000, "maintain": 90000, "gestation": 3, "full": 5,  "life": 18},  # drip+fence+borewell
     "Guava":        {"establish": 50000,  "maintain": 25000, "gestation": 2, "full": 5,  "life": 20},
     "Mango":        {"establish": 40000,  "maintain": 20000, "gestation": 5, "full": 10, "life": 40},
     "Grapes":       {"establish": 200000, "maintain": 90000, "gestation": 2, "full": 4,  "life": 20},
-    "Dragon fruit": {"establish": 150000, "maintain": 40000, "gestation": 2, "full": 4,  "life": 18},
+    "Dragon fruit": {"establish": 300000, "maintain": 50000, "gestation": 2, "full": 4,  "life": 18},  # concrete poles
     # annual / quick-cycle crops: bear every year, no gestation lock-up
-    "Ginger":       {"establish": 0, "maintain": 120000, "gestation": 1, "full": 1, "life": HORIZON, "annual": True},
-    "Banana":       {"establish": 0, "maintain": 90000,  "gestation": 1, "full": 1, "life": HORIZON, "annual": True},
+    "Ginger":       {"establish": 0, "maintain": 150000, "gestation": 1, "full": 1, "life": HORIZON, "annual": True},  # seed-rhizome heavy
+    "Banana":       {"establish": 0, "maintain": 130000, "gestation": 1, "full": 1, "life": HORIZON, "annual": True},  # TC+drip, NHB/TN ~1.3L
 }
 
 # overstorey financial timing. coconut = annual income; timber = lump at harvest.

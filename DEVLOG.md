@@ -2,6 +2,17 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-09 (later 8) — Crop costs validated + reconciled (ADR-011)
+
+- Validated per-crop costs vs NHB DPRs + TN district studies. **Key finding:** cost
+  depends on production SYSTEM — pepper/nutmeg/cocoa as *coconut intercrops* (palms as
+  standards, shared irrigation) establish far cheaper than standalone; full-sun crops
+  (pomegranate Rs 180k, dragon Rs 300k, banana Rs 130k, ginger Rs 150k) cost more than my
+  estimates. Updated `CROP_FIN`; reconciled `CROP_ECON.cost = maintain + establish/life`.
+- **Anaikadu result holds & sharpens:** coconut+nutmeg +Rs 200k/14%, coconut+pepper
+  +Rs 199k/**18%** — **pepper now marginally more robust** (bears yr 3 vs nutmeg yr 7 ->
+  payback 9 yr, P(loss) 23% vs 40%). Banana firmly uneconomic under coconut. 22 tests pass.
+
 ## 2026-06-09 (later 7) — QA: audited ALL crop economic inputs (no other bug)
 
 - After the coconut fix, audited every crop (`scripts/qa_crop_economics.py`,
