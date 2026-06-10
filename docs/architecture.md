@@ -34,9 +34,14 @@ regressors** (`reg:quantileerror`) + **conformalised quantile regression** for c
 intervals. `QuantileModel` stores training feature ranges and exposes an **`ood_score`**;
 `Predictor` returns `extrapolating` / `offset_confidence` so a design outside the training
 cloud (e.g. open coconut canopy vs closed-forest training) is flagged LOW rather than
-silently extrapolated (ADR-007). Trained on real SAFE Borneo + La Jarda Spain loggers plus
-SAFE oil-palm rasters (ADR-006/008); ambient reference is ERA5 *atmospheric* free-air, not
-ERA5-Land (ADR-006).
+silently extrapolated (ADR-007). The design→feature mapping emits **real Tamil Nadu
+satellite values** per canopy type (`CANOPY_FEATURES_TN`) rather than fabricated proxies —
+this confirmed the coconut OOD is genuine, not an artefact (ADR-013). Trained on real SAFE
+Borneo + La Jarda Spain loggers plus SAFE oil-palm rasters (ADR-006/008); ambient reference
+is ERA5 *atmospheric* free-air, not ERA5-Land (ADR-006). A physics-prior (extrapolating
+linear backbone) + ML-residual **hybrid** (`HybridQuantileModel`) was built and tested; it
+ties the pure tree in-distribution but does not improve cross-climate transfer, so the pure
+quantile model remains the default (ADR-012).
 
 ## Layer 2 — Disease (`disease.py`)
 
@@ -76,10 +81,17 @@ design is shown as risky, not "best".
 
 ## Validation (`validation.py`)
 
-**Leave-one-site-out** cross-validation — an entire site held out per fold, the honest test
-of transfer (random splits would let the model memorise a site). Conformal calibration is
-**group-aware** so interval coverage holds under transfer. Recorded: LOSO dT_mean MAE 0.28 °C
-across two macroclimates (ADR-006).
+Two protocols, every metric reported against a **mean-offset baseline** (skill = 1 −
+MAE/baseline) and with out-of-sample R², so a low MAE on a low-variance target is not
+mistaken for skill. **Leave-one-site-out (`loso`)** holds out an entire site per fold —
+within-climate transfer is skilful (dT_mean MAE 0.28–0.33 °C, +27% skill; dVPD +33%; dT_max
++19%), conformal calibration is **group-aware** so coverage holds (~0.75–0.8). **Leave-one-
+climate-out (`loco`)** holds out an entire macroclimate / canopy regime (Borneo forest /
+Mediterranean Spain / oil-palm open) — the honest macroclimate-transfer test: skill is
+strong for held-out forest, modest for open canopy, and **negative for the held-out
+Mediterranean climate**, with interval coverage collapsing to ~0.2–0.5. This quantifies why
+the warm-night semi-arid target is genuine extrapolation (ADR-012). Regenerate via
+`scripts/run_validation.py` → `reports/loso_metrics.json` + `reports/loco_metrics.json`.
 
 ## Data (`data/load.py`, `scripts/`)
 

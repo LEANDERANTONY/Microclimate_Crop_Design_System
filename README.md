@@ -2,11 +2,11 @@
 
 **From canopy design to crop profitability for a real smallholder farm — with calibrated, honest uncertainty at every step.**
 
-![tests](https://img.shields.io/badge/tests-22%20passing-3f8f4f) ![python](https://img.shields.io/badge/python-3.11-4a6b3a) ![license](https://img.shields.io/badge/license-MIT-7a5a2e) ![status](https://img.shields.io/badge/pipeline-6%20layers%20built-2f3a28)
+![tests](https://img.shields.io/badge/tests-26%20passing-3f8f4f) ![python](https://img.shields.io/badge/python-3.11-4a6b3a) ![license](https://img.shields.io/badge/license-MIT-7a5a2e) ![status](https://img.shields.io/badge/pipeline-6%20layers%20built-2f3a28)
 
 This research codebase predicts the **microclimate a planned agroforestry design will create**, scores **crop suitability and disease risk** under that microclimate, runs the result through **economics and discounted cash-flow**, and **propagates uncertainty** to a profit distribution — then recommends a design. It is built for a real site, **Anaikadu (Pattukkottai), Thanjavur District, Tamil Nadu** (hot semi-arid Cauvery delta), but the method is general.
 
-> **Headline result for Anaikadu:** coconut as the overstorey with **black pepper** (or nutmeg) intercrop clears an 8% real hurdle — **NPV ≈ ₹234k/acre, IRR ≈ 20%, payback 9 yr** — and the *choice* of crop is robust to the model's remaining temperature uncertainty. An interactive report is in [`reports/anaikadu_preprint.html`](reports/anaikadu_preprint.html).
+> **Headline result for Anaikadu:** coconut as the overstorey with **black pepper** (or nutmeg) intercrop clears an 8% real hurdle — **NPV ≈ ₹298k/acre, IRR ≈ 22%, payback 8 yr, P(loss) ≈ 17%** — and the *choice* of crop is robust to the model's remaining temperature uncertainty. An interactive report is in [`reports/anaikadu_preprint.html`](reports/anaikadu_preprint.html).
 
 ---
 
@@ -28,7 +28,7 @@ The distinguishing idea is **honesty-first modelling**: every layer carries an e
 
 | # | Layer | Method | Confidence |
 |---|---|---|---|
-| 1 | design → **microclimate** | Beer–Lambert light + shelterbelt wind (physics); XGBoost **quantile** offsets for temperature/VPD + conformal intervals; **OOD** flag | physics HIGH · offset MODERATE |
+| 1 | design → **microclimate** | Beer–Lambert light + shelterbelt wind (physics); XGBoost **quantile** offsets for temperature/VPD + conformal intervals; **OOD** flag; design→feature mapping grounded on real TN satellite values (ADR-013) | physics HIGH · offset MODERATE |
 | 2 | → **disease risk** | two axes — air-microclimate (foliar) + soil-water/waterlogging (soil-borne); variety susceptibility; drainage as a design lever | MODERATE |
 | 3 | growth + disease → **viability** | fuzzy trapezoidal membership, Liebig limiting factor | MODERATE |
 | 4 | viability → **economics** | reference yield × growth × (1−disease), banded price − validated cost; coconut + timber overstorey | MODERATE |
@@ -41,13 +41,15 @@ An **inverse-design optimiser** wraps the chain to search overstorey, canopy den
 
 ## Key findings (all figures are real pipeline output)
 
-### 1 · The canopy→microclimate offset transfers across macroclimates
+### 1 · The canopy→microclimate offset transfers *within* climate — but not yet *across* macroclimates
 
-Trained on tropical Borneo (SAFE) + Mediterranean Spain (La Jarda) forest plots and tested **leave-one-site-out** (an entire site held out per fold — the honest test of transfer):
+Trained on tropical Borneo (SAFE) + Mediterranean Spain (La Jarda) forest plots and tested **leave-one-site-out** (an entire site held out per fold):
 
 ![cross-climate transfer](figures/fig1_transfer.png)
 
-dT_mean transfers to an unseen site at **0.28 °C MAE**, with prediction-interval coverage near the 0.8 target (calibrated, not over-confident).
+Within climate the model **genuinely learns**: dT_mean LOSO MAE **0.28–0.33 °C**, **+27 % skill** over a mean-offset baseline (dVPD +33 %, dT_max +19 %), intervals calibrated near the 0.8 target. The documented full two-climate LOSO is 0.28 °C (ADR-006).
+
+But the stricter **leave-one-climate-out (LOCO)** test — holding out an entire macroclimate / canopy regime — is honest about the limit: transfer is strong for the held-out humid forest (+22 % skill), modest for the open oil-palm canopy, and **fails on the held-out Mediterranean climate** (negative skill), with interval coverage collapsing from ~0.8 to ~0.2–0.5 out-of-climate. The warm-night semi-arid Anaikadu target is a different regime again, so the under-coconut offset is **genuine extrapolation** (flagged LOW). A physics-prior + ML-residual **hybrid was built and tested**; it ties in-distribution but does **not** rescue cross-climate transfer (it overshoots into the held-out climate), so the pure quantile model stays default (ADR-012). The decisive fix is on-plot sensing. Metrics: [`reports/loso_metrics.json`](reports/loso_metrics.json), [`reports/loco_metrics.json`](reports/loco_metrics.json).
 
 ### 2 · Physics is trustworthy; the learned offset is flagged when extrapolating
 
@@ -74,7 +76,7 @@ Coconut + pepper/nutmeg clear the hurdle; banana under mature coconut is unecono
 ![monte carlo](figures/fig5_montecarlo.png)
 ![cash-flow timing](figures/fig6_cashflow.png)
 
-Monte Carlo turns every point estimate into a distribution and a probability of loss. Coconut+pepper sits mostly positive (P(loss) ≈ 22%); coconut+nutmeg is bimodal — hot draws fail the crop, cool draws pay well. The cash-flow chart shows the real trade-off: steady annual spice income vs a single distant timber harvest.
+Monte Carlo turns every point estimate into a distribution and a probability of loss. Coconut+pepper sits mostly positive (P(loss) ≈ 17%); coconut+nutmeg has a higher mean NPV but a fatter tail (P(loss) ≈ 35%) — hot draws fail the crop, cool draws pay well. The cash-flow chart shows the real trade-off: steady annual spice income vs a single distant timber harvest.
 
 ---
 
@@ -82,7 +84,8 @@ Monte Carlo turns every point estimate into a distribution and a probability of 
 
 ```bash
 uv sync                                        # env from uv.lock
-uv run pytest                                  # 22 tests
+uv run pytest                                  # 26 tests
+uv run python scripts/run_validation.py        # -> LOSO + LOCO skill metrics
 
 uv run python scripts/run_site.py --lat 10.4019 --lon 79.3545 --label "Anaikadu"   # end-to-end at a real point
 uv run python scripts/finance_anaikadu.py      # NPV / IRR / payback per system
@@ -108,8 +111,8 @@ Real, openly-sourced; raw files are gitignored. Microclimate labels: **SAFE Proj
 ```
 src/agroforestry/   physics · models · predict · suitability · disease · economics · finance · monte_carlo · optimize · validation
 scripts/            data builders, run_site, finance/MC/sensitivity, export_results, make_figures, build_dashboard
-tests/              22 tests
-docs/               architecture, modeling_blueprint, economics_layer, data_acquisition, ADRs 001–011
+tests/              26 tests
+docs/               architecture, modeling_blueprint, economics_layer, data_acquisition, ADRs 001–013
 reports/            results.json, anaikadu_preprint.html, economics_qa, sourced inputs, catalogs
 figures/            README figures (regenerated by make_figures.py)
 ```
@@ -120,15 +123,15 @@ See [`folder_structure.txt`](folder_structure.txt); running log in [`DEVLOG.md`]
 
 ## Honest limitations
 
-- The under-coconut **temperature offset is extrapolation** (forest-trained, open palm canopy) — flagged LOW; physics (shade/wind) and the robust shortlist carry the decision.
-- A **macroclimate-transfer gap** remains: warm-night semi-arid Tamil Nadu has no close analog in the humid-tropical + Mediterranean training set.
+- The under-coconut **temperature offset is extrapolation** (forest-trained, open palm canopy) — flagged LOW; physics (shade/wind) and the robust shortlist carry the decision. Grounding the design→feature mapping on real TN satellite values (ADR-013) confirmed the OOD is **genuine**, not a proxy artefact.
+- A **macroclimate-transfer gap** remains, now **quantified by leave-one-climate-out**: warm-night semi-arid Tamil Nadu has no close analog in the humid-tropical + Mediterranean training set, transfer skill goes negative on a held-out climate, and intervals lose calibration out-of-climate (ADR-012). A physics-prior hybrid was tested and did not close it.
 - Economics are **MODERATE** confidence (validated vs DPRs/TNAU + live mandi prices); a clean 3-yr CEDA price series is still pending; timber prices are LOW.
 - Reanalysis can't resolve the village from the town (shared ~31 km ERA5 pixel) — an **on-plot logger (year 1)** is the definitive fix and would collapse the temperature uncertainty.
 
-Treat **comparisons** (design A vs B, crop ranking, dry vs wet timing) as reliable and absolute numbers as indicative-with-stated-uncertainty. Every modelling decision is recorded in [`docs/architectural_decision_records/`](docs/architectural_decision_records/) (ADR-001–011).
+Treat **comparisons** (design A vs B, crop ranking, dry vs wet timing) as reliable and absolute numbers as indicative-with-stated-uncertainty. Every modelling decision is recorded in [`docs/architectural_decision_records/`](docs/architectural_decision_records/) (ADR-001–013).
 
 ---
 
 ## Status
 
-All six layers built, validated, and runnable (22 tests). Real data integrated across two macroclimates + an open-canopy regime. Interactive preprint report generated. Outstanding: SoilTemp / tropical-understory data requests (to firm the offset), CEDA 3-yr prices (to firm economics), and the user's own plot sensor. *Research preprint — model output with stated uncertainty, not guarantees.*
+All six layers built, validated, and runnable (26 tests). Real data integrated across two macroclimates + an open-canopy regime. Transfer validated with skill scores + leave-one-climate-out; a physics-prior hybrid tested (ADR-012); design→feature mapping grounded on real TN satellite values (ADR-013). Interactive preprint report generated. Outstanding: SoilTemp / tropical-understory data requests (to firm the offset and close the climate gap), CEDA 3-yr prices (to firm economics), and the user's own plot sensor. *Research preprint — model output with stated uncertainty, not guarantees.*

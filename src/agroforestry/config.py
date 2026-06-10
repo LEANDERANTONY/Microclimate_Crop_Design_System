@@ -31,6 +31,26 @@ SPECIES = {
     "teak_bare":     {"lai": 0.3, "k": 0.60, "drag": 0.08, "height_m": 15.0, "label": "Teak (leafless)"},
 }
 
+# ---- Grounded design->feature values (ADR-012 / ADR-007 fix) ----
+# REAL Tamil Nadu satellite features per canopy type (MODIS LAI/FPAR/NDVI + ETH
+# canopy height, 2020, regional median over coconut-belt + timber sites). Replaces
+# the fabricated NDVI/FAPAR/height proxies in predict.build_feature_row so the ML
+# offset model is fed realistic per-canopy values, not made-up ones. Regenerate with
+# scripts/fetch_canopy_features.py -> reports/canopy_features_tn.json. MODERATE
+# confidence (regional remote sensing, not the user's own plot). NOTE: these confirm
+# the coconut canopy (NDVI ~0.47, height ~8 m) is genuinely unlike the humid-forest
+# training set (NDVI ~0.8, height 13-55 m) -- the OOD flag is real, not a proxy artefact.
+CANOPY_FEATURES_TN = {
+    "coconut": {"ndvi": 0.468, "fapar": 0.37, "canopy_height": 7.6},
+    "timber":  {"ndvi": 0.676, "fapar": 0.40, "canopy_height": 16.7},
+}
+# map config SPECIES -> grounded canopy type ("none" keeps open-field proxies)
+SPECIES_CANOPY_TYPE = {
+    "coconut_wide": "coconut", "coconut_close": "coconut",
+    "silver_oak": "timber", "mahogany": "timber",
+    "teak_leaf": "timber", "teak_bare": "timber", "none": None,
+}
+
 # ---- Crop envelopes: [ideal_lo, ideal_hi, tol_lo, tol_hi]; wind = [ideal_max, tol_max] ----
 CROPS = {   # envelopes calibrated from sourced literature -- see ADR-003
     "Vanilla":      {"t": [21, 32, 15, 35], "shade": [30, 50, 20, 70], "rh": [75, 90, 55, 100], "wind": [1.5, 3.0]},

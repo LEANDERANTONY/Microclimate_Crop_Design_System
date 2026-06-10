@@ -95,10 +95,14 @@ ul{margin:6px 0 12px;padding-left:20px}li{margin:4px 0}
 <table><thead><tr><th>Layer</th><th>Approach</th><th>Confidence</th></tr></thead><tbody id="methodtbl"></tbody></table>
 </section>
 
-<section id="transfer"><h2>4 · Result — cross-macroclimate transfer</h2>
-<p>The core scientific claim is that the canopy&rarr;microclimate <em>offset</em> learned in one climate transfers to another. Leave-one-site-out (LOSO) cross-validation holds out an entire site per fold — the honest test of transfer. Models trained on tropical Borneo (SAFE) + Mediterranean Spain (La Jarda) forest plots predict an unseen site's offset to:</p>
+<section id="transfer"><h2>4 · Result — transfer (within-climate vs cross-climate)</h2>
+<p>The core claim is that the canopy&rarr;microclimate <em>offset</em> learned in one place transfers to another. We test two strengths of transfer. <b>Leave-one-site-out (LOSO)</b> holds out an entire site (other sites may share its climate) and reports skill against a mean-offset baseline — the model genuinely learns:</p>
 <div class="cards" id="losocards"></div>
 <p class="note" id="losonote"></p>
+<h3>The harder test: leave-one-<em>climate</em>-out (LOCO)</h3>
+<p>Holding out an entire macroclimate / canopy regime is the honest test of the project's actual claim — and of the leap to semi-arid Tamil Nadu. Skill (vs baseline) and interval coverage per held-out regime, dT_mean:</p>
+<table><thead><tr><th>Held-out regime</th><th>MAE (°C)</th><th>skill</th><th>interval coverage</th></tr></thead><tbody id="locotbl"></tbody></table>
+<p class="note" id="loconote"></p>
 </section>
 
 <section id="micro"><h2>5 · Result — under-canopy microclimate at Anaikadu</h2>
@@ -151,7 +155,7 @@ const badge=c=>c&&c.indexOf('LOW')>=0?'b-lo':c==='HIGH'?'b-hi':'b-mod';
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
 
 $('#gen').textContent='generated '+DATA.generated; $('#gen2').textContent=DATA.generated;
-$('#abstract').innerHTML="<b>Abstract.</b> Smallholders deciding how to design an agroforestry plot face a chain of coupled questions — how a chosen canopy reshapes the local microclimate, which crops then become viable once disease is accounted for, and whether the result actually pays. We build a six-layer model that answers this end-to-end: mechanistic physics for light and wind, machine-learned (gradient-boosted, quantile) offsets for temperature and vapour-pressure deficit, a two-axis disease model, fuzzy limiting-factor suitability, and a staged economics + discounted-cash-flow layer, with uncertainty propagated by Monte Carlo. The learned offset transfers across macroclimates (leave-one-site-out dT_mean MAE "+DATA.loso.dT_mean.MAE+"°C, trained on Borneo + Mediterranean Spain), and the model flags when a design (here, open coconut canopy) lies outside its training distribution rather than over-claiming. Applied to a real farm in Anaikadu, Tamil Nadu, the system identifies a robust intercrop shortlist (nutmeg, black pepper) whose ranking is insensitive to the uncertain temperature offset, and shows coconut+pepper clearing an 8% hurdle (NPV ≈ ₹230k/acre, IRR ≈ 20%, payback 9 yr) while quantifying its probability of loss. A reality-check that initially mislabelled coconut as loss-making — traced to a gestation-cost bug — is reported as a methodological illustration of validation discipline.";
+$('#abstract').innerHTML="<b>Abstract.</b> Smallholders deciding how to design an agroforestry plot face a chain of coupled questions — how a chosen canopy reshapes the local microclimate, which crops then become viable once disease is accounted for, and whether the result actually pays. We build a six-layer model that answers this end-to-end: mechanistic physics for light and wind, machine-learned (gradient-boosted, quantile) offsets for temperature and vapour-pressure deficit, a two-axis disease model, fuzzy limiting-factor suitability, and a staged economics + discounted-cash-flow layer, with uncertainty propagated by Monte Carlo. Within climate, the learned offset is genuinely skilful — leave-one-site-out dT_mean MAE "+DATA.loso.dT_mean.MAE+"°C, "+Math.round(DATA.loso.dT_mean.skill_vs_baseline*100)+"% better than a mean-offset baseline (Borneo + Mediterranean Spain). But a stricter <b>leave-one-climate-out</b> test shows cross-macroclimate transfer degrades and prediction intervals lose calibration on a held-out climate, and the model flags when a design (here, open coconut canopy) lies outside its training distribution rather than over-claiming — quantifying exactly why on-plot sensing is the decisive next step. Applied to a real farm in Anaikadu, Tamil Nadu, the system identifies a robust intercrop shortlist (nutmeg, black pepper) whose ranking is insensitive to the uncertain temperature offset, and shows coconut+pepper clearing an 8% hurdle (NPV ≈ ₹230k/acre, IRR ≈ 20%, payback 9 yr) while quantifying its probability of loss. A reality-check that initially mislabelled coconut as loss-making — traced to a gestation-cost bug — is reported as a methodological illustration of validation discipline.";
 
 // pipeline flow
 const layers=[['Design','canopy, windbreak'],['Microclimate','physics + ML offset'],['Disease','two-axis'],['Suitability','fuzzy / limiting'],['Economics','yield×price−cost'],['Finance + risk','NPV/IRR, Monte Carlo']];
@@ -174,11 +178,21 @@ const meth=[['Light / shade','Beer–Lambert extinction through canopy (LAI, k)'
 ['Uncertainty','Monte Carlo over offset+yield+price+timber bands','MODERATE']];
 meth.forEach(r=>{const tr=el('tr');tr.innerHTML='<td>'+r[0]+'</td><td>'+r[1]+'</td><td style="text-align:center"><span class="badge '+badge(r[2])+'">'+r[2]+'</span></td>';$('#methodtbl').appendChild(tr)});
 
-// LOSO
+// LOSO (within-climate) — show MAE, skill vs baseline, coverage
 const lo=DATA.loso;
 [['dT_max','°C'],['dT_mean','°C'],['dVPD','kPa']].forEach(([k,u])=>{
-$('#losocards').appendChild(el('div','mc','<div class="lab">'+k+' MAE</div><div class="num">'+lo[k].MAE+'<span class="unit"> '+u+'</span></div><div class="lim">coverage '+lo[k].interval_coverage+'</div>'))});
-$('#losonote').textContent='Folds: '+lo.dT_mean.folds+' forest plots, two macroclimates ('+lo.dT_mean.scope+'). Prediction-interval coverage near the 0.8 target indicates calibrated, not over-confident, uncertainty. Full LOSO recorded in ADR-006.';
+const sk=Math.round(lo[k].skill_vs_baseline*100);
+$('#losocards').appendChild(el('div','mc','<div class="lab">'+k+' MAE</div><div class="num">'+lo[k].MAE+'<span class="unit"> '+u+'</span></div><div class="lim">skill +'+sk+'% vs baseline · coverage '+lo[k].interval_coverage+'</div>'))});
+$('#losonote').textContent='Scope: '+lo.dT_mean.scope+', two macroclimates (Borneo + Spain). Skill = 1 − MAE/baseline (baseline = predict the mean offset), so positive skill means the model learns real canopy structure, not a near-constant offset. Interval coverage near the 0.8 target = calibrated, not over-confident. (Documented full two-climate LOSO dT_mean MAE 0.28 °C, ADR-006.)';
+
+// LOCO (leave-one-climate-out) — the honest macroclimate-transfer test, dT_mean
+const lc=DATA.loco.dT_mean;
+const zlab={borneo_forest:'Borneo humid forest',med_spain:'Mediterranean Spain',oilpalm_open:'Borneo oil-palm (open)'};
+Object.keys(lc.per_zone).forEach(z=>{const v=lc.per_zone[z];const sk=Math.round(v.skill*100);
+const skcol=sk>=10?css('--g'):sk>=0?css('--a'):css('--r');
+const tr=el('tr');tr.innerHTML='<td>'+(zlab[z]||z)+'</td><td>'+v.MAE+'</td><td style="color:'+skcol+';font-weight:700">'+(sk>=0?'+':'')+sk+'%</td><td>'+v.coverage+'</td>';
+$('#locotbl').appendChild(tr)});
+$('#loconote').innerHTML='Transfer is strong holding out the humid forest, modest holding out the open oil-palm canopy, and <b>fails (negative skill) on the held-out Mediterranean climate</b> — and interval coverage collapses from ~0.8 (LOSO) to ~0.2–0.5 out-of-climate. This is the honest quantification of the limit: the warm-night semi-arid Anaikadu target is a different regime again, so the under-coconut offset is genuine extrapolation (flagged LOW). A physics-prior hybrid was tested and did not rescue cross-climate transfer (ADR-012). The decisive fix is on-plot sensing.';
 
 // microclimate selector
 const ovsel=$('#oversel');DATA.microclimate.forEach((o,i)=>ovsel.appendChild(new Option(o.label,i)));

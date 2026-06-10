@@ -13,3 +13,9 @@ change a decision, write a new ADR that supersedes the old one.
 | [005](ADR-005-waterlogging-calibration.md) | Data-calibrated seasonal waterlogging index (SoilGrids + CGWB) | Accepted |
 | [006](ADR-006-real-data-safe.md) | First real-data integration: SAFE Project (Borneo) microclimate via Earth Engine | Accepted |
 | [007](ADR-007-ood-extrapolation.md) | Out-of-distribution flag for off-canopy-type designs (coconut) | Accepted |
+| [008](ADR-008-oilpalm-open-canopy-regime.md) | Add SAFE oil-palm open-canopy regime; OOD is macro-driven | Accepted |
+| [009](ADR-009-regional-transfer-data.md) | Source regional data to narrow the Borneo/Spain transfer gap | Accepted |
+| [010](ADR-010-coconut-economics-qa.md) | Coconut economics QA: gestation-cost bug fix | Accepted |
+| [011](ADR-011-crop-cost-validation.md) | Validate/reconcile per-crop costs vs NHB DPRs / TNAU | Accepted |
+| [012](ADR-012-transfer-validation-and-hybrid.md) | Skill-scored LOSO/LOCO transfer validation + physics-guided hybrid (tested) | Accepted |
+| [013](ADR-013-grounded-design-features.md) | Ground design→feature mapping with real TN satellite features | Accepted |

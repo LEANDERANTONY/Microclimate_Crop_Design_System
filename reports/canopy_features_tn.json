@@ -1,0 +1,23 @@
+{
+  "coconut": {
+    "lai": 0.78,
+    "fapar": 0.37,
+    "ndvi": 0.468,
+    "canopy_height": 7.612,
+    "n_points": 7
+  },
+  "timber": {
+    "lai": 0.998,
+    "fapar": 0.404,
+    "ndvi": 0.676,
+    "canopy_height": 16.682,
+    "n_points": 4
+  },
+  "_meta": {
+    "year": "2020",
+    "lai_src": "MODIS MCD15A3H",
+    "ndvi_src": "MODIS MOD13Q1",
+    "height_src": "ETH GlobalCanopyHeight 2020 10m",
+    "confidence": "MODERATE (regional RS, not on-plot)"
+  }
+}

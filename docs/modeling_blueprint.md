@@ -78,6 +78,8 @@ Mechanistic light + wind · LightGBM (quantile) for temp/VPD offset · fuzzy/lim
 **Phase B — your sensors added (one season).**
 Switch the temp/VPD models to physics-guided hybrids; Gaussian Process for VPD; calibrate locally; keep conformal bands. Re-fit extinction *k* for your actual coconut/timber.
 
+> **Tested early (ADR-012):** the physics-prior (extrapolating linear backbone) + XGBoost-residual hybrid is already implemented (`HybridQuantileModel`) and benchmarked with leave-one-climate-out. Finding: it ties the pure tree *in-distribution* but does **not** improve — and can worsen — cross-*macroclimate* transfer, because the offset magnitude is regime-dependent and a tropical-trained backbone overshoots into a held-out cool climate. Lesson: the hybrid's value is unlocked by *data in the target regime* (so its backbone interpolates), not by architecture alone. Kept as the Phase-B model, off by default until warm-climate data lands.
+
 **Phase C — multi-season, rich data.**
 PINN for the coupled energy/water balance (the "publishable physics + ML" version); GNN **only** if you move to predicting within-field *spatial* gradients across many sensor nodes.
 
@@ -96,6 +98,8 @@ The novelty of this project lives in the **question, the dataset, and the invers
 ## Validation — test the thing the project actually claims
 
 The central claim is **transferability across macroclimates**. So validate with **leave-one-site-out** (and ideally **leave-one-climate-zone-out**) cross-validation, *not* random splits. Random splits let the model memorise a site and flatter the metrics; leave-site-out directly measures "does the offset learned here transfer there." Report intervals, not just point error. This validation design is itself a credibility differentiator at review.
+
+> **Done (ADR-012).** Both protocols are implemented in `validation.py` and report **skill vs a mean-offset baseline** + out-of-sample R². Result: within-climate LOSO is skilful (dT_mean +27%, dVPD +33%, dT_max +19%; intervals ~0.8), but **leave-one-climate-out** is the honest limit — skill goes **negative** on a held-out Mediterranean climate and interval coverage collapses to ~0.2–0.5. The negative result *is* a finding: it proves transfer is data-limited, not model-limited, and motivates a target-regime training source + per-climate (Mondrian) conformal calibration.
 
 ---
 

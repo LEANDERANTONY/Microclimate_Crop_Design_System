@@ -5,7 +5,8 @@ This is the bridge from trained models to the suitability/optimiser layers.
 """
 import numpy as np
 import pandas as pd
-from agroforestry.config import RAW_FEATURES, SPECIES
+from agroforestry.config import (RAW_FEATURES, SPECIES, CANOPY_FEATURES_TN,
+                                  SPECIES_CANOPY_TYPE)
 from agroforestry.features import engineer, _tetens_es
 from agroforestry.physics import shade_pct, predict_wind, canopy_cover
 
@@ -14,7 +15,13 @@ def build_feature_row(design, macro, context):
     """design: dict(species, lai, wb_height, wb_porosity)
        macro:  dict(t_mean,t_max,t_min,rh,wind,solar,rainfall)
        context:dict(elevation,slope,twi,soc,clay)
-    Returns a 1-row DataFrame with RAW_FEATURES (canopy proxies derived from design).
+    Returns a 1-row DataFrame with RAW_FEATURES.
+
+    NDVI / FAPAR / canopy_height are the *observation-derived* features the ML offset
+    model was trained on, so for a hypothetical design we emit REAL Tamil Nadu
+    per-canopy satellite values (CANOPY_FEATURES_TN, ADR-012) rather than fabricating
+    them from LAI. LAI itself stays the design variable (the optimiser sweeps it).
+    Falls back to the old proxies only for canopy types without grounded values.
     """
     sp = SPECIES[design["species"]]
     lai = design["lai"]
@@ -22,9 +29,16 @@ def build_feature_row(design, macro, context):
     row = dict(macro)
     row.update(context)
     row["lai"] = lai
-    row["canopy_height"] = sp.get("height_m") or (lai * 5.0)   # realistic per-species height (ADR-007)
-    row["ndvi"] = float(np.clip(0.3 + 0.6 * cover, 0, 1))
-    row["fapar"] = float(np.clip(0.9 * cover, 0, 1))
+    ctype = SPECIES_CANOPY_TYPE.get(design["species"])
+    grounded = CANOPY_FEATURES_TN.get(ctype) if ctype else None
+    if grounded:
+        row["canopy_height"] = grounded["canopy_height"]   # real TN regional RS value
+        row["ndvi"] = grounded["ndvi"]
+        row["fapar"] = grounded["fapar"]
+    else:                                                  # open field / no grounded type
+        row["canopy_height"] = sp.get("height_m") or (lai * 5.0)
+        row["ndvi"] = float(np.clip(0.3 + 0.6 * cover, 0, 1))
+        row["fapar"] = float(np.clip(0.9 * cover, 0, 1))
     return pd.DataFrame([{k: row[k] for k in RAW_FEATURES}])
 
 

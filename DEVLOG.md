@@ -2,6 +2,41 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-10 (later 2) — Grounded design->feature mapping with real TN satellite features (ADR-013)
+
+- Replaced the fabricated NDVI/FAPAR/height proxies in `predict.build_feature_row`
+  with **real Tamil Nadu satellite features** per canopy type (MODIS LAI/FPAR/NDVI +
+  ETH height, regional medians: coconut NDVI 0.47/height 7.6 m; timber 0.68/16.7 m;
+  `scripts/fetch_canopy_features.py` -> `reports/canopy_features_tn.json`,
+  `config.CANOPY_FEATURES_TN`). **Finding:** coconut OOD stays ~0.58 -> the
+  extrapolation is **genuine, not a proxy artefact** (resolves the ADR-007 worry).
+  Strengthens the honest story: the TN coconut canopy really is unlike the humid-forest
+  training set. **ADR-013.**
+
+## 2026-06-10 (later) — Skill-scored transfer validation + physics-guided hybrid (ADR-012)
+
+- **Review-driven hardening of the validation.** Rewrote `validation.py` to report,
+  per fold: **skill vs a train-mean baseline**, out-of-sample R², and the fold-MAE
+  distribution (p10/50/90); added **leave-one-CLIMATE-out (`loco`)** + a
+  `climate_zone()` tagger (Borneo forest / Med Spain / oil-palm open) and a
+  `model_factory` hook. New `scripts/run_validation.py`; metrics in
+  `reports/loso_metrics.json` + `reports/loco_metrics.json`.
+- **Built `HybridQuantileModel`** (physics-guided): extrapolating Ridge backbone on a
+  parsimonious in-range feature (`canopy_cover`, the De Frenne buffering term) +
+  XGBoost quantile residual, with **backbone clipping** to the observed offset range
+  and group-aware CQR. Drop-in for `QuantileModel`.
+- **Findings (honest, paper-grade):** within-climate LOSO the model **genuinely learns**
+  — dT_mean **+27 % skill** over baseline (MAE 0.33, cov 0.75), dVPD +33 %, dT_max +19 %
+  (though R²≈0 for dT_max — daily offset is hard). **Cross-climate LOCO degrades and
+  FAILS on the held-out Mediterranean climate** (negative skill), and interval coverage
+  **collapses 0.77 → 0.24–0.46** out-of-climate. The **hybrid does not rescue
+  cross-macroclimate transfer** — it ties in-distribution but overshoots into the cool
+  held-out climate (magnitude is regime-dependent); the tree's flat extrapolation is
+  safer there. **Decision:** keep `QuantileModel` default; keep the hybrid as a tested
+  alternative for when warm-night training data is added. This quantifies *why* the
+  warm-night Anaikadu target is genuine extrapolation and the plot logger is the gating
+  item. 26 tests pass. **ADR-012.**
+
 ## 2026-06-10 — Preprint-grade interactive dashboard/report
 
 - `scripts/export_results.py` -> `reports/results.json` (real pipeline output: dataset,

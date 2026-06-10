@@ -19,13 +19,31 @@ sites = df["site_id"].astype(str)
 n_forest = int((~sites.str.startswith("OP_")).sum())
 n_palm = int(sites.str.startswith("OP_").sum())
 
-# ---- 1. cross-climate transfer: documented full-LOSO (ADR-006; recompute is 800+
-# model fits, too slow to inline). Cross-MACROCLIMATE transfer = Borneo + Spain forest.
-loso_res = {
-    "dT_mean": {"MAE": 0.28, "interval_coverage": 0.82, "folds": 276, "scope": "two-climate forest LOSO"},
-    "dT_max":  {"MAE": 1.13, "interval_coverage": 0.83, "folds": 245, "scope": "Borneo LOSO"},
-    "dVPD":    {"MAE": 0.085, "interval_coverage": 0.84, "folds": 245, "scope": "Borneo LOSO"},
-}
+# ---- 1. transfer validation: load the regenerated, skill-scored metrics
+# (scripts/run_validation.py -> reports/loso_metrics.json + loco_metrics.json; ADR-012).
+# LOSO = within-/between-forest-climate site holdout (the model genuinely learns).
+# LOCO = leave-one-CLIMATE-out, the stricter macroclimate-transfer test.
+def _round(d, keys):
+    return {k: (round(d[k], 3) if isinstance(d.get(k), (int, float)) else d.get(k)) for k in keys}
+
+_loso_raw = json.load(open("reports/loso_metrics.json", encoding="utf-8"))
+_loco_raw = json.load(open("reports/loco_metrics.json", encoding="utf-8"))
+_K = ["MAE", "interval_coverage", "skill_vs_baseline", "R2_oos", "baseline_MAE", "folds"]
+loso_res = {}
+for t in TARGETS:
+    m = _loso_raw[t]["pure_xgb"]
+    loso_res[t] = _round(m, _K)
+    loso_res[t]["scope"] = m.get("scope", "site holdout")
+# LOCO: aggregate + per-climate skill/coverage, for the honest transfer story
+loco_res = {}
+for t in TARGETS:
+    m = _loco_raw[t]["pure_xgb"]
+    loco_res[t] = {"MAE": round(m["MAE"], 3), "interval_coverage": round(m["interval_coverage"], 3),
+                   "skill_vs_baseline": round(m["skill_vs_baseline"], 3),
+                   "per_zone": {z: {"MAE": round(v["MAE"], 3),
+                                    "skill": round(v["skill_vs_baseline"], 3),
+                                    "coverage": round(v["interval_coverage"], 3)}
+                                for z, v in m["per_zone"].items()}}
 
 # ---- train full predictor ----
 models = {t: QuantileModel().fit(X[feats].values, df[t].values, feature_names=feats) for t in TARGETS}
@@ -89,8 +107,9 @@ out = {
     "dataset": {"rows": int(len(df)), "sites": int(sites.nunique()), "forest": n_forest, "palm": n_palm,
                 "climates": ["Borneo (SAFE, tropical humid)", "Cadiz Spain (La Jarda, Mediterranean)",
                              "+ Borneo oil-palm rasters (open canopy)"]},
-    "loso": loso_res, "site": {"name": "Anaikadu (GD Home Stay)", "lat": 10.4019, "lon": 79.3545,
-                               "macro": macro, "context": context},
+    "loso": loso_res, "loco": loco_res,
+    "site": {"name": "Anaikadu (GD Home Stay)", "lat": 10.4019, "lon": 79.3545,
+             "macro": macro, "context": context},
     "microclimate": micro_rows, "intercrops": intercrops, "sensitivity": sens,
     "finance": fin_rows, "montecarlo": mc_rows,
 }
