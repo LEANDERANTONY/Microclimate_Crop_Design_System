@@ -94,3 +94,18 @@ bands) rather than recentre on one possibly-seasonal-high day. Effect: coconut+p
 +Rs 225k, P(loss) 21% (pepper stays the most robust pick). Nutmeg/cocoa/vanilla are NOT
 Agmarknet-traded (spice-board/contract) so their bands are unchanged. Prices now **MODERATE**
 (live-snapshot-anchored); CEDA 3-yr monthly pull would lift to HIGH.
+
+## 7. CEDA 3-yr series — attempted, blocked (2026-06-10)
+
+Tried to pull CEDA-Ashoka's cleaned 3-yr monthly Agmarknet series. **Not programmatically
+accessible from this environment:** the shell times out (Cloudflare-style bot protection)
+and the automated browser hits an error/challenge page (not circumvented — bot-detection
+is not bypassed). A normal (human) browser loads CEDA fine.
+
+So the multi-year basis stays: **`economics_inputs_sourced.md` 2022-2025 price ranges +
+the live data.gov.in snapshot** — both already baked into the widened bands. To reach HIGH
+confidence with a true monthly series, the reliable route is **user-side**: open CEDA in a
+normal browser, select each commodity / Tamil Nadu / 2022-2025 / Monthly, click *Download
+Data* (CSV), and share the CSVs for ingestion. (Alternatively, register a personal
+data.gov.in API key to lift the 10-record/daily cap — still daily, not monthly history.)
+Bands are defensible as-is; this is a refinement, not a gap.
