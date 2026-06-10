@@ -2,6 +2,17 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-10 — Preprint-grade interactive dashboard/report
+
+- `scripts/export_results.py` -> `reports/results.json` (real pipeline output: dataset,
+  documented LOSO, Anaikadu microclimate per overstorey, intercrop viability + sensitivity,
+  finance NPV/IRR/payback + cashflow, Monte Carlo distributions). `scripts/build_dashboard.py`
+  inlines it into **`reports/anaikadu_preprint.html`** — a self-contained, publication-style
+  interactive report (abstract, 6-layer pipeline, methods, cross-climate transfer, microclimate
+  selector, crop suitability + sensitivity, economics + cashflow chart, Monte Carlo histograms,
+  limitations, recommendation, reproducibility). Chart.js from CDN; opens with no server.
+  Static-validated (`scripts/check_dashboard.py`). Headline: coconut+pepper NPV ₹234k, IRR ~20%.
+
 ## 2026-06-09 (later 8) — Crop costs validated + reconciled (ADR-011)
 
 - Validated per-crop costs vs NHB DPRs + TN district studies. **Key finding:** cost

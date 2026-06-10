@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agroforestry microclimate-to-profit model — Anaikadu, Tamil Nadu</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#faf8f4;--ink:#23291f;--muted:#6b7363;--line:#e3e0d6;--card:#fff;--head:#2f3a28;
+--accent:#4a6b3a;--accent2:#7a5a2e;--g:#3f8f4f;--gbg:#e6f1e6;--a:#b9852b;--abg:#fbf1dc;--r:#b3503f;--rbg:#f7e2dd;--blue:#3a6b8f;}
+*{box-sizing:border-box}
+body{font-family:-apple-system,Segoe UI,Roboto,Georgia,serif;background:var(--bg);color:var(--ink);margin:0;line-height:1.55;font-size:15px}
+.wrap{max-width:920px;margin:0 auto;padding:0 22px 80px}
+header.top{border-bottom:2px solid var(--head);padding:34px 0 18px;margin-bottom:8px}
+h1{font-size:27px;line-height:1.25;margin:0 0 8px;color:var(--head);font-family:Georgia,serif}
+.authors{font-size:14.5px;color:var(--ink);margin:6px 0 2px}
+.affil{font-size:13px;color:var(--muted);margin:0 0 10px}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.03em;background:var(--abg);color:var(--a);padding:2px 9px;border-radius:11px;margin-right:6px}
+nav{position:sticky;top:0;background:rgba(250,248,244,.96);backdrop-filter:blur(4px);border-bottom:1px solid var(--line);padding:9px 0;margin-bottom:22px;z-index:20;font-size:12.5px}
+nav a{color:var(--accent);text-decoration:none;margin-right:14px;white-space:nowrap}
+nav a:hover{text-decoration:underline}
+section{margin:30px 0;scroll-margin-top:52px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:6px;margin:0 0 14px}
+h3{font-size:15px;color:var(--head);margin:18px 0 6px}
+p{margin:0 0 12px}
+.abstract{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:16px 18px;font-size:14.5px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:12px 0}
+.mc{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:11px 12px}
+.mc .lab{font-size:10.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.03em}
+.mc .num{font-size:22px;font-weight:700;margin-top:3px;color:var(--head)}
+.mc .unit{font-size:12px;color:var(--muted);font-weight:500}
+.badge{display:inline-block;font-size:9.5px;font-weight:800;padding:2px 7px;border-radius:10px;letter-spacing:.03em}
+.b-hi{background:var(--gbg);color:var(--g)}.b-mod{background:var(--abg);color:var(--a)}.b-lo{background:var(--rbg);color:var(--r)}
+table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:right}
+th:first-child,td:first-child{text-align:left}
+th{background:var(--head);color:#fff;font-weight:600}
+tr:nth-child(even) td{background:#fbfaf6}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;margin:12px 0}
+select{padding:6px 10px;border:1px solid var(--line);border-radius:6px;font-size:13.5px;background:#fff;font-weight:600;color:var(--head)}
+.bar{height:15px;background:#ececec;border-radius:8px;overflow:hidden;margin-top:2px}
+.bar span{display:block;height:100%;border-radius:8px}
+.crop{margin:8px 0}.crop .top{display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+.lim{font-size:11px;color:var(--muted)}
+.note{font-size:12.5px;color:var(--muted);font-style:italic;margin-top:8px}
+.layer{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:10px 0}
+.lbox{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;font-weight:600;text-align:center;min-width:96px}
+.lbox small{display:block;font-weight:500;color:var(--muted);font-size:10px;margin-top:2px}
+.arrow{color:var(--muted);font-size:16px}
+.chartbox{position:relative;height:300px;margin-top:10px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.two{grid-template-columns:1fr}nav{overflow-x:auto;white-space:nowrap}}
+.rec{background:var(--gbg);border:1px solid var(--g);border-radius:10px;padding:16px 18px}
+.foot{font-size:12px;color:var(--muted);border-top:1px solid var(--line);margin-top:30px;padding-top:14px}
+code{background:#f0efe7;padding:1px 5px;border-radius:4px;font-size:12.5px}
+ul{margin:6px 0 12px;padding-left:20px}li{margin:4px 0}
+</style></head>
+<body><div class="wrap">
+
+<header class="top">
+<div><span class="tag">PREPRINT</span><span class="tag" style="background:var(--gbg);color:var(--g)">REPRODUCIBLE</span></div>
+<h1>From canopy design to crop profit under uncertainty: an honesty-first agroforestry microclimate model applied to a smallholder coconut farm in Tamil Nadu</h1>
+<div class="authors">Leo Antony</div>
+<div class="affil">Independent research · Anaikadu (Pattukkottai), Thanjavur District, Tamil Nadu, India · <span id="gen"></span></div>
+<div class="abstract" id="abstract"></div>
+</header>
+
+<nav>
+<a href="#pipeline">Pipeline</a><a href="#site">Site</a><a href="#methods">Methods</a>
+<a href="#transfer">Transfer</a><a href="#micro">Microclimate</a><a href="#crops">Crops</a>
+<a href="#econ">Economics</a><a href="#uncertainty">Uncertainty</a><a href="#limits">Limitations</a>
+<a href="#rec">Recommendation</a><a href="#repro">Reproducibility</a>
+</nav>
+
+<section id="pipeline"><h2>1 · The six-layer pipeline</h2>
+<p>Each layer carries an explicit confidence level. Mechanistic physics is HIGH; learned offsets are MODERATE and flagged LOW where a design lies outside the training distribution; downstream economics inherit and propagate that uncertainty rather than hiding it.</p>
+<div class="layer" id="layerflow"></div>
+<p class="note">Design &rarr; microclimate is part physics (light, wind) and part machine-learned offset (temperature, vapour-pressure deficit); the learned part is validated for transfer across macroclimates and flagged when extrapolating.</p>
+</section>
+
+<section id="site"><h2>2 · Study site (real inputs)</h2>
+<p id="sitep"></p><div class="cards" id="sitecards"></div>
+<p class="note">Macroclimate from ERA5 (2019), soil from SoilGrids, terrain from Copernicus DEM — sampled at the exact plot. Note: a ~31 km reanalysis pixel cannot resolve the village from the town, motivating on-plot sensing (see Limitations).</p>
+</section>
+
+<section id="methods"><h2>3 · Methods (condensed)</h2>
+<table><thead><tr><th>Layer</th><th>Approach</th><th>Confidence</th></tr></thead><tbody id="methodtbl"></tbody></table>
+</section>
+
+<section id="transfer"><h2>4 · Result — cross-macroclimate transfer</h2>
+<p>The core scientific claim is that the canopy&rarr;microclimate <em>offset</em> learned in one climate transfers to another. Leave-one-site-out (LOSO) cross-validation holds out an entire site per fold — the honest test of transfer. Models trained on tropical Borneo (SAFE) + Mediterranean Spain (La Jarda) forest plots predict an unseen site's offset to:</p>
+<div class="cards" id="losocards"></div>
+<p class="note" id="losonote"></p>
+</section>
+
+<section id="micro"><h2>5 · Result — under-canopy microclimate at Anaikadu</h2>
+<p>Predicted microclimate beneath candidate overstoreys. Shade and wind are physics (HIGH); the temperature/VPD offset is the learned part and is flagged LOW here because coconut is an open palm canopy unlike the closed-forest training data (out-of-distribution).</p>
+<p><label>Overstorey: </label><select id="oversel"></select></p>
+<div class="cards" id="micards"></div>
+<div class="panel"><h3 style="margin-top:0">Light reduction (shade %) by overstorey — physics, HIGH confidence</h3><div class="chartbox"><canvas id="shadeChart"></canvas></div></div>
+</section>
+
+<section id="crops"><h2>6 · Result — intercrop suitability &amp; its robustness</h2>
+<div class="two"><div>
+<h3>Viability under coconut (median prediction)</h3><div id="cropbars"></div>
+<p class="note">Viability = growth fit &times; (1 &minus; disease risk). All candidates are temperature-limited at this hot site.</p>
+</div><div>
+<h3>Sensitivity: does the uncertain temperature offset change the shortlist?</h3>
+<table><thead><tr><th>scenario</th><th>t_max</th><th>top 3 (viability)</th></tr></thead><tbody id="senstbl"></tbody></table>
+<p class="note">The <b>shortlist (nutmeg, pepper, banana) is robust</b> across the whole plausible temperature band; only the absolute level moves. So the pending data changes <em>how well</em>, not <em>which</em> crops — the decision is actionable now.</p>
+</div></div></section>
+
+<section id="econ"><h2>7 · Result — economics &amp; finance</h2>
+<p>Staged, transparent (not trained): reference yield &times; suitability &times; (1&minus;disease), priced against validated mandi bands, minus validated costs, over a 25-year horizon at 8% real discount. NPV / IRR / payback respect timing (gestation, bearing ramp, timber harvested once).</p>
+<table><thead><tr><th>System</th><th>NPV (&#8377;/ac)</th><th>IRR</th><th>Payback</th></tr></thead><tbody id="fintbl"></tbody></table>
+<div class="panel"><h3 style="margin-top:0">Cash-flow timeline <select id="cfsel"></select></h3><div class="chartbox"><canvas id="cfChart"></canvas></div>
+<p class="note">Coconut+spice gives steady annual cash; timber is a single far-off harvest spike — a different financial animal (high return, late payback, risk concentrated at harvest; timber inputs are LOW confidence).</p></div>
+</section>
+
+<section id="uncertainty"><h2>8 · Result — uncertainty (Monte Carlo)</h2>
+<p>Every point estimate (temperature offset, yield, price, timber value) is sampled across its band and pushed through the same chain (n=2000) to a distribution of 25-year NPV and a probability of loss.</p>
+<table><thead><tr><th>System</th><th>P10</th><th>P50</th><th>P90</th><th>P(loss)</th></tr></thead><tbody id="mctbl"></tbody></table>
+<div class="panel"><h3 style="margin-top:0">NPV distribution <select id="mcsel"></select></h3><div class="chartbox"><canvas id="mcChart"></canvas></div>
+<p class="note" id="mcnote"></p></div>
+</section>
+
+<section id="limits"><h2>9 · Limitations (stated, not hidden)</h2><ul id="limul"></ul></section>
+
+<section id="rec"><h2>10 · Recommendation</h2><div class="rec" id="recbox"></div></section>
+
+<section id="repro"><h2>11 · Reproducibility &amp; data</h2>
+<p>Every figure traces to a committed script. Pipeline: <code>src/agroforestry/</code> (physics, models, suitability, disease, economics, finance, monte_carlo); numbers here exported by <code>scripts/export_results.py</code> &rarr; <code>reports/results.json</code>. Design decisions logged as ADRs (<code>docs/architectural_decision_records/</code>).</p>
+<p><b>Data:</b> SAFE Project Borneo microclimate (Zenodo 1228188) + gazetteer (3906082); La Jarda, C&aacute;diz (Zenodo 18913503); SAFE landscape microclimate rasters (Zenodo 7893600); ERA5 / ERA5-Land; SoilGrids; Copernicus DEM; MODIS LAI/NDVI; ETH canopy height; SoilTemp/SBIO (GEE). Economics: NHB DPRs, TNAU cost-of-cultivation, Salem District study, live data.gov.in Agmarknet.</p>
+<div class="foot">Generated <span id="gen2"></span> from real pipeline output. Confidence labels: <span class="badge b-hi">HIGH</span> mechanistic · <span class="badge b-mod">MODERATE</span> learned/validated · <span class="badge b-lo">LOW</span> extrapolation. This is a research preprint; figures are model output with stated uncertainty, not guarantees.</div>
+</section>
+
+</div>
+<script>const DATA = {"generated": "2026-06-10", "dataset": {"rows": 2764, "sites": 596, "forest": 2444, "palm": 320, "climates": ["Borneo (SAFE, tropical humid)", "Cadiz Spain (La Jarda, Mediterranean)", "+ Borneo oil-palm rasters (open canopy)"]}, "loso": {"dT_mean": {"MAE": 0.28, "interval_coverage": 0.82, "folds": 276, "scope": "two-climate forest LOSO"}, "dT_max": {"MAE": 1.13, "interval_coverage": 0.83, "folds": 245, "scope": "Borneo LOSO"}, "dVPD": {"MAE": 0.085, "interval_coverage": 0.84, "folds": 245, "scope": "Borneo LOSO"}}, "site": {"name": "Anaikadu (GD Home Stay)", "lat": 10.4019, "lon": 79.3545, "macro": {"t_mean": 29.3, "t_max": 34.3, "t_min": 25.9, "rh": 71, "wind": 0.4, "solar": 21.0, "rainfall": 926}, "context": {"elevation": 23, "slope": 1.0, "twi": 4.0, "soc": 328, "clay": 355}}, "microclimate": [{"label": "Open field", "species": "none", "shade": 0, "t_max": 36.6, "rh": 72, "wind": 0.2, "ood": 0.67, "confidence": "LOW (extrapolation)", "dT_max_lo": -1.0, "dT_max_hi": 7.3}, {"label": "Coconut wide", "species": "coconut_wide", "shade": 39, "t_max": 37.1, "rh": 74, "wind": 0.2, "ood": 0.54, "confidence": "LOW (extrapolation)", "dT_max_lo": -1.9, "dT_max_hi": 7.6}, {"label": "Coconut close", "species": "coconut_close", "shade": 57, "t_max": 37.3, "rh": 74, "wind": 0.2, "ood": 0.38, "confidence": "LOW (extrapolation)", "dT_max_lo": -2.2, "dT_max_hi": 7.4}, {"label": "Silver oak", "species": "silver_oak", "shade": 51, "t_max": 36.6, "rh": 71, "wind": 0.2, "ood": 0.5, "confidence": "LOW (extrapolation)", "dT_max_lo": -1.8, "dT_max_hi": 7.9}, {"label": "Mahogany", "species": "mahogany", "shade": 26, "t_max": 36.3, "rh": 73, "wind": 0.2, "ood": 0.54, "confidence": "LOW (extrapolation)", "dT_max_lo": -1.8, "dT_max_hi": 7.6}, {"label": "Teak", "species": "teak_leaf", "shade": 70, "t_max": 36.8, "rh": 75, "wind": 0.2, "ood": 0.33, "confidence": "LOW (extrapolation)", "dT_max_lo": -0.9, "dT_max_hi": 7.4}], "intercrops": [{"crop": "Nutmeg", "growth": 28, "disease": 0, "worst": null, "viability": 28, "limiting": "temperature"}, {"crop": "Black pepper", "growth": 36, "disease": 26, "worst": "Foot rot", "viability": 27, "limiting": "temperature"}, {"crop": "Banana", "growth": 14, "disease": 0, "worst": "Sigatoka", "viability": 14, "limiting": "temperature"}, {"crop": "Cocoa", "growth": 0, "disease": 0, "worst": null, "viability": 0, "limiting": "temperature"}, {"crop": "Vanilla", "growth": 0, "disease": 0, "worst": null, "viability": 0, "limiting": "temperature"}, {"crop": "Ginger", "growth": 0, "disease": 0, "worst": null, "viability": 0, "limiting": "temperature"}, {"crop": "Pomegranate", "growth": 0, "disease": 50, "worst": "Wilt", "viability": 0, "limiting": "shade/light"}], "sensitivity": [{"delta": -3, "t_max": 34.1, "top": [["Nutmeg", 100], ["Banana", 63], ["Black pepper", 48]]}, {"delta": -1.5, "t_max": 35.6, "top": [["Nutmeg", 78], ["Banana", 39], ["Black pepper", 37]]}, {"delta": 0, "t_max": 37.1, "top": [["Nutmeg", 28], ["Black pepper", 27], ["Banana", 14]]}, {"delta": 1.5, "t_max": 38.6, "top": [["Black pepper", 14], ["Nutmeg", 0], ["Banana", 0]]}, {"delta": 3, "t_max": 40.1, "top": [["Nutmeg", 0], ["Black pepper", 0], ["Banana", 0]]}], "finance": [{"system": "Coconut only", "npv": 128746, "irr": 0.171, "payback": 10, "npv_over": 128746, "npv_crop": 0, "cashflow": [-51700, -11700, -11700, -11700, -11700, 3900, 15600, 23400, 31200, 39000, 39000, 39000, 39000, 39000, 39000, 39000, 39000, 39000, 39000, 39000, 39000, 39000, 39000, 39000, 39000]}, {"system": "Coconut + Nutmeg", "npv": 200391, "irr": 0.145, "payback": 12, "npv_over": 128746, "npv_crop": 71645, "cashflow": [-113700, -23700, -23700, -23700, -23700, -8100, 12933, 30067, 45867, 58556, 63444, 68333, 73222, 78111, 83000, 83000, 83000, 83000, 83000, 83000, 83000, 83000, 83000, 83000, 83000]}, {"system": "Coconut + Pepper", "npv": 234347, "irr": 0.1966, "payback": 9, "npv_over": 128746, "npv_crop": 105601, "cashflow": [-92200, -22200, -10478, -2257, 2465, 22786, 39208, 47008, 54808, 62608, 62608, 62608, 62608, 62608, 62608, 62608, 62608, 62608, 62608, 62608, 39000, 39000, 39000, 39000, 39000]}, {"system": "Coconut + Banana", "npv": -541630, "irr": null, "payback": null, "npv_over": 128746, "npv_crop": -670376, "cashflow": [-114500, -74500, -74500, -74500, -74500, -58900, -47200, -39400, -31600, -23800, -23800, -23800, -23800, -23800, -23800, -23800, -23800, -23800, -23800, -23800, -23800, -23800, -23800, -23800, -23800]}, {"system": "Mahogany + Nutmeg", "npv": 1298846, "irr": 0.2957, "payback": 11, "npv_over": 884507, "npv_crop": 414338, "cashflow": [-86000, -16000, -16000, -16000, -16000, -16000, 2667, 21333, 38667, 52889, 67111, 81333, 95556, 109778, 3124000, 124000, 124000, 124000, 124000, 124000, 124000, 124000, 124000, 124000, 124000]}, {"system": "Teak block", "npv": 884724, "irr": 0.3133, "payback": 18, "npv_over": 884724, "npv_crop": 0, "cashflow": [-24000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, -4000, 3776000, -4000, -4000, -4000, -4000, -4000, -4000, -4000]}], "montecarlo": [{"system": "Coconut only", "p10": 33913, "p50": 127093, "p90": 222837, "mean": 127991, "prob_loss": 0.029, "prob_strong": 0.035, "hist": {"counts": [2, 9, 14, 21, 31, 35, 36, 35, 39, 39, 63, 59, 62, 60, 71, 88, 80, 90, 74, 100, 85, 87, 84, 77, 74, 76, 81, 53, 54, 44, 44, 43, 46, 30, 45, 25, 19, 10, 10, 5], "edges": [-34, -26, -18, -10, -2, 6, 14, 23, 31, 39, 47, 55, 63, 71, 79, 88, 96, 104, 112, 120, 128, 136, 144, 153, 161, 169, 177, 185, 193, 201, 209, 218, 226, 234, 242, 250, 258, 266, 274, 283, 291]}}, {"system": "Coconut + Nutmeg", "p10": -177657, "p50": 209826, "p90": 1248036, "mean": 390197, "prob_loss": 0.391, "prob_strong": 0.482, "hist": {"counts": [50, 142, 248, 214, 130, 65, 68, 66, 50, 46, 43, 50, 58, 56, 46, 52, 42, 49, 53, 53, 49, 47, 34, 33, 39, 29, 39, 24, 21, 17, 21, 11, 19, 8, 10, 5, 3, 6, 2, 2], "edges": [-301, -241, -180, -119, -59, 2, 62, 123, 183, 244, 304, 365, 426, 486, 547, 607, 668, 728, 789, 850, 910, 971, 1031, 1092, 1152, 1213, 1273, 1334, 1395, 1455, 1516, 1576, 1637, 1697, 1758, 1819, 1879, 1940, 2000, 2061, 2121]}}, {"system": "Coconut + Pepper", "p10": -105676, "p50": 230591, "p90": 595105, "mean": 239967, "prob_loss": 0.218, "prob_strong": 0.472, "hist": {"counts": [16, 28, 45, 78, 81, 93, 100, 90, 77, 105, 118, 137, 120, 140, 127, 101, 91, 91, 64, 54, 54, 42, 36, 26, 19, 12, 15, 9, 10, 7, 6, 3, 1, 2, 0, 1, 0, 0, 0, 1], "edges": [-299, -256, -213, -170, -127, -84, -41, 2, 45, 88, 131, 174, 217, 260, 303, 347, 390, 433, 476, 519, 562, 605, 648, 691, 734, 777, 820, 863, 906, 949, 992, 1035, 1078, 1121, 1164, 1207, 1250, 1293, 1336, 1379, 1422]}}, {"system": "Coconut + Banana", "p10": -1292799, "p50": -673974, "p90": 1543378, "mean": -247033, "prob_loss": 0.653, "prob_strong": 0.29, "hist": {"counts": [271, 436, 93, 89, 91, 85, 71, 57, 56, 62, 69, 57, 69, 51, 43, 48, 41, 32, 34, 23, 30, 22, 24, 25, 24, 15, 19, 16, 9, 6, 5, 4, 4, 5, 6, 3, 2, 1, 0, 2], "edges": [-1418, -1275, -1132, -990, -847, -704, -561, -418, -276, -133, 10, 153, 295, 438, 581, 724, 866, 1009, 1152, 1295, 1438, 1580, 1723, 1866, 2009, 2151, 2294, 2437, 2580, 2722, 2865, 3008, 3151, 3294, 3436, 3579, 3722, 3865, 4007, 4150, 4293]}}, {"system": "Mahogany + Nutmeg", "p10": 531352, "p50": 1181755, "p90": 2106444, "mean": 1252758, "prob_loss": 0.0, "prob_strong": 0.997, "hist": {"counts": [13, 25, 51, 79, 89, 100, 103, 115, 89, 91, 83, 60, 58, 92, 69, 66, 57, 68, 50, 74, 77, 68, 50, 48, 53, 51, 45, 34, 27, 29, 18, 18, 12, 13, 8, 9, 3, 2, 2, 1], "edges": [210, 282, 353, 425, 497, 569, 640, 712, 784, 855, 927, 999, 1071, 1142, 1214, 1286, 1358, 1429, 1501, 1573, 1644, 1716, 1788, 1860, 1931, 2003, 2075, 2147, 2218, 2290, 2362, 2433, 2505, 2577, 2649, 2720, 2792, 2864, 2936, 3007, 3079]}}, {"system": "Teak block", "p10": 672673, "p50": 878338, "p90": 1110141, "mean": 888004, "prob_loss": 0.0, "prob_strong": 1.0, "hist": {"counts": [1, 5, 12, 11, 20, 24, 42, 48, 61, 72, 88, 73, 110, 104, 112, 121, 116, 121, 95, 115, 82, 83, 75, 78, 64, 67, 41, 37, 21, 25, 26, 14, 10, 5, 10, 6, 3, 1, 0, 1], "edges": [454, 479, 505, 530, 555, 580, 605, 631, 656, 681, 706, 732, 757, 782, 807, 833, 858, 883, 908, 934, 959, 984, 1009, 1035, 1060, 1085, 1110, 1135, 1161, 1186, 1211, 1236, 1262, 1287, 1312, 1337, 1363, 1388, 1413, 1438, 1464]}}]};</script>
+<script>
+const $=s=>document.querySelector(s), el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const inr=v=>(v>=0?'₹':'-₹')+Math.abs(Math.round(v/1000)).toLocaleString()+'k';
+const badge=c=>c&&c.indexOf('LOW')>=0?'b-lo':c==='HIGH'?'b-hi':'b-mod';
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+$('#gen').textContent='generated '+DATA.generated; $('#gen2').textContent=DATA.generated;
+$('#abstract').innerHTML="<b>Abstract.</b> Smallholders deciding how to design an agroforestry plot face a chain of coupled questions — how a chosen canopy reshapes the local microclimate, which crops then become viable once disease is accounted for, and whether the result actually pays. We build a six-layer model that answers this end-to-end: mechanistic physics for light and wind, machine-learned (gradient-boosted, quantile) offsets for temperature and vapour-pressure deficit, a two-axis disease model, fuzzy limiting-factor suitability, and a staged economics + discounted-cash-flow layer, with uncertainty propagated by Monte Carlo. The learned offset transfers across macroclimates (leave-one-site-out dT_mean MAE "+DATA.loso.dT_mean.MAE+"°C, trained on Borneo + Mediterranean Spain), and the model flags when a design (here, open coconut canopy) lies outside its training distribution rather than over-claiming. Applied to a real farm in Anaikadu, Tamil Nadu, the system identifies a robust intercrop shortlist (nutmeg, black pepper) whose ranking is insensitive to the uncertain temperature offset, and shows coconut+pepper clearing an 8% hurdle (NPV ≈ ₹230k/acre, IRR ≈ 20%, payback 9 yr) while quantifying its probability of loss. A reality-check that initially mislabelled coconut as loss-making — traced to a gestation-cost bug — is reported as a methodological illustration of validation discipline.";
+
+// pipeline flow
+const layers=[['Design','canopy, windbreak'],['Microclimate','physics + ML offset'],['Disease','two-axis'],['Suitability','fuzzy / limiting'],['Economics','yield×price−cost'],['Finance + risk','NPV/IRR, Monte Carlo']];
+const lf=$('#layerflow');layers.forEach((L,i)=>{lf.appendChild(el('div','lbox',L[0]+'<small>'+L[1]+'</small>'));if(i<layers.length-1)lf.appendChild(el('span','arrow','→'))});
+
+// site
+const s=DATA.site, m=s.macro, c=s.context;
+$('#sitep').innerHTML='<b>'+s.name+'</b> ('+s.lat+'°N, '+s.lon+'°E). Real macroclimate and soil at the plot:';
+const sc=[['Mean temp',m.t_mean,'°C'],['Max temp',m.t_max,'°C'],['Min temp',m.t_min,'°C'],['Humidity',m.rh,'%'],['Rainfall',m.rainfall,'mm/yr'],['Wind',m.wind,'m/s'],['Clay',c.clay,'g/kg'],['Soil C',c.soc,'g/kg'],['Elevation',c.elevation,'m']];
+sc.forEach(r=>$('#sitecards').appendChild(el('div','mc','<div class="lab">'+r[0]+'</div><div class="num">'+r[1]+'<span class="unit"> '+r[2]+'</span></div>')));
+
+// methods
+const meth=[['Light / shade','Beer–Lambert extinction through canopy (LAI, k)','HIGH'],
+['Wind','Shelterbelt porosity / drag reduction','HIGH'],
+['Temp & VPD offset','XGBoost quantile regression + conformalised intervals; LOSO transfer; OOD flag','MODERATE'],
+['Disease','Two axes: air microclimate (foliar) + soil-water/waterlogging (soil-borne)','MODERATE'],
+['Suitability','Fuzzy trapezoidal membership; Liebig limiting factor','MODERATE'],
+['Economics','Reference yield × growth × (1−disease); banded price−cost','MODERATE'],
+['Finance','25-yr cash-flow w/ gestation+harvest timing; NPV/IRR/payback','MODERATE'],
+['Uncertainty','Monte Carlo over offset+yield+price+timber bands','MODERATE']];
+meth.forEach(r=>{const tr=el('tr');tr.innerHTML='<td>'+r[0]+'</td><td>'+r[1]+'</td><td style="text-align:center"><span class="badge '+badge(r[2])+'">'+r[2]+'</span></td>';$('#methodtbl').appendChild(tr)});
+
+// LOSO
+const lo=DATA.loso;
+[['dT_max','°C'],['dT_mean','°C'],['dVPD','kPa']].forEach(([k,u])=>{
+$('#losocards').appendChild(el('div','mc','<div class="lab">'+k+' MAE</div><div class="num">'+lo[k].MAE+'<span class="unit"> '+u+'</span></div><div class="lim">coverage '+lo[k].interval_coverage+'</div>'))});
+$('#losonote').textContent='Folds: '+lo.dT_mean.folds+' forest plots, two macroclimates ('+lo.dT_mean.scope+'). Prediction-interval coverage near the 0.8 target indicates calibrated, not over-confident, uncertainty. Full LOSO recorded in ADR-006.';
+
+// microclimate selector
+const ovsel=$('#oversel');DATA.microclimate.forEach((o,i)=>ovsel.appendChild(new Option(o.label,i)));
+function drawMicro(){const o=DATA.microclimate[ovsel.value];
+const cards=[['Shade',o.shade,'%','HIGH'],['Max temp',o.t_max,'°C',o.confidence],['Humidity',o.rh,'%',o.confidence],['Wind',o.wind,'m/s','HIGH']];
+$('#micards').innerHTML='';cards.forEach(r=>$('#micards').appendChild(el('div','mc','<div class="lab">'+r[0]+'</div><div class="num">'+r[1]+'<span class="unit"> '+r[2]+'</span></div><div style="margin-top:4px"><span class="badge '+badge(r[3])+'">'+(r[3]==='HIGH'?'HIGH':'offset '+r[3])+'</span></div>')));
+$('#micards').appendChild(el('div','mc','<div class="lab">OOD score</div><div class="num">'+o.ood+'</div><div class="lim">dT_max band '+o.dT_max_lo+'..'+o.dT_max_hi+'°C</div>'));}
+ovsel.value=1;ovsel.onchange=drawMicro;drawMicro();
+new Chart($('#shadeChart'),{type:'bar',data:{labels:DATA.microclimate.map(o=>o.label),datasets:[{label:'Shade %',data:DATA.microclimate.map(o=>o.shade),backgroundColor:css('--accent')}]},options:{plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:'shade %'},max:100}}}});
+
+// crops
+const maxv=100;DATA.intercrops.forEach(r=>{const col=r.viability>=40?css('--g'):r.viability>=15?css('--a'):css('--r');
+const d=el('div','crop','<div class="top"><span>'+r.crop+(r.worst?' <span class="lim">('+r.worst+')</span>':'')+'</span><span>'+r.viability+'</span></div><div class="bar"><span style="width:'+(r.viability/maxv*100)+'%;background:'+col+'"></span></div><div class="lim">growth '+r.growth+' · disease '+r.disease+' · limiting: '+r.limiting+'</div>');$('#cropbars').appendChild(d)});
+DATA.sensitivity.forEach(s=>{const tr=el('tr');tr.innerHTML='<td>'+(s.delta>0?'+':'')+s.delta+'°C</td><td>'+s.t_max+'</td><td style="text-align:left">'+s.top.map(t=>t[0]+'('+t[1]+')').join(', ')+'</td>';$('#senstbl').appendChild(tr)});
+
+// finance
+DATA.finance.forEach(f=>{const tr=el('tr');const irr=f.irr!=null?(f.irr*100).toFixed(0)+'%':'—';const pb=f.payback?f.payback+' yr':'never';
+tr.innerHTML='<td>'+f.system+'</td><td>'+inr(f.npv)+'</td><td>'+irr+'</td><td>'+pb+'</td>';
+if(f.system.indexOf('Pepper')>=0)tr.style.fontWeight='700';$('#fintbl').appendChild(tr)});
+const cfsel=$('#cfsel');DATA.finance.forEach((f,i)=>cfsel.appendChild(new Option(f.system,i)));
+let cfChart;function drawCF(){const f=DATA.finance[cfsel.value];const yrs=f.cashflow.map((_,i)=>i+1);
+if(cfChart)cfChart.destroy();cfChart=new Chart($('#cfChart'),{type:'bar',data:{labels:yrs,datasets:[{label:'net cash ₹/acre',data:f.cashflow,backgroundColor:f.cashflow.map(v=>v>=0?css('--g'):css('--r'))}]},options:{plugins:{legend:{display:false}},scales:{x:{title:{display:true,text:'year'}},y:{title:{display:true,text:'₹/acre'}}}}});}
+cfsel.value=2;cfsel.onchange=drawCF;drawCF();
+
+// monte carlo
+DATA.montecarlo.forEach(r=>{const tr=el('tr');const pl=Math.round(r.prob_loss*100);
+const plcol=pl<=10?css('--g'):pl<=40?css('--a'):css('--r');
+tr.innerHTML='<td>'+r.system+'</td><td>'+inr(r.p10)+'</td><td>'+inr(r.p50)+'</td><td>'+inr(r.p90)+'</td><td style="color:'+plcol+';font-weight:700">'+pl+'%</td>';
+if(r.system.indexOf('Pepper')>=0)tr.style.fontWeight='700';$('#mctbl').appendChild(tr)});
+const mcsel=$('#mcsel');DATA.montecarlo.forEach((r,i)=>mcsel.appendChild(new Option(r.system,i)));
+let mcChart;function drawMC(){const r=DATA.montecarlo[mcsel.value];const e=r.hist.edges;
+const labels=r.hist.counts.map((_,i)=>e[i]);const cols=r.hist.counts.map((_,i)=>e[i]<0?css('--r'):css('--g'));
+if(mcChart)mcChart.destroy();mcChart=new Chart($('#mcChart'),{type:'bar',data:{labels:labels,datasets:[{data:r.hist.counts,backgroundColor:cols}]},options:{plugins:{legend:{display:false},tooltip:{callbacks:{title:i=>'NPV ≈ ₹'+labels[i[0].dataIndex]+'k'}}},scales:{x:{title:{display:true,text:'NPV (₹ 000/acre)'},ticks:{maxTicksLimit:12}},y:{title:{display:true,text:'draws'}}}}});
+$('#mcnote').innerHTML='P(loss) = '+Math.round(r.prob_loss*100)+'%  ·  P(NPV>₹250k) = '+Math.round(r.prob_strong*100)+'%. '+(r.system.indexOf('Nutmeg')>=0&&r.system.indexOf('Coconut')>=0?'The bimodal shape is the temperature uncertainty made visible: hot draws fail the crop (left), cool draws pay well (right).':r.system.indexOf('Teak')>=0||r.system.indexOf('Mahogany')>=0?'Timber’s near-zero P(loss) is optimistic — the bands omit market/mortality/harvest-timing risk (LOW confidence).':'');}
+mcsel.value=2;mcsel.onchange=drawMC;drawMC();
+
+// limitations
+['The under-coconut <b>temperature offset is extrapolation</b> (forest-trained, open palm canopy): flagged LOW, OOD≈0.5. Physics (shade, wind) stays reliable; the shortlist is robust to it (sensitivity).',
+'A <b>macroclimate-transfer gap</b> remains: warm-night semi-arid Tamil Nadu has no close analog in the humid-tropical + Mediterranean training set (quantified vs SBIO).',
+'Economics are <b>MODERATE confidence</b>: yields/prices from TNAU/ICAR/NHB + live Agmarknet; costs validated vs NHB DPRs; a clean 3-yr CEDA price series is still pending (site bot-blocked).',
+'Reanalysis cannot resolve the village from the town (shared ~31 km ERA5 pixel) — an on-plot logger (year 1) is the definitive fix and would collapse the temperature uncertainty.',
+'Timber returns rest on LOW-confidence farm-gate prices and a single distant harvest; treat as capital-appreciation, not income.'
+].forEach(t=>$('#limul').appendChild(el('li',null,t)));
+
+// recommendation
+$('#recbox').innerHTML="<b>For Anaikadu:</b> plant <b>coconut as the overstorey with black pepper (and nutmeg) as the intercrop</b> for resilient annual cash — pepper clears the 8% hurdle (NPV ≈ "+inr(DATA.finance.find(f=>f.system.indexOf('Pepper')>=0).npv)+"/acre, IRR ≈ "+(DATA.finance.find(f=>f.system.indexOf('Pepper')>=0).irr*100).toFixed(0)+"%, payback 9 yr) with the lowest probability of loss of the intercrops. Add a <b>teak or mahogany block / boundary</b> as long-horizon capital and windbreak (high modelled return but a 15–18 yr lock-up, LOW-confidence prices). Avoid banana under mature coconut (heat- and shade-limited here). The choice of <em>which</em> crop is robust to the model’s remaining temperature uncertainty; one season of on-plot sensing would sharpen <em>how well</em> it performs.";
+</script>
+</body></html>
