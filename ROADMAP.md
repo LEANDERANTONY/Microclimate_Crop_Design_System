@@ -1,61 +1,54 @@
 # Roadmap
 
-Build priorities for the agroforestry microclimate → suitability → design
-system. Mirrors the staged, data-readiness-gated philosophy: build what the
-available data can honestly support, defer what it cannot.
+Build priorities for the agroforestry microclimate → crop → profit system.
+Philosophy unchanged: build what the available data can honestly support, defer
+what it cannot, label confidence everywhere.
 
-## Now: Align repo + harden the layer 1–3 core
+## Done (all six layers built, validated, runnable — 22 tests)
 
-Current baseline:
+- **Repo**: `uv` env + lockfile, `src/` package, ADRs 001–011, DEVLOG, tests.
+- **Layer 1 — microclimate**: Beer–Lambert light + shelterbelt wind (physics);
+  XGBoost quantile temp/VPD offsets + conformal intervals; **OOD flag** (ADR-007).
+- **Real data integrated**: SAFE Borneo + La Jarda Spain forest loggers (two
+  macroclimates) + SAFE oil-palm rasters (open-canopy regime). Earth Engine features
+  (ERA5, SoilGrids, DEM, MODIS, ETH canopy). **Cross-macroclimate transfer demonstrated:
+  LOSO dT_mean MAE 0.28 °C** (ADR-006). Ambient-reference fix (ERA5 atmospheric) ADR-006.
+- **Layer 2 — disease**: two axes (foliar air + soil-water/waterlogging), variety
+  susceptibility, drainage lever; literature-calibrated (ADR-003/004), waterlogging
+  data-calibrated (ADR-005).
+- **Layer 3 — suitability**: fuzzy limiting-factor `viability()`.
+- **Layer 4 — economics**: yield × growth × (1−disease) × banded price − validated cost;
+  coconut + timber overstorey; costs validated vs NHB DPRs/TNAU, prices vs live Agmarknet
+  (ADR-010/011, `reports/economics_qa.md`).
+- **Layer 5 — finance**: 25-yr cash-flow with gestation/bearing/harvest timing; NPV/IRR/payback.
+- **Layer 6 — uncertainty**: Monte Carlo → NPV distribution + P(loss).
+- **Inverse design**: profit objective over overstorey/canopy/windbreak/drainage.
+- **Real-site application**: Anaikadu (GD Home Stay pin) end-to-end; sensitivity shows the
+  intercrop shortlist is robust to the temperature uncertainty.
+- **Deliverables**: interactive preprint report (`reports/anaikadu_preprint.html`),
+  README with figures, reproducible `export_results.py` → `make_figures.py` / `build_dashboard.py`.
 
-- `uv`-managed environment and lockfile, `src/` package layout
-- physics layer (Beer–Lambert light, shelterbelt wind) — mechanistic, HIGH confidence
-- XGBoost quantile models for temperature/VPD offsets with conformalised intervals
-- leave-one-site-out validation (transferability test)
-- disease layer on **two axes** (air-microclimate foliar + soil-water for soil-borne),
-  with drainage as a design lever (ADR-004)
-- envelopes + disease/variety params literature-calibrated (ADR-003); waterlogging
-  data-calibrated & seasonal from SoilGrids+CGWB (ADR-005)
-- two-axis suitability (`viability`) and inverse-design optimiser
-- crop/disease/variety catalog anchored to Pattukkottai; ADRs 001–005
+## Next: firm the two soft layers with data (not blocking)
 
-Highest-priority remaining work:
+- **Temperature offset under coconut** (currently extrapolation): add a palm/open-canopy
+  or warm-night-tropical training source — SoilTemp raw loggers (request emailed) and/or
+  the pan-tropical understory maps (30 m South-Asia subset requested from authors). The
+  definitive fix is the user's **own plot logger (year 1)** — a single season would
+  collapse the offset uncertainty (ADR-008/009).
+- **Economics prices to HIGH**: CEDA-Ashoka 3-yr monthly Agmarknet series (site is
+  bot-blocked from this environment → user-side CSV export), plus TNAU per-crop cost line
+  items for the high-input crops.
 
-- keep documentation aligned with the repo's real state (done through ADR-005)
-- expand the test baseline (now 11 tests) beyond smoke tests
-- keep the confidence labelling honest (physics HIGH, borrowed-ML MODERATE, disease LOW)
-- future extension: model coastal salinity (flagged in ADR-005)
+## Later: depth + write-up
 
-Status: Layer 1–3 core calibrated; pivoting to real data
+- **Written manuscript** from the preprint sections (publication/preprint target).
+- **Multi-crop portfolio** optimisation (a mix, not one intercrop) and a **spatial planting
+  layout** (windbreak placement, row design).
+- Bayesian-opt / NSGA-II inverse design replacing the grid search.
+- Disease parameters fitted to observed incidence once field data exists; hourly
+  leaf-wetness model; coastal salinity axis (flagged ADR-005).
 
-## Next: Real data for layer 1
+## Future research extensions
 
-- wire `src/agroforestry/data/load.py` to assemble borrowed microclimate labels
-  (SoilTemp / ForestTemp / agroforestry datasets) + Earth Engine features
-  (ERA5, Sentinel-2 LAI, SoilGrids, DEM)
-- compute offsets (sub-canopy − ambient) as the supervised targets
-- re-run leave-one-site-out / leave-one-climate-out to measure real transferability
-- recalibrate the physics extinction coefficients for coconut/timber overstoreys
-
-Status: In progress (planned next)
-
-## Later: Disease calibration + economics layer
-
-- replace literature-shaped infection parameters with values fitted to observed
-  incidence once field/extension data is available
-- upgrade leaf-wetness from the daily proxy to hourly RH>90% / dew-point models
-- implement `src/agroforestry/economics.py` (layers 4–5) per `docs/economics_layer.md`:
-  reference-yield × suitability × (1−disease loss); trailing-price band; surplus
-  + market-distance penalty; risk-adjusted profit
-
-Status: Designed, not started
-
-## Future: Field validation and research extensions
-
-- year-2 TMS-4 sensor campaign to locally validate/calibrate the MODERATE/LOW layers
-- group-aware uncertainty tooling under `src/agroforestry/uncertainty/`
-- Bayesian-optimisation / NSGA-II inverse design replacing the grid search
-- physics-informed (PINN) coupled energy/water balance once data justifies it
-- spatial (GNN) within-field microclimate gradients if multi-node sensing arrives
-
-Status: Deferred until layer-1 real data and reproducibility work is stable
+- Physics-informed (PINN) coupled energy/water balance once data justifies it.
+- Spatial (GNN) within-field microclimate gradients if multi-node sensing arrives.

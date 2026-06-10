@@ -1,64 +1,56 @@
-Microclimate_Crop_Design_System/  (agroforestry-microclimate-suitability)
-|-- README.md
+Microclimate_Crop_Design_System/  (agroforestry microclimate -> crop -> profit)
+|-- README.md                    # pitch + figures + findings
 |-- ROADMAP.md
-|-- DEVLOG.md
+|-- DEVLOG.md                    # running build log (newest first)
 |-- AGENT.md                     # local-only agent briefing (gitignored)
 |-- folder_structure.txt
-|-- LICENSE
-|-- .gitignore
-|-- .python-version              # 3.11
-|-- pyproject.toml               # uv-managed; deps + pytest config
-|-- uv.lock
+|-- LICENSE  .gitignore  .python-version (3.11)  pyproject.toml  uv.lock
 |
 |-- docs/
-|   |-- architecture.md          # the five-layer system, in prose
-|   |-- modeling_blueprint.md     # model-selection rationale per layer
-|   |-- economics_layer.md        # staged yield/price/profit design (layers 4-5)
-|   `-- architectural_decision_records/
-|       |-- README.md
-|       |-- ADR-001-offset-and-physics.md
-|       `-- ADR-002-disease-layer.md
+|   |-- architecture.md          # the SIX-layer system, in prose
+|   |-- modeling_blueprint.md    # model-selection rationale per layer
+|   |-- economics_layer.md       # economics design notes (now BUILT as economics.py)
+|   |-- data_acquisition.md      # Earth Engine / data fetch notes
+|   |-- PROJECT_CONTEXT.md        # local-only durable briefing (gitignored)
+|   `-- architectural_decision_records/   # ADR-001 .. ADR-011 (+ README)
 |
-|-- reports/                     # tracked lightweight artifacts
-|   |-- agroforestry_pipeline.html        # interactive predict/score/optimise demo
-|   |-- crop_canopy_reachability.{html,csv}
-|   |-- crop_catalog_pattukkottai.html
-|   |-- crop_catalog_register.csv
-|   |-- data_source_catalog.html
-|   |-- data_source_register.csv
-|   `-- loso_metrics.json          # written by the pipeline run
+|-- reports/                     # tracked artifacts
+|   |-- anaikadu_preprint.html    # interactive preprint dashboard (build_dashboard.py)
+|   |-- results.json              # real pipeline output (export_results.py)
+|   |-- monte_carlo_npv.png
+|   |-- economics_qa.md           # cost/price validation (ADR-010/011)
+|   |-- *_sourced.{md,csv}         # sourced crop/disease/economics inputs
+|   |-- crop_catalog_* / data_source_* / crop_canopy_reachability.*
+|   `-- agroforestry_pipeline.html (earlier demo)
 |
-|-- figures/                     # tracked curated figures
-|-- results/                     # heavier run outputs (.gitkeep)
-|-- notebooks/                   # exploratory analysis
+|-- figures/                     # README figures (make_figures.py -> fig1..6_*.png)
+|-- results/  notebooks/         # heavier outputs / exploration (.gitkeep)
+|-- data/                        # local-only, gitignored (raw/, processed/labelled_offsets.parquet)
+|
 |-- scripts/
-|   `-- run_pipeline.py          # thin runner (adds src/ to path)
+|   |-- build_safe_labels.py  build_lajarda_labels.py  build_oilpalm_labels.py
+|   |-- build_real_dataset.py  fetch_safe_rasters.py  fetch_earth_engine.py  ee_smoke_test.py
+|   |-- run_site.py            # end-to-end at any lat/lon
+|   |-- finance_anaikadu.py  monte_carlo_anaikadu.py  sensitivity_coconut.py  inverse_anaikadu.py
+|   |-- econ_run.py  qa_crop_economics.py  region_reference.py  diag_ood.py
+|   |-- agmarknet_pull.py  geocode_anaikadu.py  fairdata_download.py
+|   `-- export_results.py  make_figures.py  build_dashboard.py  check_dashboard.py
 |
-|-- data/                        # local-only, ignored
-|   |-- raw/
-|   `-- processed/
+|-- src/agroforestry/
+|   |-- config.py        # features, targets, envelopes, diseases, varieties, SPECIES, crops
+|   |-- physics.py       # Beer-Lambert light + shelterbelt wind (HIGH)
+|   |-- features.py      # feature engineering
+|   |-- models.py        # XGBoost quantile + CQR + ood_score
+|   |-- validation.py    # leave-one-site-out CV
+|   |-- predict.py       # ML offsets + physics -> microclimate (+ OOD flag)
+|   |-- suitability.py   # fuzzy limiting-factor viability
+|   |-- disease.py       # two-axis infection models x variety
+|   |-- economics.py     # layer 4: yield x price - cost; coconut + timber
+|   |-- finance.py       # layer 5: cash-flow, NPV/IRR/payback
+|   |-- monte_carlo.py   # layer 6: uncertainty propagation
+|   |-- optimize.py      # inverse design (growth | viability | profit)
+|   `-- data/{synth,load}.py
 |
-|-- src/
-|   `-- agroforestry/
-|       |-- __init__.py
-|       |-- config.py            # features, targets, crop envelopes, diseases, varieties
-|       |-- physics.py           # Beer-Lambert light + shelterbelt wind (HIGH conf)
-|       |-- features.py          # feature engineering
-|       |-- models.py            # XGBoost quantile regressors + CQR conformal
-|       |-- validation.py        # leave-one-site-out CV
-|       |-- predict.py           # unify ML offsets + physics -> microclimate
-|       |-- suitability.py       # fuzzy limiting-factor + two-axis viability
-|       |-- disease.py           # leaf-wetness + infection models x variety
-|       |-- optimize.py          # inverse-design search (growth | viability)
-|       |-- data/
-|       |   |-- synth.py         # synthetic borrowed-label generator
-|       |   `-- load.py          # real-data loader (SoilTemp/ForestTemp/GEE)
-|       |-- cli/
-|       |   `-- run_pipeline.py  # end-to-end runner (main)
-|       `-- utils/
-|           `-- repro.py         # seeding / reproducibility helpers
-|
-`-- tests/
-    |-- test_physics.py
-    |-- test_suitability.py
-    `-- test_disease.py
+`-- tests/   # 22 tests
+    |-- test_physics.py  test_suitability.py  test_disease.py
+    `-- test_models.py  test_finance.py  test_monte_carlo.py

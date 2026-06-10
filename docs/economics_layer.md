@@ -1,4 +1,10 @@
-# Economics layer — design notes (staged, build later)
+# Economics layer — design notes
+
+> **STATUS: BUILT.** These design notes are now implemented as
+> `src/agroforestry/economics.py` (layer 4) + `src/agroforestry/finance.py` (layer 5,
+> NPV/IRR/payback) + `src/agroforestry/monte_carlo.py` (layer 6, uncertainty). Inputs
+> validated against NHB DPRs / TNAU / live Agmarknet (ADR-010, ADR-011,
+> `reports/economics_qa.md`). The notes below remain the rationale of record.
 
 Captures the yield / price / market thinking. These are **layers 4–5**: kept
 deliberately separate and **uncalibrated** until data exists. The discipline
