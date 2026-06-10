@@ -2,6 +2,21 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-09 (later 7) — QA: audited ALL crop economic inputs (no other bug)
+
+- After the coconut fix, audited every crop (`scripts/qa_crop_economics.py`,
+  `reports/economics_qa.md`). **No other crop has the coconut-class manufactured-loss
+  bug** — the gestation maintenance fix (`JUVENILE_MAINT_FRAC`) already covers all
+  perennials; at ideal suitability every crop is clearly positive.
+- **Unit discipline verified:** TNAU tables are per-hectare, our model per-acre; banana
+  (20 MT/acre vs TNAU 75 MT/ha) and others confirmed correctly per-acre — no ha/acre slip.
+- **Confidence:** yields/prices MODERATE (sourced doc; not stale like coconut was — pepper
+  mid Rs 500 vs 2024-25 Rs 600-950, nutmeg Rs 600-900 current). Costs LOW (my estimates,
+  realistic ranges). The two RECOMMENDED crops (pepper, nutmeg) are well-calibrated, so the
+  recommendation doesn't rest on shaky numbers.
+- Next validation: TNAU/NHB per-acre cost line items for the high-input crops + Agmarknet
+  3-yr price pull; reconcile `CROP_ECON.cost` with `CROP_FIN`.
+
 ## 2026-06-09 (later 6) — QA: coconut economics fixed (gestation-cost bug) — ADR-010
 
 - **User-caught error:** model said coconut monoculture = guaranteed loss, contradicting
