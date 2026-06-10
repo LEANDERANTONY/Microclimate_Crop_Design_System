@@ -17,16 +17,16 @@ Money in INR. Yields per ACRE per YEAR (timber annualised over its rotation).
 # (establish/life), reconciled with CROP_FIN and validated June 2026 (NHB DPRs, TN
 # district studies, project reports). See reports/economics_qa.md + ADR-011.
 CROP_ECON = {
-    "Black pepper": {"yield": (250, 400, 600),   "price": (300, 700),    "cost": 37000, "perishable": False, "market": "very favourable", "risk": "moderate"},
+    "Black pepper": {"yield": (250, 400, 600),   "price": (300, 800),    "cost": 37000, "perishable": False, "market": "very favourable", "risk": "moderate"},
     "Nutmeg":       {"yield": (250, 400, 700),   "price": (600, 900),    "cost": 41000, "perishable": False, "market": "neutral-favourable", "risk": "moderate"},
     "Cocoa":        {"yield": (250, 350, 500),   "price": (250, 600),    "cost": 31000, "perishable": False, "market": "strongly favourable", "risk": "moderate"},
     "Vanilla":      {"yield": (60, 100, 150),    "price": (4000, 12000), "cost": 67000, "perishable": False, "market": "undersupplied", "risk": "very high"},
     "Ginger":       {"yield": (6000, 8000, 12000), "price": (30, 160),   "cost": 150000, "perishable": False, "market": "favourable", "risk": "high (volatile)"},
-    "Banana":       {"yield": (12000, 20000, 25000), "price": (8, 25),   "cost": 130000, "perishable": True,  "market": "high local surplus", "risk": "low (low margin)"},
-    "Pomegranate":  {"yield": (4000, 5000, 7000), "price": (40, 120),    "cost": 100000, "perishable": False, "market": "favourable (TN deficit)", "risk": "moderate"},
-    "Guava":        {"yield": (7000, 10000, 15000), "price": (15, 40),   "cost": 28000, "perishable": True,  "market": "moderate surplus", "risk": "low"},
-    "Mango":        {"yield": (3000, 4500, 7000), "price": (25, 80),     "cost": 21000, "perishable": True,  "market": "seasonal surplus", "risk": "moderate"},
-    "Grapes":       {"yield": (5000, 7000, 8000), "price": (30, 90),     "cost": 100000, "perishable": True, "market": "neutral-favourable", "risk": "moderate"},
+    "Banana":       {"yield": (12000, 20000, 25000), "price": (8, 40),   "cost": 130000, "perishable": True,  "market": "high local surplus", "risk": "low (low margin)"},
+    "Pomegranate":  {"yield": (4000, 5000, 7000), "price": (40, 200),    "cost": 100000, "perishable": False, "market": "favourable (TN deficit)", "risk": "moderate"},
+    "Guava":        {"yield": (7000, 10000, 15000), "price": (15, 60),   "cost": 28000, "perishable": True,  "market": "moderate surplus", "risk": "low"},
+    "Mango":        {"yield": (3000, 4500, 7000), "price": (25, 90),     "cost": 21000, "perishable": True,  "market": "seasonal surplus", "risk": "moderate"},
+    "Grapes":       {"yield": (5000, 7000, 8000), "price": (30, 120),    "cost": 100000, "perishable": True, "market": "neutral-favourable", "risk": "moderate"},
     "Dragon fruit": {"yield": (4000, 8000, 10000), "price": (80, 200),   "cost": 67000, "perishable": True, "market": "amber (supply growing)", "risk": "high (price falling)"},
 }
 

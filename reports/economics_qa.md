@@ -67,3 +67,30 @@ establish) is a tidy-up for the next pass, not a correctness issue.
 **Verdict:** the coconut error was a one-off (gestation handling), now fixed everywhere.
 No other crop manufactures a false loss; remaining risk is LOW-confidence *cost* estimates,
 flagged and bounded, not a structural bug.
+
+## 6. Agmarknet price pull (data.gov.in) — live snapshot, 2026-06-10
+
+`scripts/agmarknet_pull.py` queries the data.gov.in Agmarknet feed for TN. **Honest
+limitations:** the free resource is the **current daily snapshot, not a multi-year
+archive**; the public demo key caps at ~10 markets/call; prices are **wholesale** (farm-gate
+runs lower). So this is a present-day reality check, not the full 3-yr series — a true
+monthly history needs CEDA-Ashoka bulk download (offered as a follow-up).
+
+Live TN modal (Rs/kg) vs my prior band upper — several bands were skewed LOW (same lesson
+as coconut):
+
+| crop | live median | live max | prior band | action |
+|---|---|---|---|---|
+| Black pepper | 680 (all-India) | 800 | 300-700 | -> 300-**800** |
+| Pomegranate | 235 | 270 | 40-120 | -> 40-**200** |
+| Banana | 50 | 67 | 8-25 | -> 8-**40** |
+| Grapes | 100 | 150 | 30-90 | -> 30-**120** |
+| Guava | 55 | 90 | 15-40 | -> 15-**60** |
+| Mango | 47 | 90 | 25-80 | -> 25-**90** |
+| Ginger (green) | 135 | 180 | 30-160 | kept (within) |
+
+I **widened upper bounds to current levels, kept historical-glut lows** (wider, more honest
+bands) rather than recentre on one possibly-seasonal-high day. Effect: coconut+pepper P50
++Rs 225k, P(loss) 21% (pepper stays the most robust pick). Nutmeg/cocoa/vanilla are NOT
+Agmarknet-traded (spice-board/contract) so their bands are unchanged. Prices now **MODERATE**
+(live-snapshot-anchored); CEDA 3-yr monthly pull would lift to HIGH.
