@@ -15,6 +15,10 @@ from agroforestry.economics import (CROP_ECON, OVERSTOREY_ECON, SPECIES_TO_OVERS
 
 DISCOUNT = 0.08      # real discount rate (editable); India farm hurdle ~8-12% real
 HORIZON = 25         # years
+# Maintenance scales with the garden's bearing: juvenile years cost a FRACTION of the
+# full bearing-phase maintenance (TNAU coconut: ~Rs 8k/yr juvenile vs ~Rs 39k bearing).
+# Charging full maintenance during gestation was the bug that made coconut look doomed.
+JUVENILE_MAINT_FRAC = 0.3
 
 # crop financial timing/costs (Rs/acre). establish = yr1 planting; maintain = annual.
 # gestation = first-yield year; full = full-bearing year; life = economic life (yrs).
@@ -35,7 +39,9 @@ CROP_FIN = {
 
 # overstorey financial timing. coconut = annual income; timber = lump at harvest.
 OVERSTOREY_FIN = {
-    "coconut":    {"kind": "annual", "establish": 50000, "maintain": 38000, "gestation": 6, "full": 10, "life": HORIZON},
+    # establish excludes land (owned); ~planting+fencing+prep. maintain = full BEARING
+    # cost (Salem ~Rs 39k); juvenile years auto-scaled by JUVENILE_MAINT_FRAC.
+    "coconut":    {"kind": "annual", "establish": 40000, "maintain": 39000, "gestation": 6, "full": 10, "life": HORIZON},
     "silver_oak": {"kind": "timber", "establish": 15000, "maintain": 3000,  "harvest": 18},
     "mahogany":   {"kind": "timber", "establish": 20000, "maintain": 4000,  "harvest": 15},
     "teak":       {"kind": "timber", "establish": 20000, "maintain": 4000,  "harvest": 18},
@@ -63,9 +69,10 @@ def crop_cashflow(crop, growth, disease, horizon=HORIZON, full_rev=None):
     cf = np.zeros(horizon)
     for i in range(horizon):
         t = i + 1
-        rev = full_rev * _ramp(t, fin["gestation"], fin["full"], fin["life"])
-        cost = (fin["establish"] if t == 1 else 0) + (fin["maintain"] if t <= fin["life"] else 0)
-        cf[i] = rev - cost
+        ramp = _ramp(t, fin["gestation"], fin["full"], fin["life"])
+        maint = fin["maintain"] * max(JUVENILE_MAINT_FRAC, ramp) if t <= fin["life"] else 0
+        cost = (fin["establish"] if t == 1 else 0) + maint
+        cf[i] = full_rev * ramp - cost
     return cf
 
 
@@ -84,9 +91,10 @@ def overstorey_cashflow(species_key, horizon=HORIZON, trees_acre=None,
         full_rev = nc * (nut_price if nut_price is not None else (plo + phi) / 2)
         for i in range(horizon):
             t = i + 1
-            rev = full_rev * _ramp(t, fin["gestation"], fin["full"], fin["life"])
-            cost = (fin["establish"] if t == 1 else 0) + (fin["maintain"] if t <= fin["life"] else 0)
-            cf[i] = rev - cost
+            ramp = _ramp(t, fin["gestation"], fin["full"], fin["life"])
+            maint = fin["maintain"] * max(JUVENILE_MAINT_FRAC, ramp) if t <= fin["life"] else 0
+            cost = (fin["establish"] if t == 1 else 0) + maint
+            cf[i] = full_rev * ramp - cost
         return cf
     # timber: maintain each year, lump revenue at harvest year(s) within horizon
     e = OVERSTOREY_ECON[ok]

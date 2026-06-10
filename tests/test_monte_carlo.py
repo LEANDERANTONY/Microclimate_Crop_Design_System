@@ -33,8 +33,10 @@ def test_simulate_is_deterministic_with_seed():
     assert a["mean"] == b["mean"] and a["prob_loss"] == b["prob_loss"]
 
 
-def test_coconut_only_loses_at_conservative_price():
-    # coconut nut income alone cannot clear the 8% hurdle -> high probability of loss
+def test_intercrop_changes_distribution():
+    # adding an intercrop must change the NPV distribution vs coconut alone
     p = _predictor()
-    r = simulate(p, MACRO, CTX, "coconut_wide", 1.0, None, n=300, seed=1)
-    assert r["prob_loss"] > 0.9
+    base = simulate(p, MACRO, CTX, "coconut_wide", 1.0, None, n=300, seed=1)
+    inter = simulate(p, MACRO, CTX, "coconut_wide", 1.0, "Nutmeg", n=300, seed=1)
+    assert inter["p90"] > base["p90"]          # intercrop adds upside
+    assert 0.0 <= base["prob_loss"] <= 1.0

@@ -2,6 +2,20 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-09 (later 6) — QA: coconut economics fixed (gestation-cost bug) — ADR-010
+
+- **User-caught error:** model said coconut monoculture = guaranteed loss, contradicting
+  reality. Root cause: **full bearing maintenance (~Rs 38k) charged during the 6-yr
+  gestation** (TNAU shows juvenile upkeep ~Rs 7-8k), plus nuts/acre too low (5,000 vs
+  validated 6,500-7,000) and a stale nut-price band (Rs 7-12 vs 2024-25 Rs 15-18+).
+- **Validated** against TNAU cost-of-cultivation + Salem District study 2023-24
+  (net Rs 15,486/acre, BCR 1.39). Fixes: `JUVENILE_MAINT_FRAC=0.3` (maintenance now ramps
+  with bearing, crops + overstorey); coconut nuts (4800,6000,7500), price (8,18),
+  establish Rs 40k. **ADR-010.**
+- **Result now matches reality:** coconut-only NPV **+Rs 129k, IRR 17%, payback 10 yr,
+  MC P(loss) 3%** (was 100% loss). Coconut+nutmeg +Rs 313k / 18%; +pepper +Rs 243k / 19%.
+  Framework was sound; inputs/gestation-handling were the bug. 22 tests pass.
+
 ## 2026-06-09 (later 5) — Monte Carlo uncertainty (layer 6)
 
 - **`src/agroforestry/monte_carlo.py`:** propagates the genuinely-uncertain inputs —

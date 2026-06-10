@@ -34,7 +34,11 @@ CROP_ECON = {
 # Timber: annualised value = cft/tree x Rs/cft / rotation_yr, x trees/acre. Farm-grown
 # prices are well below forest auction; values here are CONSERVATIVE and LOW confidence.
 OVERSTOREY_ECON = {
-    "coconut": {"kind": "annual", "nuts_acre": (4000, 5000, 7000), "price_per_nut": (7, 12), "cost": 40000},
+    # nuts/acre and bearing-phase cost VALIDATED: TNAU cost-of-cultivation + Salem
+    # District study 2023-24 (6,500-7,000 nuts/acre; bearing maintenance ~Rs 39k;
+    # net ~Rs 15.5k/acre at ~Rs 8/nut; BCR 1.39). Price band widened for 2024-25 highs
+    # (copra ~Rs 140-153/kg; farm-gate nuts ~Rs 15-18+). See QA note / ADR-010.
+    "coconut": {"kind": "annual", "nuts_acre": (4800, 6000, 7500), "price_per_nut": (8, 18), "cost": 39000},
     # timber: (cft/tree lo,c,hi), Rs/cft (lo,hi), rotation yr, default trees/acre as overstorey
     "silver_oak": {"kind": "timber", "cft_tree": (6, 10, 15),  "price_cft": (300, 700),   "rotation": 18, "trees_acre": 120, "cost": 8000},
     "mahogany":   {"kind": "timber", "cft_tree": (12, 20, 30), "price_cft": (1000, 1500), "rotation": 15, "trees_acre": 120, "cost": 12000},
