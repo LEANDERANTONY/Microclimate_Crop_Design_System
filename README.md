@@ -6,7 +6,7 @@
 
 This research codebase predicts the **microclimate a planned agroforestry design will create**, scores **crop suitability and disease risk** under that microclimate, runs the result through **economics and discounted cash-flow**, and **propagates uncertainty** to a profit distribution — then recommends a design. It is built for a real site, **Anaikadu (Pattukkottai), Thanjavur District, Tamil Nadu** (hot semi-arid Cauvery delta), but the method is general.
 
-> **Headline result for Anaikadu:** coconut as the overstorey with **black pepper** (or nutmeg) intercrop clears an 8% real hurdle — **NPV ≈ ₹298k/acre, IRR ≈ 22%, payback 8 yr, P(loss) ≈ 17%** — and the *choice* of crop is robust to the model's remaining temperature uncertainty. An interactive report is in [`reports/anaikadu_preprint.html`](reports/anaikadu_preprint.html).
+> **Headline result for Anaikadu:** coconut as the overstorey with a **black pepper** intercrop clears an 8% real hurdle — **NPV ≈ ₹565k/acre, IRR ≈ 33%, payback 7 yr, P(loss) ≈ 12%** — and pepper's lead is **robust across the whole plausible temperature band**. Nutmeg, by contrast, sits at its thermal-optimum edge here and is viable only if the cooler end of the uncertain offset holds (a decision-relevant finding, not a flaw). An interactive report is in [`reports/anaikadu_preprint.html`](reports/anaikadu_preprint.html). *(Headline-crop envelopes sourced from FAO ECOCROP / PROSEA — `reports/crop_envelopes_ecocrop.md`.)*
 
 ---
 
@@ -63,20 +63,20 @@ The temperature offset under **coconut** is flagged **LOW (out-of-distribution)*
 
 ![suitability + sensitivity](figures/fig3_suitability.png)
 
-Under coconut, nutmeg and black pepper lead. Sweeping the *uncertain* temperature offset across its whole plausible band changes the absolute viability but **not the shortlist** — so the decision of *which* crop to plant is actionable now; the pending data only sharpens *how well*.
+Under coconut, **black pepper leads at every point** of the temperature sweep — its top rank is robust to the uncertain offset. Nutmeg leads only at the cool end and falls away as temperature rises (Anaikadu sits at the edge of its flowering optimum), so the model makes two different-confidence claims: pepper is the actionable pick now; nutmeg is conditional on the cooler microclimate, which on-plot sensing would confirm.
 
 ### 4 · Economics and finance, validated against reality
 
 ![economics](figures/fig4_economics.png)
 
-Coconut + pepper/nutmeg clear the hurdle; banana under mature coconut is uneconomic; timber shows high *annualised* return but as a single far-off harvest (see cash-flow timing below). Costs are validated against NHB Detailed Project Reports + TNAU; prices anchored to live data.gov.in Agmarknet. *(A coconut "guaranteed loss" the model first produced was traced to a gestation-cost bug and fixed — documented in [ADR-010](docs/architectural_decision_records/ADR-010-coconut-economics-qa.md) as a validation-discipline example.)*
+Coconut + pepper clears the hurdle decisively (NPV ≈ ₹565k, IRR ≈ 33%); coconut + nutmeg is marginal (≈ ₹127k, IRR ≈ 13%) given the thermal-edge sensitivity above; banana under mature coconut is uneconomic; timber shows high *annualised* return but as a single far-off harvest (see cash-flow timing below). Costs are validated against NHB Detailed Project Reports + TNAU; prices anchored to live data.gov.in Agmarknet. *(A coconut "guaranteed loss" the model first produced was traced to a gestation-cost bug and fixed — documented in [ADR-010](docs/architectural_decision_records/ADR-010-coconut-economics-qa.md) as a validation-discipline example.)*
 
 ### 5 · Uncertainty made explicit
 
 ![monte carlo](figures/fig5_montecarlo.png)
 ![cash-flow timing](figures/fig6_cashflow.png)
 
-Monte Carlo turns every point estimate into a distribution and a probability of loss. Coconut+pepper sits mostly positive (P(loss) ≈ 17%); coconut+nutmeg has a higher mean NPV but a fatter tail (P(loss) ≈ 35%) — hot draws fail the crop, cool draws pay well. The cash-flow chart shows the real trade-off: steady annual spice income vs a single distant timber harvest.
+Monte Carlo turns every point estimate into a distribution and a probability of loss. Coconut+pepper sits mostly positive (P(loss) ≈ 12%); coconut+nutmeg carries a much wider loss probability (≈ 41%) — hot draws fail the crop at its thermal edge, cool draws pay well. The cash-flow chart shows the real trade-off: steady annual spice income vs a single distant timber harvest.
 
 ---
 

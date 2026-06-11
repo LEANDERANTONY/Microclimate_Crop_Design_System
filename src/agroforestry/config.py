@@ -55,8 +55,13 @@ SPECIES_CANOPY_TYPE = {
 CROPS = {   # envelopes calibrated from sourced literature -- see ADR-003
     "Vanilla":      {"t": [21, 32, 15, 35], "shade": [30, 50, 20, 70], "rh": [75, 90, 55, 100], "wind": [1.5, 3.0]},
     "Cocoa":        {"t": [21, 28, 15, 36], "shade": [30, 50, 10, 65], "rh": [70, 90, 55, 100], "wind": [1.5, 3.0]},
-    "Black pepper": {"t": [23, 32, 10, 40], "shade": [20, 50, 5, 70],  "rh": [60, 90, 50, 100], "wind": [2.5, 4.5]},
-    "Nutmeg":       {"t": [25, 35, 20, 38], "shade": [25, 50, 10, 65], "rh": [70, 90, 55, 100], "wind": [1.5, 3.0]},
+    # Black pepper: ECOCROP (Piper nigrum, id 1714) optimal 22-35C / absolute 10-40C;
+    # RH 65-95%; light "clear skies -> light shade" (tolerates low-moderate shade). See
+    # reports/crop_envelopes_ecocrop.md.
+    "Black pepper": {"t": [22, 35, 10, 40], "shade": [20, 50, 5, 70],  "rh": [65, 90, 50, 100], "wind": [2.5, 4.5]},
+    # Nutmeg: PROSEA/ECOCROP (Myristica fragrans) optimal ~25-30C, flowering impaired
+    # >35C, absolute ~20-38C; shade-demanding (esp. juvenile). See sourced report.
+    "Nutmeg":       {"t": [25, 32, 20, 38], "shade": [25, 50, 10, 65], "rh": [70, 90, 55, 100], "wind": [1.5, 3.0]},
     "Ginger":       {"t": [22, 30, 13, 35], "shade": [25, 50, 0, 70],  "rh": [70, 80, 55, 100], "wind": [4.0, 6.5]},
     # ---- fruits (full-sun unless noted); shade low = wants sun ----
     "Pomegranate":  {"t": [25, 35, 18, 40], "shade": [0, 10, 0, 35],  "rh": [40, 65, 30, 90], "wind": [4.0, 7.0]},

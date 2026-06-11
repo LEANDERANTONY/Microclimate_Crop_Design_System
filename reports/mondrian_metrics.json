@@ -1,0 +1,296 @@
+{
+  "target_coverage": 0.8,
+  "ks": [
+    0,
+    5,
+    10,
+    25,
+    50,
+    100
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "results": {
+    "dT_max": {
+      "borneo_forest": {
+        "label": "Borneo humid forest",
+        "n_test": 1698,
+        "by_k": {
+          "0": {
+            "coverage": 0.441,
+            "width": 2.947
+          },
+          "5": {
+            "coverage": 0.846,
+            "width": 5.092
+          },
+          "10": {
+            "coverage": 0.808,
+            "width": 5.262
+          },
+          "25": {
+            "coverage": 0.836,
+            "width": 4.939
+          },
+          "50": {
+            "coverage": 0.81,
+            "width": 4.71
+          },
+          "100": {
+            "coverage": 0.783,
+            "width": 4.447
+          }
+        }
+      },
+      "med_spain": {
+        "label": "Mediterranean Spain",
+        "n_test": 242,
+        "by_k": {
+          "0": {
+            "coverage": 0.409,
+            "width": 5.605
+          },
+          "5": {
+            "coverage": 0.733,
+            "width": 9.277
+          },
+          "10": {
+            "coverage": 0.86,
+            "width": 10.931
+          },
+          "25": {
+            "coverage": 0.797,
+            "width": 9.91
+          },
+          "50": {
+            "coverage": 0.785,
+            "width": 9.716
+          },
+          "100": {
+            "coverage": 0.82,
+            "width": 9.956
+          }
+        }
+      },
+      "oilpalm_open": {
+        "label": "Borneo oil-palm (open)",
+        "n_test": 824,
+        "by_k": {
+          "0": {
+            "coverage": 0.322,
+            "width": 3.626
+          },
+          "5": {
+            "coverage": 0.943,
+            "width": 14.152
+          },
+          "10": {
+            "coverage": 0.856,
+            "width": 12.287
+          },
+          "25": {
+            "coverage": 0.809,
+            "width": 11.28
+          },
+          "50": {
+            "coverage": 0.752,
+            "width": 10.428
+          },
+          "100": {
+            "coverage": 0.787,
+            "width": 10.944
+          }
+        }
+      }
+    },
+    "dT_mean": {
+      "borneo_forest": {
+        "label": "Borneo humid forest",
+        "n_test": 1698,
+        "by_k": {
+          "0": {
+            "coverage": 0.476,
+            "width": 0.95
+          },
+          "5": {
+            "coverage": 0.838,
+            "width": 1.945
+          },
+          "10": {
+            "coverage": 0.848,
+            "width": 1.859
+          },
+          "25": {
+            "coverage": 0.84,
+            "width": 1.775
+          },
+          "50": {
+            "coverage": 0.812,
+            "width": 1.696
+          },
+          "100": {
+            "coverage": 0.791,
+            "width": 1.652
+          }
+        }
+      },
+      "med_spain": {
+        "label": "Mediterranean Spain",
+        "n_test": 242,
+        "by_k": {
+          "0": {
+            "coverage": 0.083,
+            "width": 1.235
+          },
+          "5": {
+            "coverage": 0.873,
+            "width": 7.278
+          },
+          "10": {
+            "coverage": 0.89,
+            "width": 7.046
+          },
+          "25": {
+            "coverage": 0.771,
+            "width": 5.884
+          },
+          "50": {
+            "coverage": 0.754,
+            "width": 5.801
+          },
+          "100": {
+            "coverage": 0.815,
+            "width": 6.042
+          }
+        }
+      },
+      "oilpalm_open": {
+        "label": "Borneo oil-palm (open)",
+        "n_test": 824,
+        "by_k": {
+          "0": {
+            "coverage": 0.169,
+            "width": 0.837
+          },
+          "5": {
+            "coverage": 0.838,
+            "width": 4.834
+          },
+          "10": {
+            "coverage": 0.894,
+            "width": 5.22
+          },
+          "25": {
+            "coverage": 0.825,
+            "width": 4.749
+          },
+          "50": {
+            "coverage": 0.779,
+            "width": 4.473
+          },
+          "100": {
+            "coverage": 0.814,
+            "width": 4.658
+          }
+        }
+      }
+    },
+    "dVPD": {
+      "borneo_forest": {
+        "label": "Borneo humid forest",
+        "n_test": 1698,
+        "by_k": {
+          "0": {
+            "coverage": 0.147,
+            "width": 0.388
+          },
+          "5": {
+            "coverage": 0.868,
+            "width": 0.798
+          },
+          "10": {
+            "coverage": 0.736,
+            "width": 0.711
+          },
+          "25": {
+            "coverage": 0.823,
+            "width": 0.757
+          },
+          "50": {
+            "coverage": 0.807,
+            "width": 0.747
+          },
+          "100": {
+            "coverage": 0.812,
+            "width": 0.75
+          }
+        }
+      },
+      "med_spain": {
+        "label": "Mediterranean Spain",
+        "n_test": 242,
+        "by_k": {
+          "0": {
+            "coverage": 0.686,
+            "width": 0.654
+          },
+          "5": {
+            "coverage": 0.841,
+            "width": 1.2
+          },
+          "10": {
+            "coverage": 0.779,
+            "width": 0.935
+          },
+          "25": {
+            "coverage": 0.826,
+            "width": 1.051
+          },
+          "50": {
+            "coverage": 0.771,
+            "width": 0.94
+          },
+          "100": {
+            "coverage": 0.821,
+            "width": 1.035
+          }
+        }
+      },
+      "oilpalm_open": {
+        "label": "Borneo oil-palm (open)",
+        "n_test": 824,
+        "by_k": {
+          "0": {
+            "coverage": 0.552,
+            "width": 0.501
+          },
+          "5": {
+            "coverage": 0.866,
+            "width": 1.532
+          },
+          "10": {
+            "coverage": 0.798,
+            "width": 1.282
+          },
+          "25": {
+            "coverage": 0.811,
+            "width": 1.164
+          },
+          "50": {
+            "coverage": 0.771,
+            "width": 1.067
+          },
+          "100": {
+            "coverage": 0.816,
+            "width": 1.178
+          }
+        }
+      }
+    }
+  }
+}

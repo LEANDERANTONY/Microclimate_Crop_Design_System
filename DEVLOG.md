@@ -2,6 +2,26 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-10 (later 3) — Pre-submission pass: manuscript, citations, Mondrian, methods figure, sourced envelopes
+
+- **Manuscript drafted** (`docs/manuscript/manuscript.md`) + venue plan (`VENUE_AND_PLAN.md`):
+  recommend EarthArXiv preprint → Agricultural Systems → Agroforestry Systems.
+- **Full 596-site LOSO** (`reports/loso_full_metrics.json`): dT_mean +48.7% skill (MAE 0.41C),
+  dT_max +48.1%, dVPD +55.8%, coverage 0.76–0.82. (per-site R² unstable → report skill.)
+- **Citations verified** via PubMed + publisher records (DOIs for De Frenne 2019/2021, Haesen,
+  Lembrechts, Zellweger, Hardwick, Pylianidis, Romano CQR, Chen&Guestrin); all [verify] removed.
+- **Mondrian / few-shot conformal** (`scripts/mondrian_conformal.py` → `reports/mondrian_metrics.json`,
+  §6.1): ~5–25 calibration points from a held-out climate restore interval coverage from 0.08 → ~0.80.
+  Quantifies the value of on-plot sensing; coverage collapse is calibration-transfer, not a broken model.
+- **Methods schematic** `figures/fig0_pipeline.png` (`scripts/make_pipeline_figure.py`).
+- **Headline-crop envelopes sourced** to FAO ECOCROP (pepper id 1714: opt 22–35C/abs 10–40C, RH 65–95%)
+  + PROSEA (nutmeg: opt 25–32C, flowering impaired >35C) → `reports/crop_envelopes_ecocrop.md`.
+  **Material result change:** pepper now the robust clear pick (growth 67; NPV ₹565k / IRR 33% /
+  payback 7 / P(loss) 12%; top across the ENTIRE temp sweep). Nutmeg downgraded to conditional
+  (opt-max 32C → Anaikadu at its thermal edge; leads only at the cool end; NPV ₹127k / P(loss) 41%).
+  README/PROJECT_CONTEXT/dashboard/abstract all updated to reflect pepper-as-pick, nutmeg-as-conditional.
+  26 tests pass; results/figures/dashboard regenerated.
+
 ## 2026-06-10 (later 2) — Grounded design->feature mapping with real TN satellite features (ADR-013)
 
 - Replaced the fabricated NDVI/FAPAR/height proxies in `predict.build_feature_row`
