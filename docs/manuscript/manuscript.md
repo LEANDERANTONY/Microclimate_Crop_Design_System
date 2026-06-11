@@ -3,7 +3,17 @@
 **Leo Antony**
 Independent research · Anaikadu (Pattukkottai), Thanjavur District, Tamil Nadu, India
 
-*Manuscript draft — v0.1, June 2026. Status: working draft for internal review. Numbers trace to the committed pipeline (`scripts/export_results.py` → `reports/results.json`; transfer metrics `reports/loso_metrics.json`, `reports/loco_metrics.json`). Citations marked **[verify]** need a final bibliographic check before submission.*
+*Manuscript draft — v0.2, June 2026. All numbers trace to the committed pipeline (`scripts/export_results.py` → `reports/results.json`; transfer metrics `reports/loso_full_metrics.json`, `reports/loco_metrics.json`, `reports/mondrian_metrics.json`). References verified (DOIs in §References). Pre-submission manual steps remaining: confirm Zenodo depositor names on each dataset "Cite as" line; export Figs 1–6 at journal DPI.*
+
+---
+
+## Highlights
+
+- A six-layer model chains agroforestry **design → microclimate → disease → crop viability → profit** under propagated uncertainty.
+- Canopy temperature/VPD offsets are learned (gradient-boosted, quantile) with conformal intervals and an out-of-distribution flag.
+- Offsets transfer **within** climate (leave-one-site-out skill +49 %) but **fail across** macroclimates (leave-one-climate-out skill negative).
+- ~5–25 local calibration points restore out-of-climate interval coverage from 0.08 to ~0.80 — quantifying the value of on-plot sensing.
+- For a real Tamil Nadu farm, coconut + black pepper is the robust, profitable pick; the model flags rather than over-claims its extrapolations.
 
 ---
 
@@ -67,7 +77,7 @@ Monte-Carlo (n = 2,000–3,000) samples the genuinely uncertain inputs — the t
 
 ### 3.6 Validation protocol
 
-Because the central claim is transferability, we validate with two holdouts and report skill against a naive baseline (predict the training-mean offset; skill = 1 − MAE/MAE_baseline) plus out-of-sample R²: (a) **leave-one-site-out (LOSO)** — an entire site held out per fold (within-climate transfer); (b) **leave-one-climate-out (LOCO)** — an entire macroclimate / canopy regime held out (Borneo humid forest / Mediterranean Spain / Borneo oil-palm open canopy) — the honest test of cross-macroclimate transfer and of the leap to Tamil Nadu.
+Because the central claim is transferability, we validate with two holdouts and report skill against a naive baseline (predict the training-mean offset; skill = 1 − MAE/MAE_baseline), the metric that distinguishes a learned signal from a near-constant offset: (a) **leave-one-site-out (LOSO)** — an entire site held out per fold (within-climate transfer); (b) **leave-one-climate-out (LOCO)** — an entire macroclimate / canopy regime held out (Borneo humid forest / Mediterranean Spain / Borneo oil-palm open canopy) — the honest test of cross-macroclimate transfer and of the leap to Tamil Nadu. We report out-of-sample R² only where the holdout makes it numerically stable (it is unreliable under single-site holdout, where within-site offset variance is near-zero; §5).
 
 ## 4. Data
 
@@ -170,6 +180,36 @@ The pipeline is an installable package (`src/agroforestry/`: physics, models, pr
 13. [dataset] SAFE landscape sub-canopy microclimate rasters (forest → logged → oil palm → cleared), Borneo. Zenodo. https://doi.org/10.5281/zenodo.7893600
 14. [dataset] La Jarda microclimate time series, Cádiz, Spain (Mediterranean). Zenodo. https://doi.org/10.5281/zenodo.18913503
 
+## Data and code availability
+
+All code, build scripts and the architectural decision records are openly available in the project repository (a tagged release will accompany submission). The pipeline reproduces every figure and table from openly-sourced inputs: microclimate labels from Zenodo (refs 11–14); remote-sensing features via Google Earth Engine (ERA5, MODIS, ETH canopy height, Copernicus DEM, SoilGrids); economics from NHB Detailed Project Reports, TNAU cost-of-cultivation, a Salem-District study, and data.gov.in Agmarknet. Raw third-party data are not redistributed; the build scripts that fetch and assemble them are committed. An interactive version of all results is provided as a self-contained HTML report (`reports/anaikadu_preprint.html`).
+
+## Author contributions
+
+L.A. conceived the study, developed the model and software, performed the analysis, and wrote the manuscript.
+
+## Funding
+
+This research received no external funding.
+
+## Conflicts of interest
+
+The author declares no conflict of interest. The study site is the author's prospective farm; the model's confidence labelling and pre-registered transfer tests are designed precisely to keep that interest from biasing the reported conclusions.
+
+## Acknowledgements
+
+This work builds on openly-shared datasets from the SAFE Project (Sabah, Borneo), the La Jarda network (Cádiz, Spain), the SoilTemp initiative, and FAO ECOCROP, whose authors and contributors are gratefully acknowledged.
+
 ---
 
-*Figures (in `figures/`): Fig. 0 six-layer methods schematic (`fig0_pipeline.png`); Fig. 1 cross-climate transfer; Fig. 2 microclimate by overstorey; Fig. 3 suitability + sensitivity; Fig. 4 economics; Fig. 5 Monte-Carlo NPV; Fig. 6 cash-flow timing. An interactive version of all results is in `reports/anaikadu_preprint.html`.*
+## Figure captions
+
+- **Figure 0.** Methods schematic: the six-layer pipeline from controllable farm design (overstorey, spacing/LAI, windbreak, drainage, variety, timing) through microclimate, disease, viability, economics and finance to a Monte-Carlo profit distribution, with each layer's confidence level (HIGH physics / MODERATE learned / propagated) and the inverse-design loop. (`figures/fig0_pipeline.png`)
+- **Figure 1.** Cross-climate transfer: leave-one-site-out error for the temperature and VPD offsets, trained on Borneo (SAFE) + Mediterranean Spain (La Jarda). (`figures/fig1_transfer.png`)
+- **Figure 2.** Predicted under-canopy microclimate (shade, temperature, humidity, wind) for candidate overstoreys at Anaikadu; shade/wind HIGH confidence, temperature/VPD offset flagged LOW (out-of-distribution). (`figures/fig2_microclimate.png`)
+- **Figure 3.** Intercrop viability under coconut and its sensitivity to the uncertain temperature offset (black pepper leads across the whole band; nutmeg only at the cool end). (`figures/fig3_suitability.png`)
+- **Figure 4.** System economics: NPV/IRR by overstorey × intercrop combination. (`figures/fig4_economics.png`)
+- **Figure 5.** Monte-Carlo 25-year NPV distributions and probability of loss per system. (`figures/fig5_montecarlo.png`)
+- **Figure 6.** Cash-flow timing: steady annual spice income versus a single distant timber harvest. (`figures/fig6_cashflow.png`)
+
+*Tables 1–3 appear inline in §5, §6.1 and §7 respectively.*
