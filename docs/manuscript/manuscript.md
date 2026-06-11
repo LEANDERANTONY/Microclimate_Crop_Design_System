@@ -135,11 +135,15 @@ We predict the **offset** from ambient macroclimate, not the raw under-canopy va
 
 `I / I₀ = exp(−k_ext · LAI)`   (2)
 
-with an extinction coefficient k_ext per overstorey. In-field wind reduction combines canopy drag with a perimeter-windbreak term that peaks at ~45 % porosity (a Gaussian in porosity, so a solid wall cannot "win") and saturates with barrier height — standard shelterbelt aerodynamics. These need no training data.
+with an extinction coefficient k_ext per overstorey. In-field wind reduction combines canopy drag with a perimeter-windbreak term whose average shelter is a Gaussian in porosity φ, peaking near 45 % (so a solid wall cannot "win") and gated by barrier height h:
+
+`r_wb = 0.5 · exp[ −((φ − 0.45)/0.18)² ] · min(1, h/10)`   (3)
+
+— standard shelterbelt aerodynamics. These need no training data.
 
 *Temperature and VPD offsets (learned, MODERATE; OOD-flagged).* dT_max, dT_mean and dVPD are learned with **XGBoost quantile regressors** (`reg:quantileerror`; lower/median/upper quantiles) on the engineered features. Prediction intervals are calibrated by **conformalised quantile regression** (Romano et al., 2019) with a group-aware (whole-site) calibration split, so coverage reflects site-transfer error. The model stores its training feature ranges and exposes an **out-of-distribution score**,
 
-`OOD(x) = (1/p) Σⱼ 1[ xⱼ < min_train,ⱼ  or  xⱼ > max_train,ⱼ ]`   (3)
+`OOD(x) = (1/p) Σⱼ 1[ xⱼ < min_train,ⱼ  or  xⱼ > max_train,ⱼ ]`   (4)
 
 (p = number of features), returning an `extrapolating` flag (OOD > 0.15) and an `offset_confidence` label, so a design unlike the training cloud (e.g. an open coconut canopy versus closed forest) is flagged LOW rather than silently extrapolated. For a hypothetical design, NDVI/FAPAR/canopy-height are not fabricated from LAI but set to **real regional satellite values** per canopy type (MODIS + ETH height over Tamil Nadu coconut/timber sites). Because tree models cannot extrapolate beyond their training range, we also implemented a physics-guided hybrid (an extrapolating Ridge backbone on the canopy-cover buffering term, clipped to the observed offset range, plus XGBoost on the residual), evaluated in §3.2.
 
@@ -147,19 +151,31 @@ with an extinction coefficient k_ext per overstorey. In-field wind reduction com
 
 Disease risk follows the disease triangle, decomposed as
 
-`realized_risk = environmental_pressure(microclimate) × variety_susceptibility`   (4)
+`realized_risk = environmental_pressure(microclimate) × variety_susceptibility`   (5)
 
-across **two independent axes**: a *foliar / air-microclimate* axis (a temperature beta-response × leaf-wetness-duration or relative-humidity term, with a rain-splash modifier) and a *soil-water* axis for soil-borne pathogens, driven by
+across **two independent axes**. On the *foliar / air-microclimate* axis the temperature response is a beta function with cardinal temperatures (T_min, T_opt, T_max),
 
-`effective_waterlogging = site_waterlogging × drainage_mitigation`   (5)
+`g(T) = [(T_max − T)/(T_max − T_opt)] · [(T − T_min)/(T_opt − T_min)]^{(T_opt − T_min)/(T_max − T_opt)}`   (6)
 
-(explicitly *not* air RH). Leaf-wetness duration is estimated from daily RH and rainfall (a deliberately crude, LOW-confidence first approximation). Variety susceptibility enters as an ordinal multiplier (R/MR/MS/S → 0.2/0.5/0.8/1.0) from published cultivar screening. The two controllable levers are explicit: fruiting-time (bahar) suppresses the foliar axis by avoiding the wet window; drainage suppresses the soil axis.
+(zero outside [T_min, T_max]), modulated by a leaf-wetness-duration proxy estimated from daily RH and rainfall,
+
+`LWD = min{ 24,  12·max(0, (RH − 80)/20) + 1[rain>0]·min(8, 4 + 0.2·rain) }`  (h)   (7)
+
+The *soil-water* axis for soil-borne pathogens is driven by effective waterlogging instead of air RH,
+
+`effective_waterlogging = site_waterlogging × drainage_mitigation`   (8)
+
+with the site term estimated from soil texture and depth-to-water-table d_wt,
+
+`WLI = 0.5·min(1, clay/50) + 0.5·max(0, 1 − d_wt/3)`   (9)
+
+(clay in %, d_wt in m). Variety susceptibility enters as an ordinal multiplier (R/MR/MS/S → 0.2/0.5/0.8/1.0) from published cultivar screening. The two controllable levers are explicit: fruiting-time (bahar) suppresses the foliar axis by avoiding the wet window; drainage suppresses the soil axis.
 
 ### 2.6 Layer 3 — viability
 
 Growth fit is a fuzzy trapezoidal membership of each predicted microclimate variable against the crop's envelope, aggregated by the **limiting factor** (Liebig's law of the minimum). Viability combines growth and disease:
 
-`viability = growth_fit × (1 − disease_risk)`   (6)
+`viability = growth_fit × (1 − disease_risk)`   (10)
 
 so a crop with ideal growth conditions but high disease pressure correctly collapses. Envelopes for the headline intercrops (black pepper, nutmeg) are sourced from FAO ECOCROP and PROSEA; the remaining crops use screening-grade extension values.
 
@@ -167,27 +183,31 @@ so a crop with ideal growth conditions but high disease pressure correctly colla
 
 These are staged, transparent and **not trained**. Attainable yield bends a reference yield by the pipeline's own suitability and disease outputs:
 
-`attainable_yield = reference_yield × growth_fit × (1 − disease_risk)`   (7)
+`attainable_yield = reference_yield × growth_fit × (1 − disease_risk)`   (11)
 
-`crop_margin = attainable_yield × price − cost`   (8)
+`crop_margin = attainable_yield × price − cost`   (12)
 
-with banded mandi prices and costs validated against NHB DPRs and TNAU. Overstorey income is modelled for coconut (annual nuts) and timber (annualised over rotation). A 25-year discounted cash-flow respects timing (gestation, bearing ramp, single-harvest timber):
+with banded mandi prices and costs validated against NHB DPRs and TNAU. Maintenance scales with a bearing ramp so juvenile years cost only a fraction f_juv = 0.3 of full upkeep,
 
-`NPV = Σ_{t=1}^{H} C_t / (1 + r)^t`,   `0 = Σ_{t=1}^{H} C_t / (1 + IRR)^t`   (9, 10)
+`ramp(t) = 0  (t < gestation or t > life);  1  (t ≥ full);  (t − gestation + 1)/(full − gestation + 1)  otherwise`,   `maint(t) = maintain · max(f_juv, ramp(t))`   (13)
 
-with r = 0.08 real and H = 25 yr. Maintenance scales with the bearing ramp (juvenile years cost a fraction of full upkeep); charging full maintenance during gestation was a bug we caught by reality-checking against measured coconut economics and report as a validation-discipline illustration (§3.5).
+(charging full maintenance during gestation was a bug we caught by reality-checking against measured coconut economics — a validation-discipline illustration, §3.5). Overstorey income is modelled for coconut (annual nuts) and timber (annualised over rotation). A 25-year discounted cash-flow respects timing (gestation, bearing ramp, single-harvest timber):
+
+`NPV = Σ_{t=1}^{H} C_t / (1 + r)^t`,   `0 = Σ_{t=1}^{H} C_t / (1 + IRR)^t`   (14, 15)
+
+with r = 0.08 real and H = 25 yr.
 
 ### 2.8 Layer 6 — uncertainty and inverse design
 
 Monte-Carlo (M = 2,000–3,000 draws) samples the genuinely uncertain inputs — the temperature-offset band, attainable yield, crop price, and overstorey bands — and pushes each draw through the same chain:
 
-`NPV⁽ᵐ⁾ = f(offset⁽ᵐ⁾, yield⁽ᵐ⁾, price⁽ᵐ⁾, overstorey⁽ᵐ⁾)`   (11)
+`NPV⁽ᵐ⁾ = f(offset⁽ᵐ⁾, yield⁽ᵐ⁾, price⁽ᵐ⁾, overstorey⁽ᵐ⁾)`   (16)
 
-`P(loss) = (1/M) Σ_{m=1}^{M} 1[ NPV⁽ᵐ⁾ < 0 ]`   (12)
+`P(loss) = (1/M) Σ_{m=1}^{M} 1[ NPV⁽ᵐ⁾ < 0 ]`   (17)
 
 The inverse-design optimiser searches overstorey, canopy density (LAI), windbreak height/porosity and drainage to maximise a risk-aware objective,
 
-`objective = 0.7 · E[system_margin] + 0.3 · system_margin_downside`   (13)
+`objective = 0.7 · E[system_margin] + 0.3 · system_margin_downside`   (18)
 
 reusing layers 1–5 (the downside term is the low-band system margin, not a Monte-Carlo percentile).
 
@@ -195,11 +215,11 @@ reusing layers 1–5 (the downside term is the low-band system margin, not a Mon
 
 Because the central claim is transferability, we validate with two holdouts and report skill against a naive baseline (predict the training-mean offset),
 
-`MAE = (1/n) Σᵢ |yᵢ − ŷᵢ|`,   `skill = 1 − MAE_model / MAE_baseline`   (14, 15)
+`MAE = (1/n) Σᵢ |yᵢ − ŷᵢ|`,   `skill = 1 − MAE_model / MAE_baseline`   (19, 20)
 
 the metric that distinguishes a learned signal from a near-constant offset: (a) **leave-one-site-out (LOSO)** — an entire site held out per fold (within-climate transfer); (b) **leave-one-climate-out (LOCO)** — an entire macroclimate / canopy regime held out (Borneo humid forest / Mediterranean Spain / Borneo oil-palm open canopy) — the honest test of cross-macroclimate transfer. Out-of-sample R² is reported only where the holdout makes it numerically stable (it is unreliable under single-site holdout, where within-site offset variance is near-zero). For out-of-climate calibration we recalibrate the conformal width on n_cal points drawn from the held-out climate, using the nonconformity score
 
-`sᵢ = max( q_lo(xᵢ) − yᵢ ,  yᵢ − q_hi(xᵢ) )`,   `q̂_α = Quantile_{0.80}({sᵢ})`   (16, 17)
+`sᵢ = max( q_lo(xᵢ) − yᵢ ,  yᵢ − q_hi(xᵢ) )`,   `q̂_α = Quantile_{0.80}({sᵢ})`   (21, 22)
 
 and the recalibrated interval `PI(x) = [ q_lo(x) − q̂_α , q_hi(x) + q̂_α ]`.
 
@@ -211,7 +231,7 @@ and the recalibrated interval `PI(x) = [ q_lo(x) − q̂_α , q_hi(x) + q̂_α ]
 
 Under full leave-one-site-out across all 596 sites, the learned offset is genuinely skilful, not a recovered constant (Table 3; Fig. 4). Skill over the mean-offset baseline is **+48.7 % for dT_mean** (MAE 0.41 °C), **+48.1 % for dT_max** (MAE 1.10 °C) and **+55.8 % for dVPD** (MAE 0.15 kPa); conformal interval coverage is calibrated near the 0.8 target (0.76–0.82). Absolute MAE is somewhat higher than a forest-only subset (a documented two-climate forest LOSO gives dT_mean 0.28 °C) precisely because the full test set includes the harder open oil-palm sites — yet the model's *skill* over baseline rises. We report skill rather than per-fold R², which is numerically unstable under single-site holdout. Canopy-structure interactions (cover × radiation, LAI × height, NDVI) dominate feature importance, recovering the physical expectation that canopy buffering is structure-driven.
 
-**Table 3.** Full leave-one-site-out (596 sites). Skill is defined in Eq. (15).
+**Table 3.** Full leave-one-site-out (596 sites). Skill is defined in Eq. (20).
 
 | Target | MAE | Baseline MAE | Skill | Interval coverage |
 |---|---|---|---|---|
@@ -235,7 +255,7 @@ Applied to Anaikadu, the coconut design is flagged **OOD (score ≈ 0.58, offset
 
 ### 3.3 Few-shot conformal recalibration
 
-The out-of-climate coverage collapse is recoverable, and cheaply (Table 5; Fig. 6). Recalibrating the conformal width (Eqs. 16–17) on n_cal points drawn from the held-out climate, averaged over five seeds: at n_cal = 0 (the LOCO collapse) dT_mean coverage on the held-out Mediterranean climate is 0.08; with just **5–10 local points it returns to ~0.85–0.89 and stabilises near the 0.80 target by n_cal ≈ 25**, across all targets and climates. This is the quantitative case for the on-plot logger: the learned *point* prediction needs a full local season to retrain, but its *uncertainty* — the quantity that makes the tool honest — is restored by on the order of ten local measurements. It also shows the failure in §3.2 is one of calibration transfer, not a broken model.
+The out-of-climate coverage collapse is recoverable, and cheaply (Table 5; Fig. 6). Recalibrating the conformal width (Eqs. 21–22) on n_cal points drawn from the held-out climate, averaged over five seeds: at n_cal = 0 (the LOCO collapse) dT_mean coverage on the held-out Mediterranean climate is 0.08; with just **5–10 local points it returns to ~0.85–0.89 and stabilises near the 0.80 target by n_cal ≈ 25**, across all targets and climates. This is the quantitative case for the on-plot logger: the learned *point* prediction needs a full local season to retrain, but its *uncertainty* — the quantity that makes the tool honest — is restored by on the order of ten local measurements. It also shows the failure in §3.2 is one of calibration transfer, not a broken model.
 
 **Table 5.** dT_mean interval coverage (target 0.80) under LOCO, recalibrated on n_cal points from the held-out climate.
 
@@ -261,7 +281,7 @@ Under a wide-spaced coconut overstorey the physics layer predicts ≈ 39 % shade
 
 ### 3.5 Economics, finance and risk
 
-Converting viability to profit (Eqs. 7–12) turns "can the crop grow?" into "is the system worth planting under uncertainty?" (Table 7; Figs. 9–11). Over 25 years at an 8 % real hurdle, coconut + **black pepper** clears it decisively (NPV ≈ ₹565k/acre, IRR ≈ 33 %, payback 7 yr) with the **lowest probability of loss** among the intercrops (P(loss) ≈ 12 %); it is the strongest annual-cash system because it bears early, stays viable across the temperature band, and has lower loss probability than nutmeg. Coconut + nutmeg is marginal at the central estimate (NPV ≈ ₹127k, IRR ≈ 13 %, P(loss) ≈ 41 %) — its wide loss probability reflecting exactly the thermal-edge sensitivity of §3.4. Coconut alone is positive but modest (≈ ₹129k, P(loss) ≈ 3 %); banana under mature coconut is uneconomic. Timber overstoreys (mahogany, teak) show high *annualised* return but concentrate all risk in a single distant harvest at 15–18 yr and rest on LOW-confidence farm-gate prices. As a validation-discipline note, an early run mislabelled coconut monoculture as a guaranteed loss; the cause was full bearing-phase maintenance charged during the multi-year gestation, corrected by ramping maintenance with bearing and validating yields/prices against TNAU and the Salem study — an illustration that reality-checking model verdicts is part of the method.
+Converting viability to profit (Eqs. 11–17) turns "can the crop grow?" into "is the system worth planting under uncertainty?" (Table 7; Figs. 9–11). Over 25 years at an 8 % real hurdle, coconut + **black pepper** clears it decisively (NPV ≈ ₹565k/acre, IRR ≈ 33 %, payback 7 yr) with the **lowest probability of loss** among the intercrops (P(loss) ≈ 12 %); it is the strongest annual-cash system because it bears early, stays viable across the temperature band, and has lower loss probability than nutmeg. Coconut + nutmeg is marginal at the central estimate (NPV ≈ ₹127k, IRR ≈ 13 %, P(loss) ≈ 41 %) — its wide loss probability reflecting exactly the thermal-edge sensitivity of §3.4. Coconut alone is positive but modest (≈ ₹129k, P(loss) ≈ 3 %); banana under mature coconut is uneconomic. Timber overstoreys (mahogany, teak) show high *annualised* return but concentrate all risk in a single distant harvest at 15–18 yr and rest on LOW-confidence farm-gate prices. As a validation-discipline note, an early run mislabelled coconut monoculture as a guaranteed loss; the cause was full bearing-phase maintenance charged during the multi-year gestation, corrected by ramping maintenance with bearing and validating yields/prices against TNAU and the Salem study — an illustration that reality-checking model verdicts is part of the method.
 
 **Table 7.** Anaikadu system finance and risk (25 yr, 8 % real).
 
