@@ -17,7 +17,7 @@ The honest shape of this paper — a **coupled, transparent design→microclimat
 
 **Cheap / doable now (no new data):**
 - [x] **Full 596-site LOSO done** → `reports/loso_full_metrics.json` (dT_mean +48.7% skill / MAE 0.41 °C; dT_max +48.1%; dVPD +55.8%; coverage 0.76–0.82). Inserted in §5 (Table 1). Note: per-site R² is numerically unstable (near-zero within-site variance) — report skill, not R², for LOSO.
-- [ ] Verify every **[verify]** citation (DOIs, exact venue/year) — especially Lembrechts/SoilTemp, De Frenne 2021 review, Hardwick 2015, Pylianidis 2021, Romano 2019, dataset authorship for SAFE / La Jarda.
+- [x] **Citations verified** (June 2026, PubMed + publisher records): De Frenne 2019 (10.1038/s41559-019-0842-1), De Frenne 2021 review (10.1111/gcb.15569), Haesen/ForestTemp (10.1111/gcb.15892), Lembrechts/SoilTemp (10.1111/gcb.15123), Zellweger (10.1016/j.tree.2018.12.012), Hardwick 2015 (10.1016/j.agrformet.2014.11.010), Pylianidis 2021 (10.1016/j.compag.2020.105942), Romano CQR (arXiv:1905.03222), Chen&Guestrin XGBoost (10.1145/2939672.2939785). Datasets cited by Zenodo DOI — still confirm exact depositor names against each record's "Cite as" before submission.
 - [ ] Add a **methods figure** (the 6-layer schematic) and ensure Figs 1–6 are publication-resolution with captions.
 - [ ] Add a short **related-work** paragraph contrasting explicitly with ForestTemp (we extend offset→agroforestry-design→downstream) and with crop-suitability/digital-twin tools (we add the microclimate + disease coupling).
 - [ ] **Per-climate (Mondrian) conformal** experiment to show whether coverage can be restored out-of-climate — strengthens the uncertainty story and pre-empts a reviewer ask.

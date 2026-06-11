@@ -131,20 +131,22 @@ The pipeline is an installable package (`src/agroforestry/`: physics, models, pr
 
 ## References
 
-*(Working list — verify formatting and complete missing details before submission.)*
+*Bibliographic details verified June 2026 (PubMed for the ecology references 1–6; publisher records for 7–9). Dataset entries are cited by Zenodo DOI; confirm exact depositor names against each record's "Cite as" field before submission.*
 
-- De Frenne, P., Zellweger, F., Rodríguez-Sánchez, F., Scheffers, B. R., Hylander, K., Luoto, M., Vellend, M., Verheyen, K., & Lenoir, J. (2019). Global buffering of temperatures under forest canopies. *Nature Ecology & Evolution*, 3(5), 744–749.
-- De Frenne, P., et al. (2021). Forest microclimates and climate change: importance, drivers and future research agenda. *Global Change Biology* / *Trends in Ecology & Evolution*. **[verify exact venue/year]**
-- Haesen, S., Lembrechts, J. J., et al. (2021). ForestTemp – Sub-canopy microclimate temperatures of European forests. *Global Change Biology*, 27(23), 6307–6319.
-- Lembrechts, J. J., et al. (2020/2022). SoilTemp: a global database of near-surface temperature. *Global Change Biology*. **[verify]**
-- Hardwick, S. R., et al. (2015). The relationship between leaf area index and microclimate in tropical forest and oil palm plantation. *Agricultural and Forest Meteorology*. **[verify]**
-- Zellweger, F., et al. (2019/2020). Advances in microclimate ecology arising from remote sensing. *Trends in Ecology & Evolution*. **[verify]**
-- Pylianidis, C., Osinga, S., & Athanasiadis, I. N. (2021). Introducing digital twins to agriculture. *Computers and Electronics in Agriculture*, 184, 105942. **[verify]**
-- Romano, Y., Patterson, E., & Candès, E. (2019). Conformalized quantile regression. *NeurIPS*. **[verify]**
-- Chen, T., & Guestrin, C. (2016). XGBoost: a scalable tree boosting system. *KDD*. **[verify]**
-- FAO. ECOCROP crop environmental requirements database. **[verify citation form]**
-- Ewers, R. M., et al. (SAFE Project) and associated microclimate dataset descriptors (Zenodo 1228188, 3906082, 7893600). **[verify]**
-- La Jarda Mediterranean microclimate dataset (Zenodo 18913503). **[verify authorship]**
+1. De Frenne, P., Zellweger, F., Rodríguez-Sánchez, F., Scheffers, B. R., Hylander, K., Luoto, M., Vellend, M., Verheyen, K., & Lenoir, J. (2019). Global buffering of temperatures under forest canopies. *Nature Ecology & Evolution*, 3(5), 744–749. https://doi.org/10.1038/s41559-019-0842-1
+2. De Frenne, P., Lenoir, J., Luoto, M., Scheffers, B. R., Zellweger, F., Aalto, J., … Hylander, K. (2021). Forest microclimates and climate change: Importance, drivers and future research agenda. *Global Change Biology*, 27(11), 2279–2297. https://doi.org/10.1111/gcb.15569
+3. Haesen, S., Lembrechts, J. J., De Frenne, P., Lenoir, J., Aalto, J., Ashcroft, M. B., … Van Meerbeek, K. (2021). ForestTemp – Sub-canopy microclimate temperatures of European forests. *Global Change Biology*, 27(23), 6307–6319. https://doi.org/10.1111/gcb.15892
+4. Lembrechts, J. J., Aalto, J., Ashcroft, M. B., De Frenne, P., Kopecký, M., Lenoir, J., … Nijs, I. (2020). SoilTemp: A global database of near-surface temperature. *Global Change Biology*, 26(11), 6616–6629. https://doi.org/10.1111/gcb.15123
+5. Zellweger, F., De Frenne, P., Lenoir, J., Rocchini, D., & Coomes, D. (2019). Advances in microclimate ecology arising from remote sensing. *Trends in Ecology & Evolution*, 34(4), 327–341. https://doi.org/10.1016/j.tree.2018.12.012
+6. Hardwick, S. R., Toumi, R., Pfeifer, M., Turner, E. C., Nilus, R., & Ewers, R. M. (2015). The relationship between leaf area index and microclimate in tropical forest and oil palm plantation: Forest disturbance drives changes in microclimate. *Agricultural and Forest Meteorology*, 201, 187–195. https://doi.org/10.1016/j.agrformet.2014.11.010
+7. Pylianidis, C., Osinga, S., & Athanasiadis, I. N. (2021). Introducing digital twins to agriculture. *Computers and Electronics in Agriculture*, 184, 105942. https://doi.org/10.1016/j.compag.2020.105942
+8. Romano, Y., Patterson, E., & Candès, E. J. (2019). Conformalized quantile regression. *Advances in Neural Information Processing Systems (NeurIPS)*, 32, 3538–3548. arXiv:1905.03222. https://doi.org/10.48550/arXiv.1905.03222
+9. Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (KDD '16)*, 785–794. https://doi.org/10.1145/2939672.2939785
+10. FAO. *ECOCROP — Crop environmental requirements database*. Food and Agriculture Organization of the United Nations, Rome. https://gaez.fao.org/pages/ecocrop *(online database; accessed 2026)*
+11. [dataset] SAFE Project — Forest microclimate (1st-order sites), Sabah, Borneo. Zenodo. https://doi.org/10.5281/zenodo.1228188
+12. [dataset] SAFE Project gazetteer of site locations. Zenodo. https://doi.org/10.5281/zenodo.3906082
+13. [dataset] SAFE landscape sub-canopy microclimate rasters (forest → logged → oil palm → cleared), Borneo. Zenodo. https://doi.org/10.5281/zenodo.7893600
+14. [dataset] La Jarda microclimate time series, Cádiz, Spain (Mediterranean). Zenodo. https://doi.org/10.5281/zenodo.18913503
 
 ---
 
