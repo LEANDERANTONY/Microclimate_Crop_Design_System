@@ -59,6 +59,6 @@ ax.text(centers[0], y0 + box_h + 0.55, "Macroclimate (ERA5) + controllable farm 
 ax.set_title("Six-layer agroforestry design → microclimate → disease → profit pipeline (confidence-labelled, uncertainty-propagated)",
              fontsize=11.5, fontweight="bold", color=INK, pad=12)
 
-fig.savefig("figures/fig0_pipeline.png", dpi=150, bbox_inches="tight")
+fig.savefig("figures/fig0_pipeline.png", dpi=300, bbox_inches="tight")
 plt.close(fig)
 print("wrote figures/fig0_pipeline.png")

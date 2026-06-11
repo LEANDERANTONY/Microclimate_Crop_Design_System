@@ -14,7 +14,7 @@ plt.rcParams.update({"font.size": 11, "axes.edgecolor": "#cfccc0", "axes.titlesi
 
 def save(fig, name):
     fig.tight_layout()
-    fig.savefig(f"figures/{name}", dpi=120, bbox_inches="tight")
+    fig.savefig(f"figures/{name}", dpi=300, bbox_inches="tight")
     plt.close(fig)
     print("wrote figures/" + name)
 
