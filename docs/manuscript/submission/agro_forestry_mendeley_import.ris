@@ -1,0 +1,313 @@
+TY  - JOUR
+AU  - De Frenne, Pieter
+AU  - Zellweger, Florian
+AU  - Rodriguez-Sanchez, Francisco
+AU  - Scheffers, Brett R.
+AU  - Hylander, Kristoffer
+AU  - Luoto, Miska
+AU  - Vellend, Mark
+AU  - Verheyen, Kris
+AU  - Lenoir, Jonathan
+TI  - Global buffering of temperatures under forest canopies
+JO  - Nature Ecology & Evolution
+PY  - 2019
+VL  - 3
+IS  - 5
+SP  - 744
+EP  - 749
+DO  - 10.1038/s41559-019-0842-1
+ER  -
+
+TY  - JOUR
+AU  - De Frenne, Pieter
+AU  - Lenoir, Jonathan
+AU  - Luoto, Miska
+AU  - Scheffers, Brett R.
+AU  - Zellweger, Florian
+AU  - Aalto, Juha
+AU  - Ashcroft, Michael B.
+AU  - Christiansen, Ditte Marie
+AU  - Decocq, Guillaume
+AU  - De Pauw, Karen
+AU  - Govaert, Sanne
+AU  - Greiser, Caroline
+AU  - Gril, Eva
+AU  - Hampe, Arndt
+AU  - Jucker, Tommaso
+AU  - Klinges, David H.
+AU  - Koelemeijer, Irena A.
+AU  - Lembrechts, Jonas J.
+AU  - Marrec, Ronan
+AU  - Meeussen, Camille
+AU  - Ogée, Jérôme
+AU  - Tyystjärvi, Ville
+AU  - Vangansbeke, Pieter
+AU  - Hylander, Kristoffer
+TI  - Forest microclimates and climate change: Importance, drivers and future research agenda
+JO  - Global Change Biology
+PY  - 2021
+VL  - 27
+IS  - 11
+SP  - 2279
+EP  - 2297
+DO  - 10.1111/gcb.15569
+ER  -
+
+TY  - JOUR
+AU  - Haesen, Stef
+AU  - Lembrechts, Jonas J.
+AU  - De Frenne, Pieter
+AU  - Lenoir, Jonathan
+AU  - Aalto, Juha
+AU  - Ashcroft, Michael B.
+AU  - Kopecký, Martin
+AU  - Luoto, Miska
+AU  - Maclean, Ilya M. D.
+AU  - Van Meerbeek, Koenraad
+TI  - ForestTemp: Sub-canopy microclimate temperatures of European forests
+JO  - Global Change Biology
+PY  - 2021
+VL  - 27
+IS  - 23
+SP  - 6307
+EP  - 6319
+DO  - 10.1111/gcb.15892
+ER  -
+
+TY  - JOUR
+AU  - Lembrechts, Jonas J.
+AU  - Aalto, Juha
+AU  - Ashcroft, Michael B.
+AU  - De Frenne, Pieter
+AU  - Kopecký, Martin
+AU  - Lenoir, Jonathan
+AU  - Nijs, Ivan
+TI  - SoilTemp: A global database of near-surface temperature
+JO  - Global Change Biology
+PY  - 2020
+VL  - 26
+IS  - 11
+SP  - 6616
+EP  - 6629
+DO  - 10.1111/gcb.15123
+ER  -
+
+TY  - JOUR
+AU  - Zellweger, Florian
+AU  - De Frenne, Pieter
+AU  - Lenoir, Jonathan
+AU  - Rocchini, Duccio
+AU  - Coomes, David
+TI  - Advances in microclimate ecology arising from remote sensing
+JO  - Trends in Ecology & Evolution
+PY  - 2019
+VL  - 34
+IS  - 4
+SP  - 327
+EP  - 341
+DO  - 10.1016/j.tree.2018.12.012
+ER  -
+
+TY  - JOUR
+AU  - Hardwick, Stephen R.
+AU  - Toumi, Ralf
+AU  - Pfeifer, Marion
+AU  - Turner, Edgar C.
+AU  - Nilus, Reuben
+AU  - Ewers, Robert M.
+TI  - The relationship between leaf area index and microclimate in tropical forest and oil palm plantation: Forest disturbance drives changes in microclimate
+JO  - Agricultural and Forest Meteorology
+PY  - 2015
+VL  - 201
+SP  - 187
+EP  - 195
+DO  - 10.1016/j.agrformet.2014.11.010
+ER  -
+
+TY  - JOUR
+AU  - Pylianidis, Christos
+AU  - Osinga, Sjoukje
+AU  - Athanasiadis, Ioannis N.
+TI  - Introducing digital twins to agriculture
+JO  - Computers and Electronics in Agriculture
+PY  - 2021
+VL  - 184
+SP  - 105942
+DO  - 10.1016/j.compag.2020.105942
+ER  -
+
+TY  - JOUR
+AU  - Romano, Yaniv
+AU  - Patterson, Evan
+AU  - Candès, Emmanuel J.
+TI  - Conformalized quantile regression
+JO  - Advances in Neural Information Processing Systems
+PY  - 2019
+VL  - 32
+SP  - 3538
+EP  - 3548
+DO  - 10.48550/arXiv.1905.03222
+UR  - https://arxiv.org/abs/1905.03222
+ER  -
+
+TY  - CONF
+AU  - Chen, Tianqi
+AU  - Guestrin, Carlos
+TI  - XGBoost: A scalable tree boosting system
+T2  - Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining
+PY  - 2016
+SP  - 785
+EP  - 794
+DO  - 10.1145/2939672.2939785
+ER  -
+
+TY  - ELEC
+AU  - Food and Agriculture Organization of the United Nations
+TI  - ECOCROP: Crop environmental requirements database
+PY  - 2026
+UR  - https://gaez.fao.org/pages/ecocrop
+N1  - Online database; accessed June 2026.
+ER  -
+
+TY  - DATA
+AU  - Hardwick, Stephen
+AU  - Nilus, Reuben
+AU  - Ewers, Robert
+TI  - Forest microclimate data: 1st order sites, Sabah, Borneo
+PB  - Zenodo
+PY  - 2018
+DO  - 10.5281/zenodo.1228188
+UR  - https://doi.org/10.5281/zenodo.1228188
+ER  -
+
+TY  - DATA
+AU  - SAFE Project
+TI  - SAFE Project gazetteer of site locations
+PB  - Zenodo
+PY  - 2020
+DO  - 10.5281/zenodo.3906082
+UR  - https://doi.org/10.5281/zenodo.3906082
+ER  -
+
+TY  - DATA
+AU  - SAFE Project
+TI  - SAFE landscape sub-canopy microclimate rasters spanning forest, logged forest, oil palm and cleared land
+PB  - Zenodo
+PY  - 2023
+DO  - 10.5281/zenodo.7893600
+UR  - https://doi.org/10.5281/zenodo.7893600
+ER  -
+
+TY  - DATA
+AU  - Rodríguez-Sánchez, Francisco
+TI  - La Jarda microclimate time series, Cádiz, Spain
+PB  - Zenodo
+PY  - 2026
+DO  - 10.5281/zenodo.18913503
+UR  - https://doi.org/10.5281/zenodo.18913503
+ER  -
+
+TY  - JOUR
+AU  - Maclean, Ilya M. D.
+AU  - Mosedale, Jonathan R.
+AU  - Bennie, Jonathan J.
+TI  - Microclima: An R package for modelling meso- and microclimate
+JO  - Methods in Ecology and Evolution
+PY  - 2019
+VL  - 10
+IS  - 2
+SP  - 280
+EP  - 290
+DO  - 10.1111/2041-210X.13093
+ER  -
+
+TY  - JOUR
+AU  - Kearney, Michael R.
+AU  - Porter, Warren P.
+TI  - NicheMapR: An R package for biophysical modelling: The microclimate model
+JO  - Ecography
+PY  - 2017
+VL  - 40
+IS  - 5
+SP  - 664
+EP  - 674
+DO  - 10.1111/ecog.02360
+ER  -
+
+TY  - JOUR
+AU  - Niether, Wiebke
+AU  - Armengot, Laura
+AU  - Andres, Christian
+AU  - Schneider, Monika
+AU  - Gerold, Gerhard
+TI  - Shade trees and tree pruning alter throughfall and microclimate in cocoa (Theobroma cacao L.) production systems
+JO  - Annals of Forest Science
+PY  - 2018
+VL  - 75
+SP  - 38
+DO  - 10.1007/s13595-018-0723-9
+ER  -
+
+TY  - JOUR
+AU  - Merle, Isabelle
+AU  - Villarreyna-Acuña, Rogelio
+AU  - Ribeyre, Fabienne
+AU  - Roupsard, Olivier
+AU  - Cilas, Christian
+AU  - Avelino, Jacques
+TI  - Microclimate estimation under different coffee-based agroforestry systems using full-sun weather data and shade tree characteristics
+JO  - European Journal of Agronomy
+PY  - 2022
+VL  - 132
+SP  - 126396
+DO  - 10.1016/j.eja.2021.126396
+ER  -
+
+TY  - JOUR
+AU  - Radočaj, Dorijan
+AU  - Jurišić, Mladen
+TI  - GIS-Based Cropland Suitability Prediction Using Machine Learning: A Novel Approach to Sustainable Agricultural Production
+JO  - Agronomy
+PY  - 2022
+VL  - 12
+IS  - 9
+SP  - 2210
+DO  - 10.3390/agronomy12092210
+ER  -
+
+TY  - JOUR
+AU  - Farag, Mohamed
+AU  - Emam, Ahmed
+AU  - Leonhardt, Johannes
+AU  - Roscher, Ribana
+TI  - Enhancing decision support in crop production: Analyzing conformal prediction for uncertainty quantification
+JO  - Computers and Electronics in Agriculture
+PY  - 2025
+VL  - 237
+SP  - 110559
+DO  - 10.1016/j.compag.2025.110559
+ER  -
+
+TY  - JOUR
+AU  - Wang, Tiantian
+AU  - Dong, Jinwei
+TI  - Global crop suitability datasets for 17 crops under present (2024) and future climate scenarios (2041-2100)
+JO  - Scientific Data
+PY  - 2026
+VL  - 13
+SP  - 691
+DO  - 10.1038/s41597-026-06688-4
+ER  -
+
+TY  - JOUR
+AU  - Yalew, Seleshi G.
+AU  - van Griensven, Ann
+AU  - van der Zaag, Pieter
+TI  - AgriSuit: A web-based GIS-MCDA framework for agricultural land suitability assessment
+JO  - Computers and Electronics in Agriculture
+PY  - 2016
+VL  - 128
+SP  - 1
+EP  - 8
+DO  - 10.1016/j.compag.2016.08.008
+ER  -
