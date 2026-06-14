@@ -4,7 +4,7 @@ Build priorities for the agroforestry microclimate → crop → profit system.
 Philosophy unchanged: build what the available data can honestly support, defer
 what it cannot, label confidence everywhere.
 
-## Done (all six layers built, validated, runnable — 26 tests)
+## Done (all six layers built, validated, runnable — 35 tests)
 
 - **Repo**: `uv` env + lockfile, `src/` package, ADRs 001–013, DEVLOG, tests.
 - **Layer 1 — microclimate**: Beer–Lambert light + shelterbelt wind (physics);
@@ -18,6 +18,18 @@ what it cannot, label confidence everywhere.
   negative on a held-out climate; intervals lose calibration). A physics-prior+residual
   **hybrid** was built + tested — competitive in-distribution, does NOT rescue cross-climate;
   pure quantile model stays default. `scripts/run_validation.py` → loso/loco_metrics.json.
+- **Few-shot conformal recalibration**: ~5–25 in-regime calibration points restore
+  out-of-climate interval coverage (0.08 → ~0.80); `scripts/mondrian_conformal.py` →
+  `reports/mondrian_metrics.json`. Reframed as few-shot domain adaptation.
+- **Model-family benchmark (packaged + tested)**: Ridge / Random Forest / Gaussian process /
+  mixture-of-experts vs the XGBoost-quantile + physics-hybrid, under LOCO + in-distribution
+  holdout. Finding: transfer failure is a data-regime property, not an estimator flaw — only
+  the distance-aware GP stays calibrated out-of-climate. `src/agroforestry/models_benchmark.py`,
+  `scripts/benchmark_models.py` → `reports/benchmark_metrics.json`.
+- **Manuscript drafted**: literature-review introduction, 22 numbered equations, 8 tables,
+  12 figures, declarations, verified references; submission `.docx`, venue analysis, cover
+  letter and EarthArXiv checklist in `docs/manuscript/`. Figures: `make_paper_figures.py`;
+  Word build: `build_docx.py`.
 - **Layer 2 — disease**: two axes (foliar air + soil-water/waterlogging), variety
   susceptibility, drainage lever; literature-calibrated (ADR-003/004), waterlogging
   data-calibrated (ADR-005).
@@ -42,15 +54,22 @@ what it cannot, label confidence everywhere.
   the pan-tropical understory maps (30 m South-Asia subset requested from authors). With
   a warm-climate source in-set, the hybrid's backbone would interpolate rather than
   extrapolate. The definitive fix is the user's **own plot logger (year 1)** — a single
-  season would collapse the offset uncertainty (ADR-008/009/012). Also: per-climate
-  (Mondrian) conformal calibration to restore out-of-climate interval coverage.
+  season would collapse the offset uncertainty (ADR-008/009/012). (Few-shot / Mondrian
+  conformal recalibration is already implemented and shows ~5–25 local points restore
+  out-of-climate coverage — done.)
 - **Economics prices to HIGH**: CEDA-Ashoka 3-yr monthly Agmarknet series (site is
   bot-blocked from this environment → user-side CSV export), plus TNAU per-crop cost line
   items for the high-input crops.
 
-## Later: depth + write-up
+## Next: submit
 
-- **Written manuscript** from the preprint sections (publication/preprint target).
+- **Post the preprint** (EarthArXiv): register ORCID, confirm the four Zenodo dataset
+  "Cite as" depositor names, Mendeley-format the references to the target style, Save-as-PDF.
+  Then submit the journal version (primary target per `docs/manuscript/JOURNAL_VETTING.md`:
+  Ecological Informatics / Agricultural Systems / Smart Agricultural Technology).
+
+## Later: depth
+
 - **Multi-crop portfolio** optimisation (a mix, not one intercrop) and a **spatial planting
   layout** (windbreak placement, row design).
 - Bayesian-opt / NSGA-II inverse design replacing the grid search.

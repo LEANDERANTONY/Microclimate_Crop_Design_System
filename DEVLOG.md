@@ -2,6 +2,24 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-11 — Manuscript build, journal formatting, submission package, doc sync
+
+- **Manuscript drafted and matured** (`docs/manuscript/manuscript.md`): literature-review
+  introduction (§1.1–1.5, forest/agroforestry microclimate, crop-suitability ML, disease, conformal
+  + digital twins), **Materials and methods** reorg (study site → data → layers → validation),
+  single **Results** umbrella, **Conclusion**, Nomenclature, declarations. References verified with
+  DOIs (PubMed + publisher records). **22 numbered equations** (incl. 5 mechanistic ones from the
+  code: windbreak penalty, disease beta-response, LWD, waterlogging index, bearing-ramp). **8 tables**
+  and **12 figures** (5 new: site map, feature-space/OOD, LOCO heatmap, few-shot curve, crop-envelope
+  overlay, benchmark; `make_paper_figures.py`; all 300 dpi). Headline crops sourced to ECOCROP/PROSEA
+  (sharpened the pick to pepper). Abstract trimmed to 248 words; Highlights to 5; figures/tables
+  renumbered to appearance order; "Materials and methods" kept (correct heading, not "Methodology").
+- **Submission package**: `build_docx.py` (markdown→docx with embedded figures) → `submission/*.docx`;
+  `JOURNAL_VETTING.md` (venue shortlist + readiness), `cover_letter.md`, `PREPRINT_SUBMISSION.md`
+  (EarthArXiv checklist), Mendeley `.ris`. python-docx + pypdf pip-installed into `.venv`.
+- **Docs synced** to current state: README (badge 35, benchmark finding, manuscript, run/layout),
+  ROADMAP, AGENT.md, PROJECT_CONTEXT.md.
+
 ## 2026-06-11 — Model-family benchmark under climate shift
 
 - `scripts/benchmark_models.py` → `reports/benchmark_metrics.json`: six families on the same
