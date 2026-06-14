@@ -13,6 +13,7 @@ Independent research · Anaikadu (Pattukkottai), Thanjavur District, Tamil Nadu,
 - Canopy temperature/VPD offsets are learned (gradient-boosted, quantile) with conformal intervals and an out-of-distribution flag; light and wind are mechanistic.
 - Offsets transfer **within** climate (leave-one-site-out skill +49 %) but **fail across** macroclimates (leave-one-climate-out skill negative; intervals lose calibration).
 - ~5–25 local calibration points restore out-of-climate interval coverage from 0.08 to ~0.80 — quantifying the value of on-plot sensing.
+- A six-family benchmark shows transfer failure is a data-regime property, not an estimator flaw; only a distance-aware Gaussian process stays calibrated out-of-climate.
 - For a real Tamil Nadu farm, coconut + black pepper is the robust, profitable pick; the model flags rather than over-claims its extrapolations.
 
 ---
@@ -191,7 +192,7 @@ with banded mandi prices and costs validated against NHB DPRs and TNAU. Maintena
 
 `ramp(t) = 0  (t < gestation or t > life);  1  (t ≥ full);  (t − gestation + 1)/(full − gestation + 1)  otherwise`,   `maint(t) = maintain · max(f_juv, ramp(t))`   (13)
 
-(charging full maintenance during gestation was a bug we caught by reality-checking against measured coconut economics — a validation-discipline illustration, §3.5). Overstorey income is modelled for coconut (annual nuts) and timber (annualised over rotation). A 25-year discounted cash-flow respects timing (gestation, bearing ramp, single-harvest timber):
+(charging full maintenance during gestation was a bug we caught by reality-checking against measured coconut economics — a validation-discipline illustration, §3.6). Overstorey income is modelled for coconut (annual nuts) and timber (annualised over rotation). A 25-year discounted cash-flow respects timing (gestation, bearing ramp, single-harvest timber):
 
 `NPV = Σ_{t=1}^{H} C_t / (1 + r)^t`,   `0 = Σ_{t=1}^{H} C_t / (1 + IRR)^t`   (14, 15)
 
@@ -222,6 +223,10 @@ the metric that distinguishes a learned signal from a near-constant offset: (a) 
 `sᵢ = max( q_lo(xᵢ) − yᵢ ,  yᵢ − q_hi(xᵢ) )`,   `q̂_α = Quantile_{0.80}({sᵢ})`   (21, 22)
 
 and the recalibrated interval `PI(x) = [ q_lo(x) − q̂_α , q_hi(x) + q̂_α ]`.
+
+### 2.10 Model-family comparison
+
+To probe whether transfer failure is estimator-specific, we evaluate six model families on the same features, targets and folds (§3.4): Ridge regression, Random Forest, a **Gaussian process** (RBF + white-noise kernel on standardised features, giving a distance-aware predictive variance), a non-neural **mixture-of-experts** (one Ridge expert per training regime with a softmax distance gate, uncertainty from expert disagreement), the XGBoost-quantile model of §2.4, and the physics-prior hybrid. All are wrapped to a common interval interface and scored by skill (Eq. 20) and interval coverage under both a grouped site holdout and leave-one-climate-out. Neural variants (domain-adversarial representation learning, neural residual networks) are deliberately out of scope here — a three-regime dataset overfits them, and domain-invariant representations risk erasing genuinely regime-dependent buffering — and are noted as future work.
 
 ---
 
@@ -255,7 +260,7 @@ Applied to Anaikadu, the coconut design is flagged **OOD (score ≈ 0.58, offset
 
 ### 3.3 Few-shot conformal recalibration
 
-The out-of-climate coverage collapse is recoverable, and cheaply (Table 5; Fig. 6). Recalibrating the conformal width (Eqs. 21–22) on n_cal points drawn from the held-out climate, averaged over five seeds: at n_cal = 0 (the LOCO collapse) dT_mean coverage on the held-out Mediterranean climate is 0.08; with just **5–10 local points it returns to ~0.85–0.89 and stabilises near the 0.80 target by n_cal ≈ 25**, across all targets and climates. This is the quantitative case for the on-plot logger: the learned *point* prediction needs a full local season to retrain, but its *uncertainty* — the quantity that makes the tool honest — is restored by on the order of ten local measurements. It also shows the failure in §3.2 is one of calibration transfer, not a broken model.
+The out-of-climate coverage collapse is recoverable, and cheaply (Table 5; Fig. 6). Recalibrating the conformal width (Eqs. 21–22) on n_cal points drawn from the held-out climate, averaged over five seeds: at n_cal = 0 (the LOCO collapse) dT_mean coverage on the held-out Mediterranean climate is 0.08; with just **5–10 local points it returns to ~0.85–0.89 and stabilises near the 0.80 target by n_cal ≈ 25**, across all targets and climates. This is the quantitative case for the on-plot logger: the learned *point* prediction needs a full local season to retrain, but its *uncertainty* — the quantity that makes the tool honest — is restored by on the order of ten local measurements. It also shows the failure in §3.2 is one of calibration transfer, not a broken model. Framed in transfer-learning terms, this is a non-parametric **few-shot domain adaptation** of the uncertainty model; full point-prediction adaptation (meta-learning, neural processes) would require many more regimes to train and is left for future work.
 
 **Table 5.** dT_mean interval coverage (target 0.80) under LOCO, recalibrated on n_cal points from the held-out climate.
 
@@ -265,7 +270,22 @@ The out-of-climate coverage collapse is recoverable, and cheaply (Table 5; Fig. 
 | Mediterranean Spain | 0.08 | 0.87 | 0.89 | 0.77 | 0.75 |
 | Borneo oil-palm (open) | 0.17 | 0.84 | 0.89 | 0.83 | 0.78 |
 
-### 3.4 Anaikadu case study: microclimate and crop ranking
+### 3.4 Model-family comparison under climate shift
+
+To test whether the transfer failure is specific to gradient boosting or a property of the problem, we benchmarked six model families on the identical offset task and folds (Methods §2.10; Table 8; Fig. 12): a Ridge linear baseline, Random Forest, a Gaussian process (distance-aware predictive variance), a non-neural mixture-of-experts (one regime expert + a distance gate), the paper's XGBoost-quantile model, and the physics-prior hybrid. Two results stand out. First, **in-distribution every family is skilful** (positive skill on a grouped site holdout), so the within-climate signal is real and estimator-agnostic. Second, **under leave-one-climate-out the families diverge sharply**: the linear model and the mixture-of-experts extrapolate catastrophically (skill ≈ −324 % and −82 % averaged over targets), the tree-based models (XGBoost, Random Forest, hybrid) are bounded but lose essentially all skill (≈ −7 to −19 %), and **only the Gaussian process retains non-negative cross-climate skill (≈ +7 %) while keeping the best-calibrated out-of-climate intervals** (coverage ≈ 0.62 vs 0.31–0.58), because its variance grows with distance from the training data. The mixture-of-experts attains comparable coverage only by inflating intervals through expert disagreement, not by predicting better. No family transfers across the warm-night gap — confirming the limitation is the data regime, not the estimator — but the comparison shows that **distance-aware uncertainty** (the Gaussian process, and by extension the conformal layer used throughout) is the most honest estimator under climate shift, and motivates the few-shot recalibration of §3.3.
+
+**Table 8.** Model-family comparison: skill (vs train-mean baseline, Eq. 20) and out-of-climate interval coverage, averaged over the three offset targets. *In-distribution* is a grouped 20 % site holdout (single split, for relative comparison between models; the robust within-climate figure is the full LOSO of Table 3). *LOCO* is leave-one-climate-out.
+
+| Model | In-distribution skill | Cross-climate (LOCO) skill | LOCO coverage |
+|---|---|---|---|
+| Ridge (linear) | +34 % | −324 % | 0.31 |
+| Random forest | +42 % | −7 % | 0.31 |
+| **Gaussian process** | +36 % | **+7 %** | **0.62** |
+| Mixture-of-experts | +19 % | −82 % | 0.63 |
+| XGBoost (this work) | +8 % | −17 % | 0.49 |
+| Physics-prior hybrid | +9 % | −19 % | 0.58 |
+
+### 3.5 Anaikadu case study: microclimate and crop ranking
 
 Under a wide-spaced coconut overstorey the physics layer predicts ≈ 39 % shade and a modest in-field wind reduction (HIGH confidence; Fig. 7); the temperature/VPD offset is reported with its LOW-confidence flag. Scoring candidate intercrops against the ECOCROP/PROSEA-sourced envelopes (Fig. 8), all candidates are temperature-limited at this hot site. Sweeping the *uncertain* temperature offset across its full plausible band (Table 6) is revealing: **black pepper is the top intercrop at every point in the sweep** — its lead is robust to the temperature uncertainty — whereas **nutmeg leads only at the cool end** (offset −3 °C) and collapses at the central and warm estimates, because Anaikadu sits at the upper edge of nutmeg's flowering optimum (~32 °C). The model thus makes two distinct, differently-confident claims: pepper is the actionable pick now; nutmeg is conditionally viable, contingent on a cooler microclimate that on-plot sensing would confirm.
 
@@ -279,9 +299,9 @@ Under a wide-spaced coconut overstorey the physics layer predicts ≈ 39 % shade
 | +1.5 °C | 38.2 | **Pepper 31** · Nutmeg 0 · Banana 0 |
 | +3 °C | 39.7 | **Pepper 7** · Nutmeg 0 · Banana 0 |
 
-### 3.5 Economics, finance and risk
+### 3.6 Economics, finance and risk
 
-Converting viability to profit (Eqs. 11–17) turns "can the crop grow?" into "is the system worth planting under uncertainty?" (Table 7; Figs. 9–11). Over 25 years at an 8 % real hurdle, coconut + **black pepper** clears it decisively (NPV ≈ ₹565k/acre, IRR ≈ 33 %, payback 7 yr) with the **lowest probability of loss** among the intercrops (P(loss) ≈ 12 %); it is the strongest annual-cash system because it bears early, stays viable across the temperature band, and has lower loss probability than nutmeg. Coconut + nutmeg is marginal at the central estimate (NPV ≈ ₹127k, IRR ≈ 13 %, P(loss) ≈ 41 %) — its wide loss probability reflecting exactly the thermal-edge sensitivity of §3.4. Coconut alone is positive but modest (≈ ₹129k, P(loss) ≈ 3 %); banana under mature coconut is uneconomic. Timber overstoreys (mahogany, teak) show high *annualised* return but concentrate all risk in a single distant harvest at 15–18 yr and rest on LOW-confidence farm-gate prices. As a validation-discipline note, an early run mislabelled coconut monoculture as a guaranteed loss; the cause was full bearing-phase maintenance charged during the multi-year gestation, corrected by ramping maintenance with bearing and validating yields/prices against TNAU and the Salem study — an illustration that reality-checking model verdicts is part of the method.
+Converting viability to profit (Eqs. 11–17) turns "can the crop grow?" into "is the system worth planting under uncertainty?" (Table 7; Figs. 9–11). Over 25 years at an 8 % real hurdle, coconut + **black pepper** clears it decisively (NPV ≈ ₹565k/acre, IRR ≈ 33 %, payback 7 yr) with the **lowest probability of loss** among the intercrops (P(loss) ≈ 12 %); it is the strongest annual-cash system because it bears early, stays viable across the temperature band, and has lower loss probability than nutmeg. Coconut + nutmeg is marginal at the central estimate (NPV ≈ ₹127k, IRR ≈ 13 %, P(loss) ≈ 41 %) — its wide loss probability reflecting exactly the thermal-edge sensitivity of §3.5. Coconut alone is positive but modest (≈ ₹129k, P(loss) ≈ 3 %); banana under mature coconut is uneconomic. Timber overstoreys (mahogany, teak) show high *annualised* return but concentrate all risk in a single distant harvest at 15–18 yr and rest on LOW-confidence farm-gate prices. As a validation-discipline note, an early run mislabelled coconut monoculture as a guaranteed loss; the cause was full bearing-phase maintenance charged during the multi-year gestation, corrected by ramping maintenance with bearing and validating yields/prices against TNAU and the Salem study — an illustration that reality-checking model verdicts is part of the method.
 
 **Table 7.** Anaikadu system finance and risk (25 yr, 8 % real).
 
@@ -300,7 +320,7 @@ Converting viability to profit (Eqs. 11–17) turns "can the crop grow?" into "i
 
 The contribution is a **transparent, uncertainty-propagating chain from controllable farm design to risk-adjusted profit**, with two features under-served in agricultural decision tools. First, **disease is coupled to the engineered microclimate**, surfacing a genuine two-sided trade-off — the humidity, shade and shelter that favour shade-loving intercrops also favour foliar pathogens — that a one-axis suitability score misses, turning canopy/windbreak/bahar choices into a balance rather than a maximisation. Second, **uncertainty is first-class**: every layer is confidence-labelled, the learned layer is validated for transfer *and flagged when extrapolating*, and downstream economics propagate that uncertainty to a probability of loss instead of a single deceptive figure.
 
-The negative transfer result deserves emphasis rather than burial. The forest-ecology offset paradigm transfers well *within* a climatic regime, consistent with ForestTemp's European success, but our leave-one-climate-out test shows it does not transfer to a sufficiently different macroclimate — and that a popular "add a physics prior" fix does not help when the prior itself is fit out-of-regime. For a decision tool this is the difference between honesty and harm: a system that confidently extrapolated the learned offset into warm-night Tamil Nadu would mislead exactly the user it is meant to serve. Building the OOD flag and reporting the coverage collapse converts an unfalsifiable claim into a falsifiable, improvable one — and the few-shot recalibration result shows the fix is small and local.
+The negative transfer result deserves emphasis rather than burial. The forest-ecology offset paradigm transfers well *within* a climatic regime, consistent with ForestTemp's European success, but our leave-one-climate-out test shows it does not transfer to a sufficiently different macroclimate — and the six-model benchmark (§3.4) shows this is a property of the *problem*, not the estimator: linear and mixture-of-experts models extrapolate catastrophically, tree models are bounded but lose their skill, and even the most graceful family (the distance-aware Gaussian process) only holds calibration, not accuracy, out-of-regime. The "add a physics prior" fix likewise does not help when the prior itself is fit out-of-regime. For a decision tool this is the difference between honesty and harm: a system that confidently extrapolated the learned offset into warm-night Tamil Nadu would mislead exactly the user it is meant to serve. Building the OOD flag and reporting the coverage collapse converts an unfalsifiable claim into a falsifiable, improvable one — and the few-shot recalibration result shows the fix is small and local.
 
 The practical upshot for the farm is clear. Where the science is mechanistic and regime-independent (light, wind), the predictions are trustworthy and decide the big structural choices; where it is learned and out-of-regime (the temperature/VPD offset), it is flagged and the decision is routed through a ranking shown to be robust to that uncertainty. The recommendation a planner can act on now is coconut + **black pepper**, with windbreak and dry-season bahar — adding nutmeg only if the cooler end of the microclimate is confirmed.
 
@@ -314,13 +334,13 @@ The practical upshot for the farm is clear. Where the science is mechanistic and
 
 ## 6. Conclusion
 
-This work presents a confidence-labelled agroforestry design-to-profit framework linking controllable canopy and management decisions to microclimate offsets, disease risk, crop viability and risk-adjusted finance. Across 596 borrowed-label sites the learned offset model is skilful within observed regimes (leave-one-site-out dT_mean MAE ≈ 0.41 °C, +49 % skill), but strict leave-one-climate-out validation shows that cross-macroclimate transfer remains unresolved and that prediction intervals lose calibration out of regime. Rather than hiding this, the framework exposes it through out-of-distribution flags and propagated uncertainty, while few-shot conformal recalibration quantifies how a small number of local observations (≈ 5–25) restores interval honesty. Applied to Anaikadu, the physics-supported and sensitivity-robust result favours coconut with black pepper as the current actionable system, while nutmeg remains conditional on local sensing confirming a cooler under-canopy microclimate. The next decisive step is in-regime field data, which would turn this honest decision framework into a locally calibrated digital twin.
+This work presents a confidence-labelled agroforestry design-to-profit framework linking controllable canopy and management decisions to microclimate offsets, disease risk, crop viability and risk-adjusted finance. Across 596 borrowed-label sites the learned offset model is skilful within observed regimes (leave-one-site-out dT_mean MAE ≈ 0.41 °C, +49 % skill), but strict leave-one-climate-out validation shows that cross-macroclimate transfer remains unresolved and that prediction intervals lose calibration out of regime. A six-family model benchmark confirms this is a property of the data regime rather than the estimator — no family transfers across the warm-night gap, and only a distance-aware Gaussian process keeps its intervals honest out-of-climate. Rather than hiding this, the framework exposes it through out-of-distribution flags and propagated uncertainty, while few-shot conformal recalibration quantifies how a small number of local observations (≈ 5–25) restores interval honesty. Applied to Anaikadu, the physics-supported and sensitivity-robust result favours coconut with black pepper as the current actionable system, while nutmeg remains conditional on local sensing confirming a cooler under-canopy microclimate. The next decisive step is in-regime field data, which would turn this honest decision framework into a locally calibrated digital twin.
 
 ---
 
 ## Data and code availability
 
-All code, build scripts and the architectural decision records are openly available in the project repository (a tagged release will accompany submission). The pipeline reproduces every figure and table from openly-sourced inputs: microclimate labels from Zenodo (refs 11–14); remote-sensing features via Google Earth Engine; economics from NHB DPRs, TNAU, a Salem-District study, and data.gov.in Agmarknet. Raw third-party data are not redistributed; the build scripts that fetch and assemble them are committed. An interactive version of all results is provided as a self-contained HTML report.
+All code, build scripts and the architectural decision records are openly available in the project repository (a tagged release will accompany submission). The pipeline reproduces every figure and table from openly-sourced inputs: microclimate labels from Zenodo (refs 11–14); remote-sensing features via Google Earth Engine; economics from NHB DPRs, TNAU, a Salem-District study, and data.gov.in Agmarknet. The model-family benchmark (§3.4) is reproduced by `scripts/benchmark_models.py` → `reports/benchmark_metrics.json`. Raw third-party data are not redistributed; the build scripts that fetch and assemble them are committed. An interactive version of all results is provided as a self-contained HTML report.
 
 ## Author contributions
 
@@ -381,5 +401,6 @@ This work builds on openly-shared datasets from the SAFE Project (Sabah, Borneo)
 - **Figure 9.** System economics: NPV/IRR by overstorey × intercrop combination. (`figures/fig4_economics.png`)
 - **Figure 10.** Monte-Carlo 25-year NPV distributions and probability of loss per system. (`figures/fig5_montecarlo.png`)
 - **Figure 11.** Cash-flow timing: steady annual spice income versus a single distant timber harvest. (`figures/fig6_cashflow.png`)
+- **Figure 12.** Model-family benchmark. All families are skilful in-distribution (left, green); under leave-one-climate-out only the Gaussian process keeps positive skill (left), and distance-aware uncertainty (Gaussian process) stays best-calibrated out-of-climate (right). (`figures/fig_benchmark.png`)
 
-*Tables 1–7 appear inline in their respective sections.*
+*Tables 1–8 appear inline in their respective sections.*

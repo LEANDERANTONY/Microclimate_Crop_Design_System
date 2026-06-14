@@ -14,7 +14,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from agroforestry.validation import climate_zone
-from agroforestry.config import CROPS, GROUP_COL
+from agroforestry.config import CROPS, GROUP_COL, TARGETS
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FIG = os.path.join(ROOT, "figures")
@@ -157,6 +157,38 @@ def fig_envelope():
     save(fig, "fig_envelope.png")
 
 
+# ---- Fig: model-family benchmark under climate shift ----------------------
+def fig_benchmark():
+    B = json.load(open(os.path.join(ROOT, "reports/benchmark_metrics.json"), encoding="utf-8"))
+    models = ["ridge", "rf", "gp", "moe", "xgb", "hybrid"]
+    lab = {"ridge": "Ridge", "rf": "Random\nforest", "gp": "Gaussian\nprocess",
+           "moe": "Mixture-of-\nexperts", "xgb": "XGBoost\n(ours)", "hybrid": "Physics\nhybrid"}
+    tg = TARGETS
+    loco_skill = [np.mean([B["loco"][t][m]["skill"] for t in tg]) for m in models]
+    indist_skill = [np.mean([B["in_distribution"][t][m]["skill"] for t in tg]) for m in models]
+    loco_cov = [np.mean([B["loco"][t][m]["coverage"] for t in tg]) for m in models]
+    x = np.arange(len(models))
+    fig, (a1, a2) = plt.subplots(1, 2, figsize=(11, 4.0))
+    w = 0.4
+    a1.bar(x - w/2, indist_skill, w, label="in-distribution", color=G)
+    a1.bar(x + w/2, loco_skill, w, label="cross-climate (LOCO)",
+           color=[RED if v < 0 else ACC for v in loco_skill])
+    a1.axhline(0, color=INK, lw=0.8); a1.set_ylim(-1.2, 0.8)
+    a1.set_xticks(x); a1.set_xticklabels([lab[m] for m in models], fontsize=8)
+    a1.set_ylabel("skill vs baseline"); a1.legend(fontsize=8, frameon=False)
+    a1.set_title("All families learn in-distribution; only GP keeps\npositive skill across climates",
+                 fontweight="bold", fontsize=10)
+    a1.annotate("Ridge −3.2 (off-scale)", (0, -1.15), fontsize=7, color=RED, ha="center")
+    a2.bar(x, loco_cov, color=[G if abs(v-0.8) < 0.18 else A for v in loco_cov])
+    a2.axhline(0.8, color=INK, ls="--", lw=1.0, label="target 0.80")
+    a2.set_xticks(x); a2.set_xticklabels([lab[m] for m in models], fontsize=8)
+    a2.set_ylabel("out-of-climate interval coverage"); a2.set_ylim(0, 1)
+    a2.legend(fontsize=8, frameon=False)
+    a2.set_title("Distance-aware uncertainty (GP) stays\nbest-calibrated out-of-climate",
+                 fontweight="bold", fontsize=10)
+    save(fig, "fig_benchmark.png")
+
+
 if __name__ == "__main__":
-    fig_sitemap(); fig_featurespace(); fig_loco(); fig_fewshot(); fig_envelope()
+    fig_sitemap(); fig_featurespace(); fig_loco(); fig_fewshot(); fig_envelope(); fig_benchmark()
     print("done")
