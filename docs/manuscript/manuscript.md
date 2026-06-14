@@ -9,12 +9,11 @@ Independent research · Anaikadu (Pattukkottai), Thanjavur District, Tamil Nadu,
 
 ## Highlights
 
-- A six-layer model chains agroforestry **design → microclimate → disease → crop viability → profit** under propagated uncertainty.
-- Canopy temperature/VPD offsets are learned (gradient-boosted, quantile) with conformal intervals and an out-of-distribution flag; light and wind are mechanistic.
-- Offsets transfer **within** climate (leave-one-site-out skill +49 %) but **fail across** macroclimates (leave-one-climate-out skill negative; intervals lose calibration).
-- ~5–25 local calibration points restore out-of-climate interval coverage from 0.08 to ~0.80 — quantifying the value of on-plot sensing.
-- A six-family benchmark shows transfer failure is a data-regime property, not an estimator flaw; only a distance-aware Gaussian process stays calibrated out-of-climate.
-- For a real Tamil Nadu farm, coconut + black pepper is the robust, profitable pick; the model flags rather than over-claims its extrapolations.
+- A six-layer model links agroforestry design to microclimate, disease, viability and profit.
+- Canopy temperature/VPD offsets are gradient-boosted with conformal intervals and an OOD flag.
+- Offsets transfer within climate (skill +49 %) but fail across macroclimates (leave-one-climate-out).
+- ~5–25 local points restore out-of-climate interval coverage, quantifying on-plot sensing value.
+- For a Tamil Nadu farm, coconut + black pepper is the robust, profitable, honestly-flagged pick.
 
 ---
 
@@ -84,17 +83,17 @@ The individual pieces therefore exist — offset modelling, crop-suitability ML,
 
 `Macroclimate + controllable design → microclimate offset → disease risk → crop viability → economics → risk-adjusted profit`,
 
-end-to-end, with an explicit confidence level on every layer and uncertainty propagated to the decision (Fig. 2).
+end-to-end, with an explicit confidence level on every layer and uncertainty propagated to the decision (Fig. 1).
 
 ---
 
 ## 2. Materials and methods
 
-The system is a chain of six layers (Fig. 2), each matched to the simplest method its physics and data support. Decomposition rather than one monolithic model is the central design decision: it lets mechanistic physics carry the variables it governs exactly, confines machine learning to the variables that genuinely need it, keeps every step interpretable, and lets uncertainty be attached and propagated layer by layer (Table 2).
+The system is a chain of six layers (Fig. 1), each matched to the simplest method its physics and data support. Decomposition rather than one monolithic model is the central design decision: it lets mechanistic physics carry the variables it governs exactly, confines machine learning to the variables that genuinely need it, keeps every step interpretable, and lets uncertainty be attached and propagated layer by layer (Table 2).
 
 ### 2.1 Study site
 
-The system is developed for and applied to a real farm at **Anaikadu (10.4019° N, 79.3545° E), Pattukkottai taluk, Thanjavur District, Tamil Nadu, India** — a hot semi-arid pocket of the Cauvery delta (Fig. 1). ERA5 (2019) at the plot gives a mean air temperature of 29.3 °C, mean daily maximum 34.3 °C, and — importantly — a mean daily **minimum of 25.9 °C** (warm nights), relative humidity ≈ 71 %, and ≈ 926 mm annual rainfall concentrated in the October–December north-east monsoon. SoilGrids indicates heavy alluvial clay (≈ 355 g kg⁻¹). Two site features shape the modelling. First, the warm-night, semi-arid regime is unlike the humid, cool-night forest sites in the training data — a transfer gap quantified in §3.2. Second, the humidity/disease-risk window is the NE-monsoon quarter while summers are hot and dry, which makes **fruiting-time (bahar) selection** as powerful a controllable lever as canopy or windbreaks. A practical caveat: a ~31 km ERA5 reanalysis pixel cannot resolve the village from the surrounding town, motivating on-plot sensing (§5).
+The system is developed for and applied to a real farm at **Anaikadu (10.4019° N, 79.3545° E), Pattukkottai taluk, Thanjavur District, Tamil Nadu, India** — a hot semi-arid pocket of the Cauvery delta (Fig. 2). ERA5 (2019) at the plot gives a mean air temperature of 29.3 °C, mean daily maximum 34.3 °C, and — importantly — a mean daily **minimum of 25.9 °C** (warm nights), relative humidity ≈ 71 %, and ≈ 926 mm annual rainfall concentrated in the October–December north-east monsoon. SoilGrids indicates heavy alluvial clay (≈ 355 g kg⁻¹). Two site features shape the modelling. First, the warm-night, semi-arid regime is unlike the humid, cool-night forest sites in the training data — a transfer gap quantified in §3.2. Second, the humidity/disease-risk window is the NE-monsoon quarter while summers are hot and dry, which makes **fruiting-time (bahar) selection** as powerful a controllable lever as canopy or windbreaks. A practical caveat: a ~31 km ERA5 reanalysis pixel cannot resolve the village from the surrounding town, motivating on-plot sensing (§5).
 
 ### 2.2 Data sources and feature construction
 
@@ -272,9 +271,9 @@ The out-of-climate coverage collapse is recoverable, and cheaply (Table 5; Fig. 
 
 ### 3.4 Model-family comparison under climate shift
 
-To test whether the transfer failure is specific to gradient boosting or a property of the problem, we benchmarked six model families on the identical offset task and folds (Methods §2.10; Table 8; Fig. 12): a Ridge linear baseline, Random Forest, a Gaussian process (distance-aware predictive variance), a non-neural mixture-of-experts (one regime expert + a distance gate), the paper's XGBoost-quantile model, and the physics-prior hybrid. Two results stand out. First, **in-distribution every family is skilful** (positive skill on a grouped site holdout), so the within-climate signal is real and estimator-agnostic. Second, **under leave-one-climate-out the families diverge sharply**: the linear model and the mixture-of-experts extrapolate catastrophically (skill ≈ −324 % and −82 % averaged over targets), the tree-based models (XGBoost, Random Forest, hybrid) are bounded but lose essentially all skill (≈ −7 to −19 %), and **only the Gaussian process retains non-negative cross-climate skill (≈ +7 %) while keeping the best-calibrated out-of-climate intervals** (coverage ≈ 0.62 vs 0.31–0.58), because its variance grows with distance from the training data. The mixture-of-experts attains comparable coverage only by inflating intervals through expert disagreement, not by predicting better. No family transfers across the warm-night gap — confirming the limitation is the data regime, not the estimator — but the comparison shows that **distance-aware uncertainty** (the Gaussian process, and by extension the conformal layer used throughout) is the most honest estimator under climate shift, and motivates the few-shot recalibration of §3.3.
+To test whether the transfer failure is specific to gradient boosting or a property of the problem, we benchmarked six model families on the identical offset task and folds (Methods §2.10; Table 6; Fig. 7): a Ridge linear baseline, Random Forest, a Gaussian process (distance-aware predictive variance), a non-neural mixture-of-experts (one regime expert + a distance gate), the paper's XGBoost-quantile model, and the physics-prior hybrid. Two results stand out. First, **in-distribution every family is skilful** (positive skill on a grouped site holdout), so the within-climate signal is real and estimator-agnostic. Second, **under leave-one-climate-out the families diverge sharply**: the linear model and the mixture-of-experts extrapolate catastrophically (skill ≈ −324 % and −82 % averaged over targets), the tree-based models (XGBoost, Random Forest, hybrid) are bounded but lose essentially all skill (≈ −7 to −19 %), and **only the Gaussian process retains non-negative cross-climate skill (≈ +7 %) while keeping the best-calibrated out-of-climate intervals** (coverage ≈ 0.62 vs 0.31–0.58), because its variance grows with distance from the training data. The mixture-of-experts attains comparable coverage only by inflating intervals through expert disagreement, not by predicting better. No family transfers across the warm-night gap — confirming the limitation is the data regime, not the estimator — but the comparison shows that **distance-aware uncertainty** (the Gaussian process, and by extension the conformal layer used throughout) is the most honest estimator under climate shift, and motivates the few-shot recalibration of §3.3.
 
-**Table 8.** Model-family comparison: skill (vs train-mean baseline, Eq. 20) and out-of-climate interval coverage, averaged over the three offset targets. *In-distribution* is a grouped 20 % site holdout (single split, for relative comparison between models; the robust within-climate figure is the full LOSO of Table 3). *LOCO* is leave-one-climate-out.
+**Table 6.** Model-family comparison: skill (vs train-mean baseline, Eq. 20) and out-of-climate interval coverage, averaged over the three offset targets. *In-distribution* is a grouped 20 % site holdout (single split, for relative comparison between models; the robust within-climate figure is the full LOSO of Table 3). *LOCO* is leave-one-climate-out.
 
 | Model | In-distribution skill | Cross-climate (LOCO) skill | LOCO coverage |
 |---|---|---|---|
@@ -287,9 +286,9 @@ To test whether the transfer failure is specific to gradient boosting or a prope
 
 ### 3.5 Anaikadu case study: microclimate and crop ranking
 
-Under a wide-spaced coconut overstorey the physics layer predicts ≈ 39 % shade and a modest in-field wind reduction (HIGH confidence; Fig. 7); the temperature/VPD offset is reported with its LOW-confidence flag. Scoring candidate intercrops against the ECOCROP/PROSEA-sourced envelopes (Fig. 8), all candidates are temperature-limited at this hot site. Sweeping the *uncertain* temperature offset across its full plausible band (Table 6) is revealing: **black pepper is the top intercrop at every point in the sweep** — its lead is robust to the temperature uncertainty — whereas **nutmeg leads only at the cool end** (offset −3 °C) and collapses at the central and warm estimates, because Anaikadu sits at the upper edge of nutmeg's flowering optimum (~32 °C). The model thus makes two distinct, differently-confident claims: pepper is the actionable pick now; nutmeg is conditionally viable, contingent on a cooler microclimate that on-plot sensing would confirm.
+Under a wide-spaced coconut overstorey the physics layer predicts ≈ 39 % shade and a modest in-field wind reduction (HIGH confidence; Fig. 8); the temperature/VPD offset is reported with its LOW-confidence flag. Scoring candidate intercrops against the ECOCROP/PROSEA-sourced envelopes (Fig. 9), all candidates are temperature-limited at this hot site. Sweeping the *uncertain* temperature offset across its full plausible band (Table 7) is revealing: **black pepper is the top intercrop at every point in the sweep** — its lead is robust to the temperature uncertainty — whereas **nutmeg leads only at the cool end** (offset −3 °C) and collapses at the central and warm estimates, because Anaikadu sits at the upper edge of nutmeg's flowering optimum (~32 °C). The model thus makes two distinct, differently-confident claims: pepper is the actionable pick now; nutmeg is conditionally viable, contingent on a cooler microclimate that on-plot sensing would confirm.
 
-**Table 6.** Top-3 intercrop by viability as the (LOW-confidence) temperature offset is swept; under-canopy T_max in parentheses.
+**Table 7.** Top-3 intercrop by viability as the (LOW-confidence) temperature offset is swept; under-canopy T_max in parentheses.
 
 | Offset | T_max | Top 3 (viability) |
 |---|---|---|
@@ -301,9 +300,9 @@ Under a wide-spaced coconut overstorey the physics layer predicts ≈ 39 % shade
 
 ### 3.6 Economics, finance and risk
 
-Converting viability to profit (Eqs. 11–17) turns "can the crop grow?" into "is the system worth planting under uncertainty?" (Table 7; Figs. 9–11). Over 25 years at an 8 % real hurdle, coconut + **black pepper** clears it decisively (NPV ≈ ₹565k/acre, IRR ≈ 33 %, payback 7 yr) with the **lowest probability of loss** among the intercrops (P(loss) ≈ 12 %); it is the strongest annual-cash system because it bears early, stays viable across the temperature band, and has lower loss probability than nutmeg. Coconut + nutmeg is marginal at the central estimate (NPV ≈ ₹127k, IRR ≈ 13 %, P(loss) ≈ 41 %) — its wide loss probability reflecting exactly the thermal-edge sensitivity of §3.5. Coconut alone is positive but modest (≈ ₹129k, P(loss) ≈ 3 %); banana under mature coconut is uneconomic. Timber overstoreys (mahogany, teak) show high *annualised* return but concentrate all risk in a single distant harvest at 15–18 yr and rest on LOW-confidence farm-gate prices. As a validation-discipline note, an early run mislabelled coconut monoculture as a guaranteed loss; the cause was full bearing-phase maintenance charged during the multi-year gestation, corrected by ramping maintenance with bearing and validating yields/prices against TNAU and the Salem study — an illustration that reality-checking model verdicts is part of the method.
+Converting viability to profit (Eqs. 11–17) turns "can the crop grow?" into "is the system worth planting under uncertainty?" (Table 8; Figs. 10–12). Over 25 years at an 8 % real hurdle, coconut + **black pepper** clears it decisively (NPV ≈ ₹565k/acre, IRR ≈ 33 %, payback 7 yr) with the **lowest probability of loss** among the intercrops (P(loss) ≈ 12 %); it is the strongest annual-cash system because it bears early, stays viable across the temperature band, and has lower loss probability than nutmeg. Coconut + nutmeg is marginal at the central estimate (NPV ≈ ₹127k, IRR ≈ 13 %, P(loss) ≈ 41 %) — its wide loss probability reflecting exactly the thermal-edge sensitivity of §3.5. Coconut alone is positive but modest (≈ ₹129k, P(loss) ≈ 3 %); banana under mature coconut is uneconomic. Timber overstoreys (mahogany, teak) show high *annualised* return but concentrate all risk in a single distant harvest at 15–18 yr and rest on LOW-confidence farm-gate prices. As a validation-discipline note, an early run mislabelled coconut monoculture as a guaranteed loss; the cause was full bearing-phase maintenance charged during the multi-year gestation, corrected by ramping maintenance with bearing and validating yields/prices against TNAU and the Salem study — an illustration that reality-checking model verdicts is part of the method.
 
-**Table 7.** Anaikadu system finance and risk (25 yr, 8 % real).
+**Table 8.** Anaikadu system finance and risk (25 yr, 8 % real).
 
 | System | NPV (₹/ac) | IRR | Payback | P(loss) | Main limitation |
 |---|---|---|---|---|---|
@@ -390,17 +389,17 @@ This work builds on openly-shared datasets from the SAFE Project (Sabah, Borneo)
 
 ## Figure captions
 
-- **Figure 1.** Study site and training regimes. The offset model is trained on tropical Borneo (forest and oil-palm) and Mediterranean Spain, then applied to the warm-night semi-arid Anaikadu site in Tamil Nadu; the thermal-regime bars show Anaikadu's warm-night gap. (`figures/fig_sitemap.png`)
-- **Figure 2.** Six-layer methods schematic: controllable design → microclimate → disease → viability → economics → finance → Monte-Carlo profit, with per-layer confidence and the inverse-design loop. (`figures/fig0_pipeline.png`)
+- **Figure 1.** Six-layer methods schematic: controllable design → microclimate → disease → viability → economics → finance → Monte-Carlo profit, with per-layer confidence and the inverse-design loop. (`figures/fig0_pipeline.png`)
+- **Figure 2.** Study site and training regimes. The offset model is trained on tropical Borneo (forest and oil-palm) and Mediterranean Spain, then applied to the warm-night semi-arid Anaikadu site in Tamil Nadu; the thermal-regime bars show Anaikadu's warm-night gap. (`figures/fig_sitemap.png`)
 - **Figure 3.** Training feature-space coverage and target extrapolation. Anaikadu lies outside the observed macroclimate range (warm nights) and the coconut canopy outside the observed structure range, so the temperature/VPD offset is flagged out-of-distribution. (`figures/fig_featurespace.png`)
 - **Figure 4.** Leave-one-site-out validation error for the temperature and VPD offsets (within-climate transfer). (`figures/fig1_transfer.png`)
 - **Figure 5.** Leave-one-climate-out transfer: skill vs baseline (left) and interval coverage (right) by held-out regime and target. Transfer degrades and coverage collapses out-of-climate. (`figures/fig_loco.png`)
 - **Figure 6.** Few-shot conformal recalibration: a small number of in-regime calibration points restores dT_mean interval coverage toward the 0.80 target after the leave-one-climate-out collapse. (`figures/fig_fewshot.png`)
-- **Figure 7.** Predicted under-canopy microclimate by candidate overstorey at Anaikadu; shade/wind HIGH confidence, temperature/VPD offset flagged LOW (out-of-distribution). (`figures/fig2_microclimate.png`)
-- **Figure 8.** Crop thermal envelopes against the predicted Anaikadu under-coconut temperature sweep. Black pepper's envelope overlaps the full plausible range more robustly than nutmeg's. (`figures/fig_envelope.png`)
-- **Figure 9.** System economics: NPV/IRR by overstorey × intercrop combination. (`figures/fig4_economics.png`)
-- **Figure 10.** Monte-Carlo 25-year NPV distributions and probability of loss per system. (`figures/fig5_montecarlo.png`)
-- **Figure 11.** Cash-flow timing: steady annual spice income versus a single distant timber harvest. (`figures/fig6_cashflow.png`)
-- **Figure 12.** Model-family benchmark. All families are skilful in-distribution (left, green); under leave-one-climate-out only the Gaussian process keeps positive skill (left), and distance-aware uncertainty (Gaussian process) stays best-calibrated out-of-climate (right). (`figures/fig_benchmark.png`)
+- **Figure 7.** Model-family benchmark. All families are skilful in-distribution (left, green); under leave-one-climate-out only the Gaussian process keeps positive skill (left), and distance-aware uncertainty (Gaussian process) stays best-calibrated out-of-climate (right). (`figures/fig_benchmark.png`)
+- **Figure 8.** Predicted under-canopy microclimate by candidate overstorey at Anaikadu; shade/wind HIGH confidence, temperature/VPD offset flagged LOW (out-of-distribution). (`figures/fig2_microclimate.png`)
+- **Figure 9.** Crop thermal envelopes against the predicted Anaikadu under-coconut temperature sweep. Black pepper's envelope overlaps the full plausible range more robustly than nutmeg's. (`figures/fig_envelope.png`)
+- **Figure 10.** System economics: NPV/IRR by overstorey × intercrop combination. (`figures/fig4_economics.png`)
+- **Figure 11.** Monte-Carlo 25-year NPV distributions and probability of loss per system. (`figures/fig5_montecarlo.png`)
+- **Figure 12.** Cash-flow timing: steady annual spice income versus a single distant timber harvest. (`figures/fig6_cashflow.png`)
 
 *Tables 1–8 appear inline in their respective sections.*
