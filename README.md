@@ -2,7 +2,9 @@
 
 **From canopy design to crop profitability for a real smallholder farm — with calibrated, honest uncertainty at every step.**
 
-![tests](https://img.shields.io/badge/tests-26%20passing-3f8f4f) ![python](https://img.shields.io/badge/python-3.11-4a6b3a) ![license](https://img.shields.io/badge/license-MIT-7a5a2e) ![status](https://img.shields.io/badge/pipeline-6%20layers%20built-2f3a28)
+![tests](https://img.shields.io/badge/tests-35%20passing-3f8f4f) ![python](https://img.shields.io/badge/python-3.11-4a6b3a) ![license](https://img.shields.io/badge/license-MIT-7a5a2e) ![status](https://img.shields.io/badge/pipeline-6%20layers%20built-2f3a28) ![manuscript](https://img.shields.io/badge/manuscript-draft%20v0.3-4a6b3a)
+
+> **Manuscript:** a full draft (literature review, 22 numbered equations, 8 tables, 12 figures, declarations, verified references) is in [`docs/manuscript/manuscript.md`](docs/manuscript/manuscript.md); a Word build with figures embedded is in [`docs/manuscript/submission/manuscript.docx`](docs/manuscript/submission/manuscript.docx). Venue analysis, cover letter and preprint checklist are alongside it in [`docs/manuscript/`](docs/manuscript/).
 
 This research codebase predicts the **microclimate a planned agroforestry design will create**, scores **crop suitability and disease risk** under that microclimate, runs the result through **economics and discounted cash-flow**, and **propagates uncertainty** to a profit distribution — then recommends a design. It is built for a real site, **Anaikadu (Pattukkottai), Thanjavur District, Tamil Nadu** (hot semi-arid Cauvery delta), but the method is general.
 
@@ -78,22 +80,29 @@ Coconut + pepper clears the hurdle decisively (NPV ≈ ₹565k, IRR ≈ 33%); co
 
 Monte Carlo turns every point estimate into a distribution and a probability of loss. Coconut+pepper sits mostly positive (P(loss) ≈ 12%); coconut+nutmeg carries a much wider loss probability (≈ 41%) — hot draws fail the crop at its thermal edge, cool draws pay well. The cash-flow chart shows the real trade-off: steady annual spice income vs a single distant timber harvest.
 
+### 6 · The transfer failure is a data-regime property, not an estimator flaw
+
+A six-family benchmark (Ridge, Random Forest, Gaussian process, mixture-of-experts, the XGBoost-quantile model, and the physics hybrid) on the same offset task shows that **in-distribution every family is skilful**, but **under leave-one-climate-out they diverge sharply**: linear and mixture-of-experts models collapse, tree models are bounded but lose nearly all skill, and **only the distance-aware Gaussian process keeps non-negative cross-climate skill and the best out-of-climate interval coverage** (~0.62). No family transfers across the warm-night gap — confirming the limit is the data regime. Reproduce with `scripts/benchmark_models.py` (classes in `src/agroforestry/models_benchmark.py`) → [`reports/benchmark_metrics.json`](reports/benchmark_metrics.json).
+
 ---
 
 ## Install & run (uv)
 
 ```bash
 uv sync                                        # env from uv.lock
-uv run pytest                                  # 26 tests
+uv run pytest                                  # 35 tests
 uv run python scripts/run_validation.py        # -> LOSO + LOCO skill metrics
+uv run python scripts/benchmark_models.py      # -> model-family benchmark (reports/benchmark_metrics.json)
 
 uv run python scripts/run_site.py --lat 10.4019 --lon 79.3545 --label "Anaikadu"   # end-to-end at a real point
 uv run python scripts/finance_anaikadu.py      # NPV / IRR / payback per system
 uv run python scripts/monte_carlo_anaikadu.py  # uncertainty distributions
 
 uv run python scripts/export_results.py        # -> reports/results.json
-uv run python scripts/make_figures.py          # -> figures/*.png
+uv run python scripts/make_figures.py          # -> figures/*.png (results figures)
+uv run python scripts/make_paper_figures.py    # -> figures/*.png (site map, OOD, LOCO, benchmark, …)
 uv run python scripts/build_dashboard.py       # -> reports/anaikadu_preprint.html
+uv run python scripts/build_docx.py            # -> docs/manuscript/submission/*.docx
 ```
 
 Earth-Engine-backed scripts (`run_site.py`, the data builders) need an authenticated `earthengine-api` project; the offset/economics/finance/Monte-Carlo scripts run from the committed `data/processed/labelled_offsets.parquet` (gitignored) without network.
@@ -109,12 +118,12 @@ Real, openly-sourced; raw files are gitignored. Microclimate labels: **SAFE Proj
 ## Repo layout
 
 ```
-src/agroforestry/   physics · models · predict · suitability · disease · economics · finance · monte_carlo · optimize · validation
-scripts/            data builders, run_site, finance/MC/sensitivity, export_results, make_figures, build_dashboard
-tests/              26 tests
-docs/               architecture, modeling_blueprint, economics_layer, data_acquisition, ADRs 001–013
-reports/            results.json, anaikadu_preprint.html, economics_qa, sourced inputs, catalogs
-figures/            README figures (regenerated by make_figures.py)
+src/agroforestry/   physics · models · models_benchmark · predict · suitability · disease · economics · finance · monte_carlo · optimize · validation
+scripts/            data builders, run_site, finance/MC/sensitivity, run_validation, benchmark_models, export_results, make_figures, make_paper_figures, build_dashboard, build_docx
+tests/              35 tests
+docs/               architecture, modeling_blueprint, economics_layer, data_acquisition, ADRs 001–013, manuscript/ (paper + submission docx + venue/cover-letter/preprint guides)
+reports/            results.json, loso/loco/benchmark/mondrian metrics, anaikadu_preprint.html, economics_qa, sourced inputs, catalogs
+figures/            12 manuscript figures (regenerated by make_figures.py + make_paper_figures.py)
 ```
 
 See [`folder_structure.txt`](folder_structure.txt); running log in [`DEVLOG.md`](DEVLOG.md); plans in [`ROADMAP.md`](ROADMAP.md).
@@ -134,4 +143,4 @@ Treat **comparisons** (design A vs B, crop ranking, dry vs wet timing) as reliab
 
 ## Status
 
-All six layers built, validated, and runnable (26 tests). Real data integrated across two macroclimates + an open-canopy regime. Transfer validated with skill scores + leave-one-climate-out; a physics-prior hybrid tested (ADR-012); design→feature mapping grounded on real TN satellite values (ADR-013). Interactive preprint report generated. Outstanding: SoilTemp / tropical-understory data requests (to firm the offset and close the climate gap), CEDA 3-yr prices (to firm economics), and the user's own plot sensor. *Research preprint — model output with stated uncertainty, not guarantees.*
+All six layers built, validated, and runnable (35 tests). Real data integrated across two macroclimates + an open-canopy regime. Transfer validated with skill scores + leave-one-climate-out; a physics-prior hybrid tested (ADR-012); design→feature mapping grounded on real TN satellite values (ADR-013); a six-family model benchmark packaged and tested (`models_benchmark.py`). **Full manuscript drafted** (literature review, equations, 8 tables, 12 figures, declarations, verified references) with a submission Word build, venue analysis, cover letter and EarthArXiv checklist in `docs/manuscript/`. Outstanding (manual / data): post the preprint (ORCID + Zenodo "Cite as" names + Save-as-PDF), SoilTemp / tropical-understory data (to close the climate gap), CEDA 3-yr prices, and the user's own plot sensor. *Research preprint — model output with stated uncertainty, not guarantees.*
