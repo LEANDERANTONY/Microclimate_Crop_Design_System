@@ -2,6 +2,23 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-11 — Model-family benchmark under climate shift
+
+- `scripts/benchmark_models.py` → `reports/benchmark_metrics.json`: six families on the same
+  offset task/folds — Ridge, Random Forest, Gaussian process (distance-aware variance),
+  non-neural mixture-of-experts (regime experts + distance gate), XGBoost-quantile (ours),
+  physics-prior hybrid. Skill + interval coverage under grouped site holdout and LOCO.
+- **Finding:** in-distribution all families are skilful; under leave-one-climate-out, Ridge and
+  MoE collapse (skill ≈ −324%, −82%), tree models are bounded but lose skill (≈ −7 to −19%),
+  and **only the Gaussian process keeps non-negative cross-climate skill (≈ +7%) with the best
+  out-of-climate coverage (≈0.62)** — distance-aware variance widens away from training. Confirms
+  transfer failure is a data-regime property, not an estimator flaw; validates elevating the GP
+  and the conformal/few-shot story. Neural variants (domain-adversarial, neural residual) left as
+  future work (no torch; 3 regimes overfit them).
+- Manuscript: new §2.10 (benchmark methods) + §3.4 (results, Table 8) + Fig. 12; few-shot reframed
+  as few-shot domain adaptation; Discussion/Conclusion/Highlights updated. Anaikadu→§3.5,
+  economics→§3.6 (cross-refs fixed). docx regenerated (9 tables, 12 figures). 26 tests pass.
+
 ## 2026-06-10 (later 3) — Pre-submission pass: manuscript, citations, Mondrian, methods figure, sourced envelopes
 
 - **Manuscript drafted** (`docs/manuscript/manuscript.md`) + venue plan (`VENUE_AND_PLAN.md`):
