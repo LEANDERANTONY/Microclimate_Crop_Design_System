@@ -18,101 +18,12 @@ and a 3-regime dataset overfits them) and are discussed as future work.
 import json, os, sys, time
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 import numpy as np, pandas as pd
-from sklearn.linear_model import Ridge
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.preprocessing import StandardScaler
-from sklearn.gaussian_process import GaussianProcessRegressor
-from sklearn.gaussian_process.kernels import RBF, WhiteKernel, ConstantKernel
 from agroforestry.features import engineer
-from agroforestry.models import QuantileModel, HybridQuantileModel
+from agroforestry.models_benchmark import BENCHMARK_FACTORIES as FACTORIES
 from agroforestry.validation import climate_zone
 from agroforestry.config import TARGETS, GROUP_COL
 
-Z = 1.2816   # 80% two-sided normal quantile
 RNG = np.random.default_rng(0)
-
-
-# ---- common wrapper interface: fit(X,y,feature_names,groups) ; predict -> dict ----
-class _Scaled:
-    def _fit_scaler(self, X):
-        self.scaler = StandardScaler().fit(X); return self.scaler.transform(X)
-
-
-class RidgeModel(_Scaled):
-    def fit(self, X, y, feature_names=None, groups=None):
-        Xs = self._fit_scaler(np.asarray(X)); self.m = Ridge(alpha=10.0).fit(Xs, y)
-        self.sigma = float(np.std(y - self.m.predict(Xs))); return self
-    def predict(self, X):
-        mu = self.m.predict(self.scaler.transform(np.asarray(X)))
-        return {"median": mu, "lower": mu - Z * self.sigma, "upper": mu + Z * self.sigma}
-
-
-class RFModel:
-    def fit(self, X, y, feature_names=None, groups=None):
-        self.m = RandomForestRegressor(n_estimators=300, max_depth=None, min_samples_leaf=3,
-                                       n_jobs=-1, random_state=0).fit(np.asarray(X), y); return self
-    def predict(self, X):
-        X = np.asarray(X)
-        per = np.stack([t.predict(X) for t in self.m.estimators_], axis=1)
-        return {"median": per.mean(1), "lower": np.quantile(per, 0.1, axis=1),
-                "upper": np.quantile(per, 0.9, axis=1)}
-
-
-class GPModel(_Scaled):
-    def fit(self, X, y, feature_names=None, groups=None, cap=1000):
-        X = np.asarray(X); y = np.asarray(y)
-        if len(X) > cap:
-            idx = RNG.choice(len(X), cap, replace=False); X, y = X[idx], y[idx]
-        Xs = self._fit_scaler(X)
-        k = ConstantKernel(1.0) * RBF(length_scale=np.ones(X.shape[1])) + WhiteKernel(0.1)
-        self.m = GaussianProcessRegressor(kernel=k, normalize_y=True, n_restarts_optimizer=0,
-                                          random_state=0).fit(Xs, y); return self
-    def predict(self, X):
-        mu, sd = self.m.predict(self.scaler.transform(np.asarray(X)), return_std=True)
-        return {"median": mu, "lower": mu - Z * sd, "upper": mu + Z * sd}
-
-
-class MoEModel(_Scaled):
-    """One Ridge expert per training regime + softmax distance gate; interval from
-    weighted expert disagreement (the honest 'far from all experts' uncertainty)."""
-    def fit(self, X, y, feature_names=None, groups=None):
-        X = np.asarray(X); y = np.asarray(y); self.zones = np.asarray(groups)
-        self.scaler = StandardScaler().fit(X); Xs = self.scaler.transform(X)
-        self.experts, self.centroids = {}, {}
-        for z in np.unique(self.zones):
-            mk = self.zones == z
-            self.experts[z] = Ridge(alpha=10.0).fit(Xs[mk], y[mk])
-            self.centroids[z] = Xs[mk].mean(0)
-        self.sigma = float(np.std(y - self.predict_raw(X)[0])); return self
-    def _weights(self, Xs):
-        d = np.stack([np.linalg.norm(Xs - self.centroids[z], axis=1) for z in self.experts], 1)
-        w = np.exp(-d / (d.mean() + 1e-9)); return w / w.sum(1, keepdims=True)
-    def predict_raw(self, X):
-        Xs = self.scaler.transform(np.asarray(X)); w = self._weights(Xs)
-        preds = np.stack([self.experts[z].predict(Xs) for z in self.experts], 1)
-        mu = (w * preds).sum(1)
-        disagree = np.sqrt((w * (preds - mu[:, None]) ** 2).sum(1))
-        return mu, disagree
-    def predict(self, X):
-        mu, dis = self.predict_raw(X)
-        half = Z * np.sqrt(dis ** 2 + getattr(self, "sigma", 0.0) ** 2)
-        return {"median": mu, "lower": mu - half, "upper": mu + half}
-
-
-# QuantileModel/HybridQuantileModel already match fit(...groups=)/predict; adapt signature
-class XGBWrap:
-    def fit(self, X, y, feature_names=None, groups=None):
-        self.m = QuantileModel().fit(X, y, feature_names=feature_names, groups=groups); return self
-    def predict(self, X): return self.m.predict(X)
-
-class HybridWrap:
-    def fit(self, X, y, feature_names=None, groups=None):
-        self.m = HybridQuantileModel().fit(X, y, feature_names=feature_names, groups=groups); return self
-    def predict(self, X): return self.m.predict(X)
-
-
-FACTORIES = {"ridge": RidgeModel, "rf": RFModel, "gp": GPModel, "moe": MoEModel,
-             "xgb": XGBWrap, "hybrid": HybridWrap}
 
 
 def _metrics(y, pred, y_tr_mean):
