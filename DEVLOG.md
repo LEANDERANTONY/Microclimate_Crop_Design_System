@@ -18,6 +18,10 @@ Chronological build log. Newest first.
 - Manuscript: new §2.10 (benchmark methods) + §3.4 (results, Table 8) + Fig. 12; few-shot reframed
   as few-shot domain adaptation; Discussion/Conclusion/Highlights updated. Anaikadu→§3.5,
   economics→§3.6 (cross-refs fixed). docx regenerated (9 tables, 12 figures). 26 tests pass.
+- **Promoted** the benchmark model wrappers from the script into the package:
+  `src/agroforestry/models_benchmark.py` (Ridge/RF/GP/MoE + XGB/Hybrid adapters, `BENCHMARK_FACTORIES`
+  registry); `scripts/benchmark_models.py` now imports them. Added `tests/test_benchmark.py`
+  (interface, ordered intervals, GP-uncertainty-grows-with-distance, MoE experts). 35 tests pass.
 
 ## 2026-06-10 (later 3) — Pre-submission pass: manuscript, citations, Mondrian, methods figure, sourced envelopes
 

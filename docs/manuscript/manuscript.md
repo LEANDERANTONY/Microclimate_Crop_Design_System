@@ -340,7 +340,7 @@ This work presents a confidence-labelled agroforestry design-to-profit framework
 
 ## Data and code availability
 
-All code, build scripts and the architectural decision records are openly available in the project repository (a tagged release will accompany submission). The pipeline reproduces every figure and table from openly-sourced inputs: microclimate labels from Zenodo (refs 11–14); remote-sensing features via Google Earth Engine; economics from NHB DPRs, TNAU, a Salem-District study, and data.gov.in Agmarknet. The model-family benchmark (§3.4) is reproduced by `scripts/benchmark_models.py` → `reports/benchmark_metrics.json`. Raw third-party data are not redistributed; the build scripts that fetch and assemble them are committed. An interactive version of all results is provided as a self-contained HTML report.
+All code, build scripts and the architectural decision records are openly available in the project repository (a tagged release will accompany submission). The pipeline reproduces every figure and table from openly-sourced inputs: microclimate labels from Zenodo (refs 11–14); remote-sensing features via Google Earth Engine; economics from NHB DPRs, TNAU, a Salem-District study, and data.gov.in Agmarknet. The model-family benchmark (§3.4) is reproduced by `scripts/benchmark_models.py` (model classes in `src/agroforestry/models_benchmark.py`) → `reports/benchmark_metrics.json`. Raw third-party data are not redistributed; the build scripts that fetch and assemble them are committed. An interactive version of all results is provided as a self-contained HTML report.
 
 ## Author contributions
 
