@@ -33,14 +33,39 @@ Any validation site must be **disjoint** from these by study, location and time.
 |---|---|---|---|---|---|
 | **Cocoa agroforestry, Alto Beni** (Zenodo 1185579) | Humid tropical (≈ Borneo regime) | Canopy openness, light, throughfall, **T, RH**; mono vs agroforestry | Yes — agroforestry design contrast | **Clean.** Bolivia (~15.4 °S, 67.5 °W) — different continent, study and decade from SAFE | Open download (Zenodo) ✅ |
 | Pan-tropical understory TMS (Nat. Comms. 2024) | Humid tropical | Near-surface T (TMS), hourly | Forest | ⚠️ **Contamination risk** — spans South/SE Asia and may include SAFE/Bornean loggers; must de-dup by site coords before use | Raw via SoilTemp request |
-| Montseny (NE Spain) / SENTHYMED-MEDOAK (Montpellier, FR) | Mediterranean (≈ La Jarda regime) | Soil/understory T, canopy structure (varies) | Oak forest | Likely clean (different region from Cádiz) — **must confirm it carries sub-canopy *air* T**, else weak | Zenodo (to inspect) |
-| ForestTemp / ForestClim (Europe) | Mediterranean/temperate | **Modelled** 25 m offset maps | n/a | n/a — model *output*, not in-situ truth | Figshare (open) |
+| SoilTemp Iberian/Mediterranean in-situ | Mediterranean (≈ La Jarda regime) | Sub-canopy **air T** <100 cm, ≥4 h, RH/soil where available | Site metadata | The **correct systematic source**; exclude La Jarda by coords | Gated (data request) ⏳ |
+| Aleppo-pine shrub-layer gradient (AgForMet 2020) | Mediterranean (lowland — **best climatic match**) | **T, RH, VPD, solar, soil moisture** across a dense/medium/low/open cover gradient ± shrub | Vegetation-cover gradient = controllable design | Clean (S. France/Med, not La Jarda) | On request to authors (HAL article only) ⏳ |
+| ForestTemp / ForestClim (Europe) | Mediterranean/temperate | **Modelled** 25 m offset maps | n/a | n/a — model *output*, not in-situ truth | Figshare (open) ❌ as truth |
 
-**Note on ForestTemp:** it is a *gridded modelled product*, not raw in-situ labels —
-validating against another model's output is weak. The clean in-situ European labels
-live in SoilTemp (gated). So the immediately-usable, cleanly-independent in-situ set
-is the **cocoa Zenodo** (humid-tropical); a clean Mediterranean in-situ set likely
-needs the SoilTemp route or careful vetting of Montseny/SENTHYMED.
+### Mediterranean vetting verdict (2026-06-15)
+
+No **immediately-open, clean, sub-canopy air-temperature in-situ** Mediterranean set
+exists that matches lowland Cádiz and is independent of La Jarda. Per-candidate:
+
+- **Montseny (NE Spain)** — ❌ wrong variables. It's a long-term *hydrological /
+  biogeochemical* catchment record (streamflow, water chemistry, N deposition,
+  1978–2018), not sub-canopy microclimate loggers.
+- **SENTHYMED/MEDOAK (Montpellier, FR)** — ⚠️ partial only. Has canopy structure
+  (PAI, LiDAR) + **soil** moisture/temperature, one season, remote-sensing focus; no
+  clear sub-canopy **air**-T offset. Usable as a structure/soil-temp auxiliary, not
+  the air-T validation.
+- **Fagus treeline (Italy, Sci. Rep. 2021)** — ❌ for now. Does measure below-canopy
+  near-ground air T, but data are "available from the corresponding author on
+  reasonable request" (not deposited), and it's a mountain treeline (cooler, weak
+  match to lowland Cádiz).
+- **Aleppo-pine shrub-layer (AgForMet 2020)** — ⭐ best *scientific* fit (cover
+  gradient → T/RH/VPD/solar, exactly our design→microclimate structure) but data
+  openness unconfirmed — likely on-request (HAL hosts the paper, not a data deposit).
+- **ForestTemp/ForestClim** — ❌ as ground truth: it is a *gridded modelled* product.
+
+**Recommendation:** the Mediterranean leg is access-gated, not impossible. Two
+parallel requests (same effort class as the pan-tropical raw): (1) **SoilTemp** data
+request for Iberian/Mediterranean sub-canopy air-T loggers, de-duplicated against La
+Jarda; (2) email the **Aleppo-pine** authors for their gradient data. Until one
+arrives, the only immediately-runnable independent external test is the humid-tropical
+**cocoa Zenodo** set — so it is fine to produce the first external-validation result on
+cocoa and add the Mediterranean leg when the request clears. Do **not** substitute
+Montseny (wrong variable) or ForestTemp (modelled) to fill the gap.
 
 ## (B) Cross-climate / deployment gap — deferred
 
@@ -60,8 +85,9 @@ to paper over.
 
 1. **Primary within-climate test (humid-tropical): cocoa Zenodo 1185579** — frozen,
    confirmed geographically/temporally disjoint from SAFE.
-2. **Secondary (Mediterranean):** vet Montseny/SENTHYMED for sub-canopy air-T; else
-   request SoilTemp European in-situ for sites ≠ La Jarda.
+2. **Secondary (Mediterranean):** access-gated (see vetting verdict). Request
+   SoilTemp Iberian/Mediterranean in-situ (sites ≠ La Jarda) and the Aleppo-pine
+   gradient data; add this leg once it clears. Not a blocker for the first result.
 3. For any SoilTemp-derived set (pan-tropical TMS included), **de-duplicate by site
    coordinates against `data/processed/all_label_sites.csv`** before scoring; drop any
    site within ~1 km of a training site.
