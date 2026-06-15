@@ -82,16 +82,33 @@ design is shown as risky, not "best".
 ## Validation (`validation.py`)
 
 Two protocols, every metric reported against a **mean-offset baseline** (skill = 1 −
-MAE/baseline) and with out-of-sample R², so a low MAE on a low-variance target is not
-mistaken for skill. **Leave-one-site-out (`loso`)** holds out an entire site per fold —
-within-climate transfer is skilful (dT_mean MAE 0.28–0.33 °C, +27% skill; dVPD +33%; dT_max
-+19%), conformal calibration is **group-aware** so coverage holds (~0.75–0.8). **Leave-one-
-climate-out (`loco`)** holds out an entire macroclimate / canopy regime (Borneo forest /
-Mediterranean Spain / oil-palm open) — the honest macroclimate-transfer test: skill is
-strong for held-out forest, modest for open canopy, and **negative for the held-out
-Mediterranean climate**, with interval coverage collapsing to ~0.2–0.5. This quantifies why
-the warm-night semi-arid target is genuine extrapolation (ADR-012). Regenerate via
-`scripts/run_validation.py` → `reports/loso_metrics.json` + `reports/loco_metrics.json`.
+MAE/baseline), so a low MAE on a low-variance target is not mistaken for skill. **Leave-one-
+site-out (`loso`)** holds out an entire site per fold — full-LOSO within-climate transfer is
+skilful (dT_mean MAE 0.41 °C, **+49% skill**; dT_max +48%; dVPD +56%), conformal calibration
+is **group-aware** so coverage holds (~0.76–0.82). **Leave-one-climate-out (`loco`)** holds
+out an entire macroclimate / canopy regime (Borneo forest / Mediterranean Spain / oil-palm
+open) — the honest macroclimate-transfer test: skill is strong for held-out forest, modest
+for open canopy, and **negative for the held-out Mediterranean climate**, with interval
+coverage collapsing to ~0.1–0.5. This quantifies why the warm-night semi-arid target is
+genuine extrapolation (ADR-012). Regenerate via `scripts/run_validation.py` →
+`reports/loso_metrics.json` + `reports/loco_metrics.json`.
+
+## Few-shot recalibration & model-family benchmark (`models_benchmark.py`, `scripts/`)
+
+Out-of-climate interval coverage is recovered by **few-shot conformal recalibration**: the
+conformal width is re-estimated on ~5–25 points from the target regime, restoring dT_mean
+coverage from ~0.08 to ~0.80 (`scripts/mondrian_conformal.py` → `reports/mondrian_metrics.json`;
+ADR-014) — a data-light, non-parametric few-shot domain adaptation of the uncertainty model.
+To test whether the transfer failure is estimator-specific, a **six-family benchmark**
+(`src/agroforestry/models_benchmark.py`: Ridge, Random Forest, a distance-aware **Gaussian
+process**, a non-neural **mixture-of-experts**, plus the XGBoost-quantile and physics-hybrid
+adapters) is run under the same folds (`scripts/benchmark_models.py` →
+`reports/benchmark_metrics.json`). All families are skilful in-distribution; under LOCO only
+the Gaussian process keeps non-negative cross-climate skill and the best out-of-climate
+coverage — so transfer failure is a **data-regime property, not an estimator flaw**, and
+XGBoost-quantile remains the production model with the GP as the transfer-honest reference
+(ADR-014). Neural variants (domain-adversarial, neural residual) are out of scope until more
+regimes exist.
 
 ## Data (`data/load.py`, `scripts/`)
 
