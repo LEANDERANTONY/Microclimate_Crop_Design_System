@@ -1,62 +1,79 @@
 # External validation datasets (Paper 1)
 
-Register of open microclimate label sources for held-out validation, with access
-terms and climate match to the deployment region (Pattukkottai / Anaikadu,
-Thanjavur — hot tropical, semi-arid delta, ~28 °C mean, NE-monsoon rainfall).
+How Paper 1's validation data is organised, and the pre-registration that keeps it
+honest. Two distinct questions, two distinct data needs:
 
-## Honest headline
+- **(A) Within-climate generalization** — does the model work on *new, independent
+  sites in the climates it was trained on* (humid-tropical, Mediterranean)? This is
+  the legitimate **positive** claim. Data available now.
+- **(B) Cross-climate transfer / deployment gap** — does it transfer to an *unseen*
+  climate (semi-arid Pattukkottai/Anaikadu)? This is the **honest negative** /
+  deferred-deployment story. No same-region open data exists.
 
-**No open under-canopy microclimate logger dataset exists for tropical / semi-arid
-South India.** SoilTemp itself states hot tropical climates — tropical seasonal
-forest / savanna, and Asia in particular — are largely underrepresented. What
-exists *for our exact region* is only the macroclimate / gridded layer used as
-model **inputs** (ERA5-Land, NASA POWER, IMD, the Indian gridded soil-temperature
-/ soil-moisture product), not the under-canopy **labels** we need.
+Validating in (A) does **not** validate (B). Paper 1's claim is "generalizes within
+trained climates"; the semi-arid farm relevance waits for the user's own sensors or
+for adding a semi-arid source to *training*.
 
-Consequence: same-region validation is not available from open data. The credible
-strategy is a **pre-registered held-out climatic analogue** (chosen and frozen
-before scoring), with the user's own plot loggers as the year-2 local
-calibration/validation.
+---
 
-## Candidate held-out sources (priority order)
+## What we trained on (the baseline for independence)
 
-| # | Dataset | Climate match | Variables | Canopy/structure | Access | Role |
-|---|---|---|---|---|---|---|
-| 1 | Pan-tropical understory TMS (*Patterns of tropical forest understory temperatures*, Nat. Comms. 2024) | Warm tropical, 3 continents (incl. tropical Asia) | Near-surface air/surface/soil T (TOMST TMS), hourly, 2015–2022 | Forest canopy; paired to ERA5-Land | **Modelled** outputs open on Finnish Fairdata; **raw logger labels via the SoilTemp platform** (request/collaboration, not one-click). 30 m South-Asia subset already requested from authors. | Best warm-climate held-out test (temperature/offset) |
-| 2 | Cocoa agroforestry microclimate (Zenodo, Alto Beni, Bolivia) | Humid tropical (not semi-arid) | Canopy openness, light, throughfall, T, RH; mono vs agroforestry | Agroforestry — directly relevant design contrast | Open download (Zenodo) | Agroforestry-specific held-out; tests design→microclimate contrast |
-| 3 | OzFlux / TERN semi-arid + savanna (Alice Mulga ≈ semi-arid; Howard Springs / Litchfield / Fletcherview ≈ savanna) | **Best semi-arid analogue** to Pattukkottai | Eddy-covariance met (T, RH, radiation, wind), QA/QC L1–L6 | **Above-canopy** flux towers | Open (TERN/OzFlux portal) | Validates ambient/macroclimate side; NOT under-canopy offset |
-| — | SoilTemp global database | Mostly temperate; tropics sparse | Near-surface T loggers | Mixed | Contributory platform; request access | Broad borrowed pre-training (already in use) |
-| — | Indian gridded soil T / soil moisture (Sci. Data 2018); ERA5-Land, NASA POWER, IMD | Same region | Gridded reanalysis T/moisture/met | n/a | Open | Model **inputs / features**, sanity checks — not independent labels |
+| Source | Climate | Region / coords | Period | Sites |
+|---|---|---|---|---|
+| SAFE Project (Borneo) | Humid tropical rainforest + oil-palm | Sabah, Malaysia ~4.69 °N, 117.58 °E | 2011–2012 | `E_*` (e.g. E_196, E_224, E_198), oil-palm rasters |
+| La Jarda (Spain) | Mediterranean | SW Spain (Cádiz) ~36.57 °N, −5.60 °E | 2005–2006 | `LJ_*` (DOWN/UP_*) |
 
-Already integrated as in-set training (not held-out): SAFE Borneo + La Jarda
-Spain forest loggers, SAFE oil-palm rasters.
+Any validation site must be **disjoint** from these by study, location and time.
+
+---
+
+## (A) Independent within-climate validation — available now
+
+| Dataset | Climate (matches) | Variables | Canopy/structure | Independent of training? | Access |
+|---|---|---|---|---|---|
+| **Cocoa agroforestry, Alto Beni** (Zenodo 1185579) | Humid tropical (≈ Borneo regime) | Canopy openness, light, throughfall, **T, RH**; mono vs agroforestry | Yes — agroforestry design contrast | **Clean.** Bolivia (~15.4 °S, 67.5 °W) — different continent, study and decade from SAFE | Open download (Zenodo) ✅ |
+| Pan-tropical understory TMS (Nat. Comms. 2024) | Humid tropical | Near-surface T (TMS), hourly | Forest | ⚠️ **Contamination risk** — spans South/SE Asia and may include SAFE/Bornean loggers; must de-dup by site coords before use | Raw via SoilTemp request |
+| Montseny (NE Spain) / SENTHYMED-MEDOAK (Montpellier, FR) | Mediterranean (≈ La Jarda regime) | Soil/understory T, canopy structure (varies) | Oak forest | Likely clean (different region from Cádiz) — **must confirm it carries sub-canopy *air* T**, else weak | Zenodo (to inspect) |
+| ForestTemp / ForestClim (Europe) | Mediterranean/temperate | **Modelled** 25 m offset maps | n/a | n/a — model *output*, not in-situ truth | Figshare (open) |
+
+**Note on ForestTemp:** it is a *gridded modelled product*, not raw in-situ labels —
+validating against another model's output is weak. The clean in-situ European labels
+live in SoilTemp (gated). So the immediately-usable, cleanly-independent in-situ set
+is the **cocoa Zenodo** (humid-tropical); a clean Mediterranean in-situ set likely
+needs the SoilTemp route or careful vetting of Montseny/SENTHYMED.
+
+## (B) Cross-climate / deployment gap — deferred
+
+| Dataset | Role |
+|---|---|
+| OzFlux/TERN semi-arid (Alice Mulga) & savanna (Howard Springs/Litchfield/Fletcherview) | Best semi-arid analogue, but **above-canopy** flux-tower met — validates the ambient driver, not the under-canopy offset |
+| Indian gridded soil-T/moisture; ERA5-Land, NASA POWER, IMD | Model **inputs/features** for our region — not independent labels |
+| **User's own plot loggers (year 2)** | The definitive semi-arid fix — collapses the deployment gap; few-shot recalibration already shown to work with ~5–25 local points |
+
+There is **no open under-canopy logger dataset for tropical/semi-arid South India** —
+same-region open validation is impossible; (B) is a characterized limitation, not a gap
+to paper over.
+
+---
 
 ## Pre-registration rule
 
-Pick **one** held-out dataset (recommended: #1 pan-tropical TMS once raw access
-clears; fall back to #2 cocoa Zenodo, which is immediately downloadable), declare
-it in the manuscript methods, and freeze it **before** computing any external
-metric. Report its performance honestly even if mediocre — a predefined,
-honestly-reported external test is worth more than a cherry-picked flattering one.
-
-## Caveats that travel with each
-
-- #1 access is the rate-limiter; the open Fairdata layer is *modelled* maps, the
-  raw point labels need the SoilTemp request.
-- #2 is humid not semi-arid — good for the agroforestry design contrast, weaker as
-  a Pattukkottai climate analogue.
-- #3 is above-canopy, so it validates the ambient driver, not the offset that is
-  the paper's core claim.
+1. **Primary within-climate test (humid-tropical): cocoa Zenodo 1185579** — frozen,
+   confirmed geographically/temporally disjoint from SAFE.
+2. **Secondary (Mediterranean):** vet Montseny/SENTHYMED for sub-canopy air-T; else
+   request SoilTemp European in-situ for sites ≠ La Jarda.
+3. For any SoilTemp-derived set (pan-tropical TMS included), **de-duplicate by site
+   coordinates against `data/processed/all_label_sites.csv`** before scoring; drop any
+   site within ~1 km of a training site.
+4. Declare the held-out sites in methods and compute external metrics **once**, after
+   freezing. Report honestly regardless of outcome.
 
 ## Sources
 
-- SoilTemp — global near-surface temperature database (tropics underrepresented):
-  https://onlinelibrary.wiley.com/doi/abs/10.1111/gcb.15123 ,
-  https://www.soiltempproject.com/
-- Pan-tropical understory temperatures (Nat. Comms. 2024), data via SoilTemp +
-  Fairdata: https://www.nature.com/articles/s41467-024-44734-0
 - Cocoa agroforestry microclimate (Zenodo): https://zenodo.org/record/1185579
-- OzFlux / TERN semi-arid & savanna:
-  https://www.tern.org.au/natt-the-backbone-of-nt-research/
-- Indian gridded soil moisture/temperature (Sci. Data 2018):
-  https://www.nature.com/articles/sdata2018264
+- Pan-tropical understory temperatures (Nat. Comms. 2024): https://www.nature.com/articles/s41467-024-44734-0
+- ForestTemp – European sub-canopy temperatures (Figshare): https://figshare.com/articles/dataset/ForestTemp_sub-canopy_microclimate_temperatures_of_European_forests/14618235
+- Montseny long-term dataset: https://onlinelibrary.wiley.com/doi/abs/10.1002/hyp.14887
+- SENTHYMED/MEDOAK Mediterranean oak dataset: https://www.sciencedirect.com/science/article/pii/S2352340924001562
+- OzFlux/TERN: https://www.tern.org.au/natt-the-backbone-of-nt-research/
+- SoilTemp (tropics underrepresented): https://onlinelibrary.wiley.com/doi/abs/10.1111/gcb.15123
