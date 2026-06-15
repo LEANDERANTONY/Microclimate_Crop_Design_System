@@ -6,7 +6,7 @@ what it cannot, label confidence everywhere.
 
 ## Done (all six layers built, validated, runnable — 35 tests)
 
-- **Repo**: `uv` env + lockfile, `src/` package, ADRs 001–013, DEVLOG, tests.
+- **Repo**: `uv` env + lockfile, `src/` package, ADRs 001–014, DEVLOG, tests.
 - **Layer 1 — microclimate**: Beer–Lambert light + shelterbelt wind (physics);
   XGBoost quantile temp/VPD offsets + conformal intervals; **OOD flag** (ADR-007);
   design→feature mapping grounded on real TN satellite values (ADR-013).
