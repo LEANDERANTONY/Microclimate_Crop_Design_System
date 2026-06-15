@@ -52,6 +52,7 @@ Thumbs.db
 .vscode/
 
 # ---- Personal / not public (kept local, off GitHub) ----
+AGENTS.md
 docs/PROJECT_CONTEXT.md
 docs/correspondence/
 docs/manuscript/
