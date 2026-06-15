@@ -20,3 +20,4 @@ change a decision, write a new ADR that supersedes the old one.
 | [012](ADR-012-transfer-validation-and-hybrid.md) | Skill-scored LOSO/LOCO transfer validation + physics-guided hybrid (tested) | Accepted |
 | [013](ADR-013-grounded-design-features.md) | Ground design→feature mapping with real TN satellite features | Accepted |
 | [014](ADR-014-model-benchmark-and-fewshot-conformal.md) | Model-family benchmark; keep XGBoost (GP as transfer-honest reference); few-shot conformal recalibration | Accepted |
+| [015](ADR-015-modular-publication-program.md) | Split into modular three-paper program; non-destructive monorepo; pre-register external validation | Accepted |

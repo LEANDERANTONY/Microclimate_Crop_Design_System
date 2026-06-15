@@ -61,6 +61,26 @@ what it cannot, label confidence everywhere.
   bot-blocked from this environment → user-side CSV export), plus TNAU per-crop cost line
   items for the high-input crops.
 
+## Publication program: modular three-paper split (ADR-015)
+
+The all-in-one manuscript is being **carved into three focused papers** sharing
+one tested core (see `papers/` and `papers/README.md`). Each has one defensible
+claim and its own validation protocol. Economics is pruned from the lead paper.
+
+- **Paper 1 — uncertainty-aware microclimate prediction** (foundation; target AFM
+  IF 5.7 / Ecological Informatics IF 7.3). Blockers: (a) acquire a warm-tropical
+  training source; (b) **pre-register + freeze one external held-out warm-climate
+  test** before scoring (`docs/external_validation_datasets.md`); (c) carve Paper-1
+  sections out of `docs/manuscript/manuscript.md`.
+- **Paper 2 — microclimate-aware suitability + inverse design** (disease as a
+  modifier). Needs suitability validation against an independent source.
+- **Paper 3 — risk-aware economics** (transparent/uncalibrated). Prices → HIGH.
+
+Data reality (confirmed): **no open under-canopy dataset exists for our region**;
+same-region open validation is impossible, so the play is a pre-registered
+climatic analogue (pan-tropical TMS preferred; cocoa-agroforestry Zenodo fallback)
+plus year-2 own-plot loggers.
+
 ## Next: submit
 
 - **Post the preprint** (EarthArXiv): register ORCID, confirm the four Zenodo dataset

@@ -2,6 +2,24 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-15 — Modular three-paper program + external-validation data register (ADR-015)
+
+- **Strategy pivot:** carve the all-in-one manuscript into three focused papers
+  (microclimate prediction / suitability+inverse-design / economics), sharing one
+  tested core. Economics pruned from the lead paper. Rationale and consequences in
+  **ADR-015**.
+- **Repo modularity (non-destructive):** added `papers/` with `paper1_microclimate/`,
+  `paper2_suitability/`, `paper3_economics/`, each a README mapping the paper to
+  the existing core modules / scripts / report snapshots (no code moved or forked).
+  Overview in `papers/README.md`.
+- **External validation data hunt:** confirmed **no open under-canopy dataset exists
+  for tropical/semi-arid South India** — same-region open validation is impossible.
+  Registered held-out climatic analogues in `docs/external_validation_datasets.md`
+  (pan-tropical understory TMS via SoilTemp — preferred; cocoa-agroforestry Zenodo —
+  downloadable fallback; OzFlux semi-arid — above-canopy ambient only). Adopted a
+  **pre-registration rule**: freeze one external test before scoring.
+- ROADMAP updated with the modular program and Paper-1 blockers.
+
 ## 2026-06-11 — Manuscript build, journal formatting, submission package, doc sync
 
 - **Manuscript drafted and matured** (`docs/manuscript/manuscript.md`): literature-review
