@@ -68,18 +68,20 @@ one tested core (see `papers/` and `papers/README.md`). Each has one defensible
 claim and its own validation protocol. Economics is pruned from the lead paper.
 
 - **Paper 1 — uncertainty-aware microclimate prediction** (foundation; target AFM
-  IF 5.7 / Ecological Informatics IF 7.3). Blockers: (a) acquire a warm-tropical
-  training source; (b) **pre-register + freeze one external held-out warm-climate
-  test** before scoring (`docs/external_validation_datasets.md`); (c) carve Paper-1
-  sections out of `docs/manuscript/manuscript.md`.
+  IF 5.7 / Ecological Informatics IF 7.3). External-validation strategy set (ADR-016,
+  `docs/external_validation_datasets.md`): **cocoa-agroforestry set downloaded** as the
+  primary independent within-climate (humid-tropical) test; **SoilTemp/MDB data-use
+  request submitted** (committee review ~2–3 wks) for independent Mediterranean +
+  Tamil-Nadu few-shot/cross-climate sets. Remaining: build the cocoa external-validation
+  run; add a warm-tropical training source once MDB clears; draft Paper-1 from existing material.
 - **Paper 2 — microclimate-aware suitability + inverse design** (disease as a
   modifier). Needs suitability validation against an independent source.
 - **Paper 3 — risk-aware economics** (transparent/uncalibrated). Prices → HIGH.
 
-Data reality (confirmed): **no open under-canopy dataset exists for our region**;
-same-region open validation is impossible, so the play is a pre-registered
-climatic analogue (pan-tropical TMS preferred; cocoa-agroforestry Zenodo fallback)
-plus year-2 own-plot loggers.
+Data reality (confirmed): **no open under-canopy dataset exists for our exact
+semi-arid site**; the play is pre-registered climatic analogues — cocoa-agroforestry
+(downloaded) for humid-tropical, independent Mediterranean + a Tamil-Nadu savanna point
+(~12.82 N, via the MDB request) for cross-climate/few-shot — plus year-2 own-plot loggers.
 
 ## Next: submit
 

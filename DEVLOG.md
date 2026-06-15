@@ -2,6 +2,25 @@
 
 Chronological build log. Newest first.
 
+## 2026-06-15 — External within-climate validation data + repo hosting hygiene
+
+- **Validation-data strategy firmed up (ADR-016).** Split validation into within-climate
+  (independent humid-tropical + Mediterranean sets, de-duplicated by site coords vs training)
+  and the semi-arid deployment gap (few-shot + own sensors). Register:
+  `docs/external_validation_datasets.md`.
+- **Cocoa-agroforestry set downloaded** (Zenodo 1185579, Alto Beni; humid-tropical; T/RH +
+  stand structure + PAR/LAI) as the primary, in-hand within-climate test — via new
+  `scripts/fetch_validation_data.py` → `data/raw/cocoa_altobeni/` (gitignored).
+- **SoilTemp / MDB data-use request submitted** through the formal MEB request form
+  (committee review ~2–3 weeks). Shortlist drawn from the 82k-row MDB metadata: Mediterranean
+  (`AngeloRita_Astroni_Oct`/`_Oct`, `JosepPenuelas_1.0`, `LuciaSantoianni_Oct`), Tamil-Nadu
+  savanna for few-shot/cross-climate (`RajasekaranMurugan_Oct` + `RaphaelVonBuren_Oct`),
+  French-Guiana humid-tropical (`Jean-YvesGoret_1.0`); SAFE-Borneo-overlapping sets excluded.
+- **Repo hosting hygiene.** The public repo hosts code, ADRs, figures, reports and shared
+  docs only; non-code working documents and the operator briefing (`AGENTS.md`) are kept
+  local-only / out of version control. Merged the two agent files into a single `AGENTS.md`;
+  removed the unused empty `notebooks/`.
+
 ## 2026-06-15 — Modular three-paper program + external-validation data register (ADR-015)
 
 - **Strategy pivot:** carve the all-in-one manuscript into three focused papers
