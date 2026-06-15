@@ -93,6 +93,14 @@ coverage collapsing to ~0.1–0.5. This quantifies why the warm-night semi-arid 
 genuine extrapolation (ADR-012). Regenerate via `scripts/run_validation.py` →
 `reports/loso_metrics.json` + `reports/loco_metrics.json`.
 
+**External within-climate validation (ADR-016).** Beyond held-out *training* sites, the
+positive claim is tested on *independent* datasets from the trained climates, de-duplicated
+by site coordinates against `data/processed/all_label_sites.csv`. The cocoa-agroforestry set
+(Zenodo 1185579, humid-tropical) is downloaded as the primary external test
+(`scripts/fetch_validation_data.py`); independent Mediterranean and a Tamil-Nadu savanna point
+are requested via SoilTemp/MDB. The semi-arid deployment site has no open under-canopy data, so
+it stays the cross-climate / few-shot gap. Register: `docs/external_validation_datasets.md`.
+
 ## Few-shot recalibration & model-family benchmark (`models_benchmark.py`, `scripts/`)
 
 Out-of-climate interval coverage is recovered by **few-shot conformal recalibration**: the
@@ -116,3 +124,10 @@ Real labels assembled from SAFE/La Jarda loggers + SAFE oil-palm rasters; featur
 Earth Engine (ERA5, SoilGrids, DEM, MODIS, ETH canopy). `DATA_SOURCE` env switch; a synthetic
 generator (`data/synth.py`) remains for smoke-testing with identical columns. Offsets
 (sub-canopy − free-air) are the supervised targets.
+
+## Publication structure
+
+One shared `src/agroforestry/` core; the write-up is organised as a **modular three-paper
+program** (ADR-015, `papers/`): (1) uncertainty-aware microclimate prediction, (2) microclimate-
+aware crop suitability + inverse design (disease as a modifier), (3) risk-aware economics.
+Each paper imports the same core and carries one defensible claim.
