@@ -96,10 +96,23 @@ genuine extrapolation (ADR-012). Regenerate via `scripts/run_validation.py` →
 **External within-climate validation (ADR-016).** Beyond held-out *training* sites, the
 positive claim is tested on *independent* datasets from the trained climates, de-duplicated
 by site coordinates against `data/processed/all_label_sites.csv`. The cocoa-agroforestry set
-(Zenodo 1185579, humid-tropical) is downloaded as the primary external test
-(`scripts/fetch_validation_data.py`); independent Mediterranean and a Tamil-Nadu savanna point
-are requested via SoilTemp/MDB. The semi-arid deployment site has no open under-canopy data, so
-it stays the cross-climate / few-shot gap. Register: `docs/external_validation_datasets.md`.
+(Zenodo 1185579, humid-tropical) was the primary external test
+(`scripts/fetch_validation_data.py` → `scripts/run_cocoa_validation.py`); independent
+Mediterranean and a Tamil-Nadu savanna point are requested via SoilTemp/MDB. The semi-arid
+deployment site has no open under-canopy data, so it stays the cross-climate / few-shot gap.
+Register: `docs/external_validation_datasets.md`.
+
+**Status (2026-07-23): no passing external validation yet.** The cocoa test was executed and
+scored once, and returned a **null result on methodological grounds** — the source publishes a
+single station coordinate (so every plot resolves to one feature vector and the canopy→offset
+mapping cannot vary), and the ERA5 free-air ambient reference is unrepresentative at that
+high-relief valley site. The Mediterranean leg is blocked pending outstanding datasets.
+
+**Ambient-reference applicability (ADR-017).** The ERA5-atmospheric reference of ADR-006 is
+valid over **low-relief** terrain and not where the ~31 km cell is unrepresentative of site
+elevation. Candidate external-validation sites are screened on elevation representativeness
+(and per-plot coordinate availability) **before** being frozen. The deployment site is
+unaffected — Anaikadu sits 8 m from its cell mean across 43 m of relief.
 
 ## Few-shot recalibration & model-family benchmark (`models_benchmark.py`, `scripts/`)
 

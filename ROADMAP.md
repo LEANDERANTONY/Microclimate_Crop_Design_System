@@ -69,10 +69,36 @@ claim and its own validation protocol. Economics is pruned from the lead paper.
 
 - **Paper 1 — uncertainty-aware microclimate prediction** (foundation; target AFM
   IF 5.7 / Ecological Informatics IF 7.3). External-validation strategy set (ADR-016,
-  `docs/external_validation_datasets.md`): **cocoa-agroforestry set downloaded** as the
-  primary independent within-climate (humid-tropical) test. The **SoilTemp/MDB delivery
-  arrived 2026-07-22 with 7 of the 10 pre-registered datasets** (per-dataset detail:
+  `docs/external_validation_datasets.md`). **Honest position as of 2026-07-23: Paper 1 has
+  NO passing external validation.** Both legs are down — the Mediterranean leg is **blocked**
+  (missing AngeloRita sets) and the humid-tropical leg is **methodologically void** (cocoa,
+  below). What exists instead is a characterised failure mode (**ADR-017**) plus independent
+  confirmation that the physical signal is real. The **SoilTemp/MDB delivery arrived 2026-07-22
+  with 7 of the 10 pre-registered datasets** (per-dataset detail:
   `data/raw/soiltemp_mdb_data/_validation_report.csv`). Current status:
+  - ✅ **Cocoa (Alto Beni) external run is DONE — and returned a NULL result.** Executed and
+    scored once on 2026-07-23 (`scripts/run_cocoa_validation.py` →
+    `reports/cocoa_external_metrics.json`; frozen set 192 rows / 18 plots / 22 months;
+    independence clean, de-dup min distance 8,685 km / 0 sites dropped). **Not a model failure
+    and not a validation** — two independent methodological limitations each prevent this dataset
+    as a test: (i) the published data carry **one coordinate for the whole station**, so all 18
+    plots share one feature vector and the canopy→offset mapping cannot vary, let alone be
+    tested; (ii) the ~31 km ERA5 free-air ambient reference is cold-biased ~7.5 °C on daily max
+    at this Andean-front valley site, **flipping the observed offsets positive** (+3.63 / +1.09 °C
+    vs training means −2.04 / −1.01 °C). The scored metrics therefore measure ERA5 bias plus a
+    constant feature vector, not canopy skill. The OOD flag behaved as designed (25.5 % of rows
+    flagged). **Genuine gains:** a quantified boundary condition on the ADR-006 ambient reference
+    (**ADR-017**), and confirmation *in the raw data* that the buffering signal is real and
+    correctly signed (sub-canopy T_max ~3.5 °C below the local open-air station; plot-mean dT_max
+    correlates +0.55 with canopy openness, −0.49 with LAI4). **Anaikadu is unaffected** — the
+    orographic mechanism does not operate in the flat Cauvery delta (site 22.8 m vs 14.7 m box
+    mean across 42.7 m relief, vs cocoa's +277.6 m across 1,570.7 m), so existing Anaikadu
+    results stand.
+  - 🧪 **New gate before any future freeze (ADR-017).** Screen every candidate external-validation
+    site *before* freezing it: reject sites where the ~31 km ERA5 cell is unrepresentative
+    (high-relief terrain / valley position — check site elevation vs box mean and box relief),
+    and confirm the source publishes **per-plot coordinates** so the feature matrix is not
+    degenerate. Recorded in `docs/external_validation_datasets.md` (pre-registration rule 5).
   - 🚫 **Independent Mediterranean VPD validation is BLOCKED.** Both `AngeloRita` sets —
     the only pre-registered Mediterranean sources with RH at 15 cm air — are not yet in hand
     (followed up with the MDB team). The Mediterranean data we do have (Peñuelas 5 cm,
@@ -91,9 +117,12 @@ claim and its own validation protocol. Economics is pruned from the lead paper.
   - ⚠️ **Humid-tropical arm usable** (Powers 15 cm, Goret 12 cm, Lelis 150 cm, Zavaleta 100 cm),
     but `site_selection.csv` marks these four "train + validation" — the train-vs-validate role
     split must be settled before scoring, or the ADR-016 independence claim is compromised.
-  - ➡️ **Next actionable step is unchanged and unaffected: build the cocoa external-validation
-    run.** Then: warm-tropical training source once the outstanding sets are resolved; draft
-    Paper-1 from existing material.
+  - ➡️ **Next actionable steps** (the cocoa run is no longer among them — it is done):
+    settle the Mediterranean open decision with the MDB team (re-request / substitute /
+    proceed without), settle the train-vs-validate role split on the four humid-tropical sets,
+    and screen any replacement humid-tropical candidate under the ADR-017 gate before freezing
+    it. Then: warm-tropical training source; draft Paper 1 from existing material — with the
+    external-validation section written as the honest null it currently is.
 - **Paper 2 — microclimate-aware suitability + inverse design** (disease as a
   modifier). Needs suitability validation against an independent source.
 - **Paper 3 — risk-aware economics** (transparent/uncalibrated). Prices → HIGH.
@@ -104,6 +133,10 @@ semi-arid site**; the play is pre-registered climatic analogues — cocoa-agrofo
 (~12.82 N, via the MDB request) for cross-climate/few-shot — plus year-2 own-plot loggers.
 **Update 2026-07-22:** the MDB delivery only partly materialised this play — the Tamil-Nadu
 point survives but is thin, and the Mediterranean leg has no VPD-capable data at all.
+**Update 2026-07-23:** the humid-tropical analogue did not survive contact either — the cocoa
+set was scored once and is methodologically void (single station coordinate; unrepresentative
+ERA5 ambient reference at a high-relief site — ADR-017). The play now rests on finding an
+ADR-017-screenable replacement analogue and, ultimately, on the year-2 own-plot loggers.
 
 ## Next: submit
 

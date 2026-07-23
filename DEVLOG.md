@@ -2,6 +2,66 @@
 
 Chronological build log. Newest first.
 
+## 2026-07-23 — First pre-registered external validation (cocoa, Alto Beni): NULL result
+
+The first external test under the ADR-016 pre-registration rule was executed and scored once.
+**It is a null result on methodological grounds — it is not a model failure, and it is not a
+validation.** Two independent limitations each, on their own, prevent this dataset from testing
+the thing we set out to test.
+
+- **The run.** New `scripts/run_cocoa_validation.py` scores the frozen humid-tropical set
+  (Niether et al., Zenodo 1185579; Sara Ana station, Alto Beni, **Bolivia**, −15.4602, −67.4724,
+  380 m) against the production offset models. Frozen test set
+  `data/processed/cocoa_external_test.parquet` (gitignored): **192 rows / 18 plots / 22 months
+  (2013-03 → 2014-12)**. Metrics: `reports/cocoa_external_metrics.json`.
+- **Independence: clean.** Coordinate de-duplication against the training sites
+  (ADR-016 rule 3) gives a **minimum distance of 8,685 km and 0 sites dropped** — no overlap
+  with SAFE Borneo or La Jarda by any margin.
+- **Limitation 1 — degenerate feature matrix.** The dataset publishes a **single coordinate for the
+  whole station**; per-plot coordinates are not distributed. All 18 plots therefore resolve to
+  one identical feature vector: `lai`, `canopy_height`, `ndvi`, `fapar`, `elevation`, `slope`,
+  `twi`, `soc` and `clay` each take **exactly one unique value**, leaving only 22 distinct
+  feature rows (the months) behind 192 label rows. The canopy→offset mapping — the entire object
+  under test — **cannot vary and therefore cannot be tested** on this set.
+- **Limitation 2 — our ambient reference is cold-biased here, flipping the label sign.** The ~31 km ERA5 free-air cell
+  (ADR-006) straddles the Andean front here; it is cold-biased **~7.5 °C on daily max** against
+  the local Sapecho station climatology. Observed offsets consequently came out **positive**
+  (`dT_max` **+3.63 °C**, `dT_mean` **+1.09 °C**) where the training means are **−2.04 / −1.01 °C**
+  — i.e. the labels claim the canopy *warms*, which is an artefact of the reference, not of the
+  stand. The applicability boundary this exposes is recorded in **ADR-017**.
+- **The metrics, correctly framed.** They measure ERA5 bias plus a constant feature vector, **not
+  canopy skill**. `pure_xgb`, nominal coverage 0.80 — dT_max MAE **5.458 °C**, skill **+3.7 %**,
+  coverage **0.04**; dT_mean MAE **2.421 °C**, skill **−15.1 %**, coverage **0.01**; dVPD MAE
+  **0.322 kPa**, skill **−46.8 %**, coverage **0.30**. Do not read these as external performance
+  numbers for the model.
+- **The OOD flag behaved as designed.** Mean `ood_score` **0.144** with **25.5 % of rows above the
+  0.15 extrapolation flag** — borderline-to-out-of-distribution. The system declined to assert
+  confidence it did not have, which is the intended behaviour (ADR-007).
+- **What the run DID establish (genuine, publishable):**
+  1. A **quantified boundary condition on the ADR-006 ambient-reference convention** (now
+     **ADR-017**): ERA5 free-air is a valid ambient reference over **low-relief** terrain, and is
+     **not** valid at valley sites in **high-relief** terrain.
+  2. **The physics is confirmed independently of the model, in the raw data.** Sub-canopy T_max
+     sits **~3.5 °C below** the local open-air station max, and observed plot-mean `dT_max`
+     correlates **+0.55 with in-situ canopy openness** and **−0.49 with in-situ LAI4** — open
+     monoculture warmest, closed fallow coolest. The buffering signal is present and **correctly
+     signed** in an independent humid-tropical agroforestry dataset.
+- **Deployment site is UNAFFECTED.** The orographic mechanism does not operate in the flat Cauvery
+  delta. Elevation representativeness (Copernicus DEM; site elevation vs ~31 km box mean, and box
+  relief): **Anaikadu 22.8 m vs 14.7 m (−8.1 m), relief 42.7 m**; Tamil Nadu savanna site 94.3 vs
+  92.3 m (−2.0 m), relief 77.1 m — against cocoa's **+277.6 m offset across 1,570.7 m of relief**
+  (training references: SAFE Borneo +89.6 m / 1,094 m, La Jarda −109.1 m / 1,045 m). **Existing
+  Anaikadu results stand unchanged.**
+- **Reproducibility note on the source files** (needed to rebuild the run):
+  the published `date` string column labels June-2014 and November-2014 as year 2013, producing
+  25,938 duplicate plot-timestamps. The separate `year`/`month`/`day` columns are self-consistent
+  and were used instead.
+- **Honest bottom line.** **Paper 1 still has no passing external validation.** The Mediterranean
+  leg is blocked (missing AngeloRita sets — see the 2026-07-22 entry) and the humid-tropical leg is
+  now methodologically void. What exists in their place is a **characterised failure mode**
+  (ADR-017) plus **independent confirmation that the physical signal is real**. Register updated:
+  `docs/external_validation_datasets.md`; `ROADMAP.md` updated.
+
 ## 2026-07-22 — SoilTemp/MDB delivery received and validated
 
 - **Delivery.** The approved SoilTemp/MDB data-use request was delivered to

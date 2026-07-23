@@ -22,3 +22,4 @@ change a decision, write a new ADR that supersedes the old one.
 | [014](ADR-014-model-benchmark-and-fewshot-conformal.md) | Model-family benchmark; keep XGBoost (GP as transfer-honest reference); few-shot conformal recalibration | Accepted |
 | [015](ADR-015-modular-publication-program.md) | Split into modular three-paper program; non-destructive monorepo; pre-register external validation | Accepted |
 | [016](ADR-016-external-validation-datasets.md) | External within-climate validation datasets + independence/de-dup rule; cocoa + SoilTemp/MDB acquisition | Accepted |
+| [017](ADR-017-ambient-reference-orographic-limits.md) | Orographic screening rule limiting where the ERA5 free-air ambient reference (ADR-006) applies | Accepted |

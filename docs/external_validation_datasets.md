@@ -5,7 +5,10 @@ honest. Two distinct questions, two distinct data needs:
 
 - **(A) Within-climate generalization** — does the model work on *new, independent
   sites in the climates it was trained on* (humid-tropical, Mediterranean)? This is
-  the legitimate **positive** claim. Data available now.
+  the legitimate **positive** claim. **Status 2026-07-23: no runnable test in hand** —
+  the humid-tropical leg (cocoa) was executed and returned a null result on
+  methodological grounds, and the Mediterranean leg is blocked pending outstanding
+  datasets. See the dated sections below.
 - **(B) Cross-climate transfer / deployment gap** — does it transfer to an *unseen*
   climate (semi-arid Pattukkottai/Anaikadu)? This is the **honest negative** /
   deferred-deployment story. No same-region open data exists.
@@ -31,7 +34,7 @@ Any validation site must be **disjoint** from these by study, location and time.
 
 | Dataset | Climate (matches) | Variables | Canopy/structure | Independent of training? | Access |
 |---|---|---|---|---|---|
-| **Cocoa agroforestry, Alto Beni** (Zenodo 1185579) | Humid tropical (≈ Borneo regime) | Canopy openness, light, throughfall, **T, RH**; mono vs agroforestry | Yes — agroforestry design contrast | **Clean.** Bolivia (~15.4 °S, 67.5 °W) — different continent, study and decade from SAFE | Open download (Zenodo) ✅ |
+| **Cocoa agroforestry, Alto Beni** (Zenodo 1185579) | Humid tropical (≈ Borneo regime) | Canopy openness, light, throughfall, **T, RH**; mono vs agroforestry | Yes — agroforestry design contrast | **Clean.** Bolivia (~15.4 °S, 67.5 °W) — different continent, study and decade from SAFE; de-dup min distance **8,685 km**, 0 sites dropped | Open download (Zenodo) ✅ — **scored 2026-07-23: NULL result, methodologically invalid** (see below) |
 | Pan-tropical understory TMS (Nat. Comms. 2024) | Humid tropical | Near-surface T (TMS), hourly | Forest | ⚠️ **Contamination risk** — spans South/SE Asia and may include SAFE/Bornean loggers; must de-dup by site coords before use | Raw via SoilTemp request |
 | SoilTemp Iberian/Mediterranean in-situ | Mediterranean (≈ La Jarda regime) | Sub-canopy **air T** <100 cm, ≥4 h, RH/soil where available | Site metadata | The **correct systematic source**; exclude La Jarda by coords | Requested → **delivered 2026-07-22, 7 of 10 in hand** ⚠️ (see below) |
 | Aleppo-pine shrub-layer gradient (AgForMet 2020) | Mediterranean (lowland — **best climatic match**) | **T, RH, VPD, solar, soil moisture** across a dense/medium/low/open cover gradient ± shrub | Vegetation-cover gradient = controllable design | Clean (S. France/Med, not La Jarda) | On request to authors (HAL article only) ⏳ |
@@ -66,6 +69,10 @@ arrives, the only immediately-runnable independent external test is the humid-tr
 **cocoa Zenodo** set — so it is fine to produce the first external-validation result on
 cocoa and add the Mediterranean leg when the request clears. Do **not** substitute
 Montseny (wrong variable) or ForestTemp (modelled) to fill the gap.
+
+> **Superseded in part (2026-07-23):** the cocoa test was run and returned a **null result for
+> methodological reasons** — see "Cocoa (Alto Beni) — test executed and scored once" below.
+> The rest of this verdict (the Mediterranean per-candidate assessment) still stands.
 
 ## SoilTemp/MDB delivery — status of the 10 requested datasets (2026-07-22)
 
@@ -129,6 +136,63 @@ MDB, is an **open decision for the project owner**. It is deliberately **not** t
 register. ADR-016 stands unamended — nothing here changes the independence or pre-registration
 rule; a **new ADR** should record whichever course is chosen.
 
+## Cocoa (Alto Beni) — test executed and scored once (2026-07-23): NULL result
+
+Governing decisions: **ADR-016** (pre-registration / independence) and **ADR-017** (ambient-reference
+applicability). Run: `scripts/run_cocoa_validation.py`; metrics:
+**`reports/cocoa_external_metrics.json`**.
+
+**Status: run, frozen, scored once — and the result is NULL for methodological reasons.** It is
+neither a validation nor a model failure: the dataset as published cannot test the quantity we
+pre-registered it to test.
+
+- **Frozen set.** `data/processed/cocoa_external_test.parquet` (gitignored) — **192 rows / 18 plots
+  / 22 months (2013-03 → 2014-12)**, Sara Ana station, Alto Beni, Bolivia (−15.4602, −67.4724,
+  380 m).
+- **Independence: clean.** Coordinate de-duplication vs training sites gives **minimum distance
+  8,685 km, 0 sites dropped**.
+
+**Cause 1 — degenerate feature matrix.** The dataset publishes **one coordinate for the entire
+station**; per-plot coordinates are not distributed. All 18 plots therefore collapse to a single
+feature vector — `lai`, `canopy_height`, `ndvi`, `fapar`, `elevation`, `slope`, `twi`, `soc`, `clay`
+each hold **exactly one unique value**, and only 22 distinct feature rows (the months) sit behind
+192 label rows. The **canopy→offset mapping cannot vary across plots and so cannot be tested here**.
+
+**Cause 2 — ambient-reference cold bias flips the label sign.** The ~31 km ERA5 free-air cell
+(ADR-006) straddles the Andean front at this site and is cold-biased **~7.5 °C on daily max** vs the
+local Sapecho station climatology. Observed offsets therefore came out **positive** (`dT_max`
+**+3.63 °C**, `dT_mean` **+1.09 °C**) against training means of **−2.04 / −1.01 °C** — an artefact
+of the reference, not of the stands. The resulting applicability rule (ERA5 free-air is valid over
+low-relief terrain, invalid at valley sites in high-relief terrain) is **ADR-017**.
+
+**Metrics — read them correctly.** They quantify ERA5 bias plus a constant feature vector, **not
+canopy skill**. `pure_xgb`, nominal coverage 0.80: dT_max MAE **5.458 °C** / skill **+3.7 %** /
+coverage **0.04**; dT_mean MAE **2.421 °C** / skill **−15.1 %** / coverage **0.01**; dVPD MAE
+**0.322 kPa** / skill **−46.8 %** / coverage **0.30**. The OOD flag behaved as designed: mean
+`ood_score` **0.144**, **25.5 % of rows above the 0.15 flag** (borderline-to-out-of-distribution) —
+the model declined to assert confidence rather than asserting false confidence.
+
+**What the run did establish.**
+- A **quantified boundary condition on the ADR-006 ambient-reference convention** (ADR-017).
+- **The physics, confirmed independently of the model, in the raw data:** sub-canopy T_max sits
+  **~3.5 °C below** the local open-air station max, and observed plot-mean `dT_max` correlates
+  **+0.55 with in-situ canopy openness** and **−0.49 with in-situ LAI4** (open monoculture warmest,
+  closed fallow coolest). The buffering signal is present and correctly signed in an independent
+  humid-tropical agroforestry dataset.
+- **Deployment site unaffected.** The orographic mechanism does not operate in the flat Cauvery
+  delta: Anaikadu sits **22.8 m vs a 14.7 m ~31 km box mean (−8.1 m) across 42.7 m of relief**, and
+  the Tamil Nadu savanna site 94.3 vs 92.3 m (−2.0 m) across 77.1 m — versus cocoa's **+277.6 m
+  across 1,570.7 m of relief** (training references: SAFE Borneo +89.6 m / 1,094 m; La Jarda
+  −109.1 m / 1,045 m). **Existing Anaikadu results stand.**
+
+**Dataset note (technical, needed to reproduce).** The published `date` string column labels
+June-2014 and November-2014 as year 2013, yielding 25,938 duplicate plot-timestamps. The separate
+`year` / `month` / `day` columns are self-consistent and were used instead.
+
+**What would make this dataset testable.** **Per-plot coordinates** are required before it can ever
+test the canopy→offset mapping; without them the feature matrix is degenerate by construction. A
+valid ambient reference for the site (ADR-017 screening) would additionally be needed.
+
 ## (B) Cross-climate / deployment gap — deferred
 
 | Dataset | Role |
@@ -146,11 +210,19 @@ to paper over.
 ## Pre-registration rule
 
 1. **Primary within-climate test (humid-tropical): cocoa Zenodo 1185579** — frozen,
-   confirmed geographically/temporally disjoint from SAFE.
+   confirmed geographically/temporally disjoint from SAFE (de-dup min distance 8,685 km).
+   **EXECUTED and scored once on 2026-07-23. Outcome: invalid for methodological reasons**
+   (degenerate single-coordinate feature matrix; ERA5 ambient-reference cold bias flipping the
+   label sign — ADR-017). Metrics: `reports/cocoa_external_metrics.json`. This test is **spent**:
+   the frozen set `data/processed/cocoa_external_test.parquet` **must not be re-scored**, and any
+   future re-test of this dataset requires a **new frozen set** built once these limitations are addressed.
+   The dataset can only ever test the canopy→offset mapping if **per-plot coordinates** become
+   available; a valid ambient reference for the site is a further prerequisite.
 2. **Secondary (Mediterranean):** the SoilTemp/MDB request was delivered 2026-07-22, but the
    two RH-bearing sets are not yet in hand, so **no independent Mediterranean VPD test is
    currently available**. The leg is **blocked pending an owner decision**, not silently
-   dropped. Still not a blocker for the first (cocoa, humid-tropical) result.
+   dropped. With the cocoa (humid-tropical) leg now void as well, **Paper 1 has no passing
+   external validation** — see `ROADMAP.md`.
 3. For any SoilTemp-derived set (pan-tropical TMS included), **de-duplicate by site
    coordinates against `data/processed/all_label_sites.csv`** before scoring; drop any
    site within ~1 km of a training site. **In the 2026-07-22 delivery this rule excludes one
@@ -159,6 +231,13 @@ to paper over.
    have caught it.
 4. Declare the held-out sites in methods and compute external metrics **once**, after
    freezing. Report honestly regardless of outcome.
+5. **Screen candidate sites before freezing (ADR-017).** Two checks the cocoa run showed are
+   not optional: (a) **ambient-reference applicability** — reject sites where the ~31 km ERA5
+   free-air cell is unrepresentative, i.e. high-relief terrain / valley positions (compare site
+   elevation against the box mean and the box relief); (b) **feature-matrix non-degeneracy** —
+   confirm the published data carry **per-plot coordinates**, so the canopy features actually
+   vary across plots. A set failing either check cannot test the canopy→offset mapping and
+   should not be frozen as a test.
 
 ## Sources
 

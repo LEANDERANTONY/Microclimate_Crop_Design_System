@@ -1,0 +1,496 @@
+{
+  "_meta": {
+    "scored_at": "2026-07-23T22:15:24",
+    "test_set": "data\\processed\\cocoa_external_test.parquet",
+    "test_rows": 192,
+    "test_sites": 18,
+    "test_period": [
+      "2013-03",
+      "2014-12"
+    ],
+    "train_rows": 2764,
+    "train_sites": 596,
+    "protocol": "external hold-out; model fit on ALL training rows (group-aware conformal calibration), scored once",
+    "baseline": "training-mean offset (identical to validation.py)"
+  },
+  "dT_max": {
+    "pure_xgb": {
+      "n_test": 192,
+      "MAE": 5.458449139042972,
+      "RMSE": 5.767151727821187,
+      "interval_coverage": 0.036458333333333336,
+      "interval_nominal": 0.8,
+      "interval_width": 3.7985687255859375,
+      "baseline_MAE": 5.669026584005138,
+      "skill_vs_baseline": 0.03714525621670217,
+      "R2_oos": 0.08296051247374436,
+      "obs_mean": 3.6256254263484675,
+      "obs_std": 2.0325022722631894,
+      "pred_mean": -1.8310178518295288,
+      "pred_std": 0.4651857316493988,
+      "bias_pred_minus_obs": -5.456643122336686,
+      "seconds": 0.9,
+      "per_treatment": {
+        "AF CONV": {
+          "n": 34,
+          "MAE": 5.853178686195809,
+          "interval_coverage": 0.0
+        },
+        "AF ORG": {
+          "n": 34,
+          "MAE": 5.6842307162082335,
+          "interval_coverage": 0.0
+        },
+        "BAR": {
+          "n": 32,
+          "MAE": 2.508640305220062,
+          "interval_coverage": 0.21875
+        },
+        "MONO CONV": {
+          "n": 34,
+          "MAE": 6.685692193056973,
+          "interval_coverage": 0.0
+        },
+        "MONO ORG": {
+          "n": 34,
+          "MAE": 6.366943080670147,
+          "interval_coverage": 0.0
+        },
+        "SAFS": {
+          "n": 24,
+          "MAE": 5.486842747531206,
+          "interval_coverage": 0.0
+        }
+      },
+      "per_site_MAE": {
+        "COC_01": 5.602768771238203,
+        "COC_02": 6.582882570521353,
+        "COC_03": 6.784700670879777,
+        "COC_04": 6.419379882349314,
+        "COC_05": 6.364319846507018,
+        "COC_06": 7.077548341130676,
+        "COC_07": 6.45312271389053,
+        "COC_08": 6.34424636980451,
+        "COC_09": 6.189902283783006,
+        "COC_10": 6.270940814248953,
+        "COC_11": 5.318747593327762,
+        "COC_12": 1.8799117763470334,
+        "COC_14": 5.44470872778559,
+        "COC_15": 5.077349967551808,
+        "COC_18": 6.777159220793899,
+        "COC_19": 6.199324082295783,
+        "COC_21": 3.5400940400554055,
+        "COC_22": 4.419466611768705
+      },
+      "ood": {
+        "definition": "fraction of engineered features outside the training min/max box (models.QuantileModel.ood_score)",
+        "flag_threshold": 0.15,
+        "external_mean": 0.1443142361111111,
+        "external_min": 0.125,
+        "external_max": 0.3333333333333333,
+        "external_frac_flagged": 0.2552083333333333,
+        "train_mean": 0.0,
+        "features_out_of_range": [
+          "clay",
+          "diurnal_range",
+          "rain_per_temp",
+          "rainfall",
+          "rh",
+          "slope",
+          "twi",
+          "vpd_ambient",
+          "wind"
+        ]
+      }
+    },
+    "hybrid": {
+      "n_test": 192,
+      "MAE": 5.293843207833561,
+      "RMSE": 5.6331225920216905,
+      "interval_coverage": 0.036458333333333336,
+      "interval_nominal": 0.8,
+      "interval_width": 4.078505704049274,
+      "baseline_MAE": 5.669026584005138,
+      "skill_vs_baseline": 0.06618126950226999,
+      "R2_oos": 0.12508938155167004,
+      "obs_mean": 3.6256254263484675,
+      "obs_std": 2.0325022722631894,
+      "pred_mean": -1.6638796387637245,
+      "pred_std": 0.38480746436864555,
+      "bias_pred_minus_obs": -5.289505065112192,
+      "seconds": 1.4,
+      "per_treatment": {
+        "AF CONV": {
+          "n": 34,
+          "MAE": 5.68822238712558,
+          "interval_coverage": 0.0
+        },
+        "AF ORG": {
+          "n": 34,
+          "MAE": 5.519274417138003,
+          "interval_coverage": 0.0
+        },
+        "BAR": {
+          "n": 32,
+          "MAE": 2.3607971380232904,
+          "interval_coverage": 0.21875
+        },
+        "MONO CONV": {
+          "n": 34,
+          "MAE": 6.520735893986743,
+          "interval_coverage": 0.0
+        },
+        "MONO ORG": {
+          "n": 34,
+          "MAE": 6.201986781599917,
+          "interval_coverage": 0.0
+        },
+        "SAFS": {
+          "n": 24,
+          "MAE": 5.301871882182927,
+          "interval_coverage": 0.0
+        }
+      },
+      "per_site_MAE": {
+        "COC_01": 5.428797776842143,
+        "COC_02": 6.408911576125294,
+        "COC_03": 6.610729676483718,
+        "COC_04": 6.245408887953253,
+        "COC_05": 6.190348852110958,
+        "COC_06": 6.903577346734617,
+        "COC_07": 6.279151719494471,
+        "COC_08": 6.17027537540845,
+        "COC_09": 6.015931289386946,
+        "COC_10": 6.096969819852894,
+        "COC_11": 5.158708400798893,
+        "COC_12": 1.7419711381316234,
+        "COC_14": 5.284669535256723,
+        "COC_15": 4.881379231251311,
+        "COC_18": 6.617120028265029,
+        "COC_19": 6.039284889766915,
+        "COC_21": 3.366123045659346,
+        "COC_22": 4.256351275973373
+      }
+    }
+  },
+  "dT_mean": {
+    "pure_xgb": {
+      "n_test": 192,
+      "MAE": 2.4214241360791906,
+      "RMSE": 2.4976818935955514,
+      "interval_coverage": 0.005208333333333333,
+      "interval_nominal": 0.8,
+      "interval_width": 0.9685208201408386,
+      "baseline_MAE": 2.1041283721657127,
+      "skill_vs_baseline": -0.15079677082006904,
+      "R2_oos": -0.30185889464170046,
+      "obs_mean": 1.089321656355598,
+      "obs_std": 0.6037982869492347,
+      "pred_mean": -1.3321025371551514,
+      "pred_std": 0.4782406985759735,
+      "bias_pred_minus_obs": -2.4214241360791906,
+      "seconds": 0.7,
+      "per_treatment": {
+        "AF CONV": {
+          "n": 34,
+          "MAE": 2.61765073953567,
+          "interval_coverage": 0.0
+        },
+        "AF ORG": {
+          "n": 34,
+          "MAE": 2.4825834818756167,
+          "interval_coverage": 0.0
+        },
+        "BAR": {
+          "n": 32,
+          "MAE": 1.6786387408962318,
+          "interval_coverage": 0.03125
+        },
+        "MONO CONV": {
+          "n": 34,
+          "MAE": 2.8446337313590533,
+          "interval_coverage": 0.0
+        },
+        "MONO ORG": {
+          "n": 34,
+          "MAE": 2.5068488894517444,
+          "interval_coverage": 0.0
+        },
+        "SAFS": {
+          "n": 24,
+          "MAE": 2.3266092409572616,
+          "interval_coverage": 0.0
+        }
+      },
+      "per_site_MAE": {
+        "COC_01": 2.4476399228974253,
+        "COC_02": 2.616062824629802,
+        "COC_03": 2.9642327768400776,
+        "COC_04": 2.7260718598747258,
+        "COC_05": 2.5441028858603896,
+        "COC_06": 2.630386562682372,
+        "COC_07": 2.696259733231953,
+        "COC_08": 2.7247262430885844,
+        "COC_09": 2.4817443882498753,
+        "COC_10": 2.520816520866362,
+        "COC_11": 2.3997665277307787,
+        "COC_12": 1.5726491017280226,
+        "COC_14": 2.49355896926927,
+        "COC_15": 2.188526326340873,
+        "COC_18": 2.947436887228968,
+        "COC_19": 2.4693474427303146,
+        "COC_21": 1.8647348303048321,
+        "COC_22": 1.982437622208482
+      },
+      "ood": {
+        "definition": "fraction of engineered features outside the training min/max box (models.QuantileModel.ood_score)",
+        "flag_threshold": 0.15,
+        "external_mean": 0.1443142361111111,
+        "external_min": 0.125,
+        "external_max": 0.3333333333333333,
+        "external_frac_flagged": 0.2552083333333333,
+        "train_mean": 0.0,
+        "features_out_of_range": [
+          "clay",
+          "diurnal_range",
+          "rain_per_temp",
+          "rainfall",
+          "rh",
+          "slope",
+          "twi",
+          "vpd_ambient",
+          "wind"
+        ]
+      }
+    },
+    "hybrid": {
+      "n_test": 192,
+      "MAE": 2.391710518997108,
+      "RMSE": 2.4713340866887963,
+      "interval_coverage": 0.0,
+      "interval_nominal": 0.8,
+      "interval_width": 0.4661776061819551,
+      "baseline_MAE": 2.1041283721657127,
+      "skill_vs_baseline": -0.13667519084655289,
+      "R2_oos": -0.27453739528347065,
+      "obs_mean": 1.089321656355598,
+      "obs_std": 0.6037982869492347,
+      "pred_mean": -1.3023888626415105,
+      "pred_std": 0.3924469883421095,
+      "bias_pred_minus_obs": -2.391710518997108,
+      "seconds": 0.7,
+      "per_treatment": {
+        "AF CONV": {
+          "n": 34,
+          "MAE": 2.585169008308326,
+          "interval_coverage": 0.0
+        },
+        "AF ORG": {
+          "n": 34,
+          "MAE": 2.450101750648274,
+          "interval_coverage": 0.0
+        },
+        "BAR": {
+          "n": 32,
+          "MAE": 1.6622747366008945,
+          "interval_coverage": 0.0
+        },
+        "MONO CONV": {
+          "n": 34,
+          "MAE": 2.8121520001317104,
+          "interval_coverage": 0.0
+        },
+        "MONO ORG": {
+          "n": 34,
+          "MAE": 2.474367158224402,
+          "interval_coverage": 0.0
+        },
+        "SAFS": {
+          "n": 24,
+          "MAE": 2.2947821203159973,
+          "interval_coverage": 0.0
+        }
+      },
+      "per_site_MAE": {
+        "COC_01": 2.439590111750875,
+        "COC_02": 2.608013013483252,
+        "COC_03": 2.956182965693527,
+        "COC_04": 2.718022048728175,
+        "COC_05": 2.536053074713839,
+        "COC_06": 2.622336751535822,
+        "COC_07": 2.6882099220854023,
+        "COC_08": 2.716676431942034,
+        "COC_09": 2.4736945771033247,
+        "COC_10": 2.512766709719812,
+        "COC_11": 2.353958294641185,
+        "COC_12": 1.526840868638429,
+        "COC_14": 2.4477507361796764,
+        "COC_15": 2.132921896204895,
+        "COC_18": 2.901628654139373,
+        "COC_19": 2.423539209640721,
+        "COC_21": 1.8566850191582818,
+        "COC_22": 2.1155455865583748
+      }
+    }
+  },
+  "dVPD": {
+    "pure_xgb": {
+      "n_test": 192,
+      "MAE": 0.321875504718977,
+      "RMSE": 0.3851788782015657,
+      "interval_coverage": 0.3020833333333333,
+      "interval_nominal": 0.8,
+      "interval_width": 0.43608465790748596,
+      "baseline_MAE": 0.21929969266849372,
+      "skill_vs_baseline": -0.4677426165185872,
+      "R2_oos": -0.9383218933048967,
+      "obs_mean": -0.11092109637486668,
+      "obs_std": 0.21511228786452782,
+      "pred_mean": -0.4233739376068115,
+      "pred_std": 0.06759753823280334,
+      "bias_pred_minus_obs": -0.31245284588855776,
+      "seconds": 0.7,
+      "per_treatment": {
+        "AF CONV": {
+          "n": 34,
+          "MAE": 0.328462818786682,
+          "interval_coverage": 0.20588235294117646
+        },
+        "AF ORG": {
+          "n": 34,
+          "MAE": 0.26998950924636483,
+          "interval_coverage": 0.38235294117647056
+        },
+        "BAR": {
+          "n": 32,
+          "MAE": 0.1488270930371955,
+          "interval_coverage": 0.8125
+        },
+        "MONO CONV": {
+          "n": 34,
+          "MAE": 0.4842065028402873,
+          "interval_coverage": 0.029411764705882353
+        },
+        "MONO ORG": {
+          "n": 34,
+          "MAE": 0.3660345009142788,
+          "interval_coverage": 0.11764705882352941
+        },
+        "SAFS": {
+          "n": 24,
+          "MAE": 0.32425236033643745,
+          "interval_coverage": 0.2916666666666667
+        }
+      },
+      "per_site_MAE": {
+        "COC_01": 0.34830642007295,
+        "COC_02": 0.6122411086424338,
+        "COC_03": 0.38147207063643324,
+        "COC_04": 0.4536855808219658,
+        "COC_05": 0.27272019460928026,
+        "COC_06": 0.4833074542672604,
+        "COC_07": 0.4367072257568119,
+        "COC_08": 0.4187493733403054,
+        "COC_09": 0.5243520419602149,
+        "COC_10": 0.3596428807261716,
+        "COC_11": 0.22867390484904043,
+        "COC_12": 0.0898347585101665,
+        "COC_14": 0.27985408772712694,
+        "COC_15": 0.21217548965629243,
+        "COC_18": 0.4622423222806498,
+        "COC_19": 0.3357941373238585,
+        "COC_21": 0.28652976667365704,
+        "COC_22": 0.2667309224811627
+      },
+      "ood": {
+        "definition": "fraction of engineered features outside the training min/max box (models.QuantileModel.ood_score)",
+        "flag_threshold": 0.15,
+        "external_mean": 0.1443142361111111,
+        "external_min": 0.125,
+        "external_max": 0.3333333333333333,
+        "external_frac_flagged": 0.2552083333333333,
+        "train_mean": 0.0,
+        "features_out_of_range": [
+          "clay",
+          "diurnal_range",
+          "rain_per_temp",
+          "rainfall",
+          "rh",
+          "slope",
+          "twi",
+          "vpd_ambient",
+          "wind"
+        ]
+      }
+    },
+    "hybrid": {
+      "n_test": 192,
+      "MAE": 0.32112292201975073,
+      "RMSE": 0.3912012222485892,
+      "interval_coverage": 0.2708333333333333,
+      "interval_nominal": 0.8,
+      "interval_width": 0.3912902458043595,
+      "baseline_MAE": 0.21929969266849372,
+      "skill_vs_baseline": -0.4643108620547818,
+      "R2_oos": -0.9994077868493625,
+      "obs_mean": -0.11092109637486668,
+      "obs_std": 0.21511228786452782,
+      "pred_mean": -0.42050237266687657,
+      "pred_std": 0.07611812639238562,
+      "bias_pred_minus_obs": -0.3095812762920099,
+      "seconds": 0.7,
+      "per_treatment": {
+        "AF CONV": {
+          "n": 34,
+          "MAE": 0.3258966130780004,
+          "interval_coverage": 0.2647058823529412
+        },
+        "AF ORG": {
+          "n": 34,
+          "MAE": 0.2664844693398278,
+          "interval_coverage": 0.3235294117647059
+        },
+        "BAR": {
+          "n": 32,
+          "MAE": 0.15983018831075124,
+          "interval_coverage": 0.71875
+        },
+        "MONO CONV": {
+          "n": 34,
+          "MAE": 0.4816402971316058,
+          "interval_coverage": 0.0
+        },
+        "MONO ORG": {
+          "n": 34,
+          "MAE": 0.3634682952055972,
+          "interval_coverage": 0.08823529411764706
+        },
+        "SAFS": {
+          "n": 24,
+          "MAE": 0.31943275250737685,
+          "interval_coverage": 0.25
+        }
+      },
+      "per_site_MAE": {
+        "COC_01": 0.34849314085707633,
+        "COC_02": 0.61242782942656,
+        "COC_03": 0.38165879142055953,
+        "COC_04": 0.45387230160609215,
+        "COC_05": 0.27290691539340656,
+        "COC_06": 0.48349417505138664,
+        "COC_07": 0.43689394654093827,
+        "COC_08": 0.4189360941244316,
+        "COC_09": 0.5245387627443412,
+        "COC_10": 0.35982960151029797,
+        "COC_11": 0.2231551772930507,
+        "COC_12": 0.10571085866962643,
+        "COC_14": 0.27578628574964104,
+        "COC_15": 0.20234955321404502,
+        "COC_18": 0.4581745203031639,
+        "COC_19": 0.3317263353463726,
+        "COC_21": 0.2867164874577833,
+        "COC_22": 0.26715705261638956
+      }
+    }
+  }
+}
