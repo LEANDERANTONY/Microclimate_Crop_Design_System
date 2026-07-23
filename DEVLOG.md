@@ -2,6 +2,56 @@
 
 Chronological build log. Newest first.
 
+## 2026-07-22 — SoilTemp/MDB delivery received and validated
+
+- **Delivery.** The approved SoilTemp/MDB data-use request was delivered to
+  `data/raw/soiltemp_mdb_data/` (original archive kept under `_delivery/`). Validated against the
+  frozen request list `docs/correspondence/soiltemp_mdb/site_selection.csv`; full per-dataset
+  evidence in `data/raw/soiltemp_mdb_data/_validation_report.csv`.
+- **Coverage: 7 of the 10 pre-registered datasets are in hand.** Not yet available:
+  `AngeloRita_Astroni_Oct`, `AngeloRita_Oct`, `RaphaelVonBuren_Oct` — followed up with the MDB
+  team. Everything below is conditional on that follow-up.
+- **Scope control.** The archive also contained one dataset outside our approved selection whose
+  sites fall inside the SAFE-Borneo extent used in our **training** data. It is **excluded** under
+  the ADR-016 independence rule and takes no part in any analysis. La Jarda cross-check: clean,
+  0 sites. Exclusion was caught by the **coordinate-based** de-duplication rule, not by name
+  matching — worth noting, since release tags vary (see below).
+- **What the 7 in-hand datasets support.** All match `site_selection.csv` coordinates (no >0.1°
+  mismatch); all carry an above-ground air sensor; units are as expected (°C / %). Routine
+  screening of sentinel values and duplicate timestamps is applied on load, as with any logger
+  archive. Release-tag suffixes differ from our request (`_Jun`/`_1.0` vs `_Oct`) on 6 datasets —
+  presumed MDB re-versioning; cite the tag actually used for reproducibility.
+- **Structural note (for whoever writes the loader).** Neither parquet is a metadata table —
+  **both are long-format time-series** (`Data_source`, `Raw data identifier`, Year/Month/Day/Time,
+  `clim_ts_values`). **All** metadata (Site_id, coordinates, `Sensor_height`,
+  `Microclimate_measurement`, dates, `Habitat_type`, `Licence`) lives in the two xlsx `metadata`
+  sheets, paired by original format (`prqt` ↔ `prqt.xlsx`, `xlsx` ↔ `xlsx.xlsx`).
+- **Paper-1 impact (honest).**
+  - **Mediterranean VPD validation is blocked.** The two AngeloRita sets were the *only*
+    pre-registered Mediterranean sources carrying RH at 15 cm air, i.e. the only ones supporting
+    **VPD** validation. The Mediterranean data in hand — Peñuelas (air sensor at 5 cm) and
+    Santoianni (10 cm) — carries temperature only, so independent Mediterranean **VPD validation
+    cannot currently be run**, and dT validation there would rest on sensors below our 15 cm
+    reference height. **This is a Paper-1 blocker.**
+  - **Tamil Nadu few-shot survives but is thin.** `RaphaelVonBuren_Oct` was a co-deposit at the
+    *same* coordinates (12.820 °N, 79.643 °E) as `RajasekaranMurugan_Oct`, so the site itself is
+    not lost — but what remains is **1 site / 2,232 temperature readings**, marginal for the
+    ~5–25-point few-shot conformal recalibration, and it is our closest analogue to the Anaikadu
+    deployment site.
+  - **Humid-tropical arm is usable.** Powers, Goret, Lelis and Zavaleta all landed with
+    above-ground air sensors (15 / 12 / 150 / 100 cm).
+- **OPEN DECISION (not taken here).** Whether to (a) proceed with Paper 1 without independent
+  Mediterranean VPD validation, (b) substitute another Mediterranean source, or (c) wait on the
+  outstanding AngeloRita sets — is the project owner's call and **a new ADR will likely be
+  required** to record it. ADR-016 stands unamended; nothing about the independence or
+  pre-registration rule changes. Register updated: `docs/external_validation_datasets.md`.
+- **Also flagged for that ADR:** `site_selection.csv` marks the four humid-tropical sets as
+  "train + validation". Using the same sets for training *and* independent external validation
+  would conflict with the ADR-016 independence claim — the role split must be settled explicitly
+  before that arm is scored.
+- The **cocoa (Alto Beni) external-validation run is unaffected** and remains the next actionable
+  step.
+
 ## 2026-06-15 — External within-climate validation data + repo hosting hygiene
 
 - **Validation-data strategy firmed up (ADR-016).** Split validation into within-climate

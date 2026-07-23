@@ -70,10 +70,30 @@ claim and its own validation protocol. Economics is pruned from the lead paper.
 - **Paper 1 — uncertainty-aware microclimate prediction** (foundation; target AFM
   IF 5.7 / Ecological Informatics IF 7.3). External-validation strategy set (ADR-016,
   `docs/external_validation_datasets.md`): **cocoa-agroforestry set downloaded** as the
-  primary independent within-climate (humid-tropical) test; **SoilTemp/MDB data-use
-  request submitted** (committee review ~2–3 wks) for independent Mediterranean +
-  Tamil-Nadu few-shot/cross-climate sets. Remaining: build the cocoa external-validation
-  run; add a warm-tropical training source once MDB clears; draft Paper-1 from existing material.
+  primary independent within-climate (humid-tropical) test. The **SoilTemp/MDB delivery
+  arrived 2026-07-22 with 7 of the 10 pre-registered datasets** (per-dataset detail:
+  `data/raw/soiltemp_mdb_data/_validation_report.csv`). Current status:
+  - 🚫 **Independent Mediterranean VPD validation is BLOCKED.** Both `AngeloRita` sets —
+    the only pre-registered Mediterranean sources with RH at 15 cm air — are not yet in hand
+    (followed up with the MDB team). The Mediterranean data we do have (Peñuelas 5 cm,
+    Santoianni 10 cm) carries temperature only, and even a dT-only test would rest on sensors
+    below our 15 cm reference. **Open decision** (proceed without it / substitute a source /
+    wait for the outstanding sets) — a follow-up **ADR will likely be needed**; ADR-016 is
+    unamended.
+  - ⚠️ **Scope control:** one dataset outside our approved selection sits inside the
+    SAFE-Borneo **training** extent and is excluded under the ADR-016 independence rule. The
+    de-dup rule must stay **coordinate-first** — release tags differ between request and
+    delivery, so name matching alone would not have caught it.
+  - ⚠️ **Tamil-Nadu few-shot is thin, not lost.** `RaphaelVonBuren_Oct` is absent but was a
+    co-deposit at the same coordinates as `RajasekaranMurugan_Oct`, so the site survives —
+    1 site / 2,232 temperature readings, marginal for the ~5–25-point few-shot recalibration
+    and our closest analogue to Anaikadu.
+  - ⚠️ **Humid-tropical arm usable** (Powers 15 cm, Goret 12 cm, Lelis 150 cm, Zavaleta 100 cm),
+    but `site_selection.csv` marks these four "train + validation" — the train-vs-validate role
+    split must be settled before scoring, or the ADR-016 independence claim is compromised.
+  - ➡️ **Next actionable step is unchanged and unaffected: build the cocoa external-validation
+    run.** Then: warm-tropical training source once the outstanding sets are resolved; draft
+    Paper-1 from existing material.
 - **Paper 2 — microclimate-aware suitability + inverse design** (disease as a
   modifier). Needs suitability validation against an independent source.
 - **Paper 3 — risk-aware economics** (transparent/uncalibrated). Prices → HIGH.
@@ -82,6 +102,8 @@ Data reality (confirmed): **no open under-canopy dataset exists for our exact
 semi-arid site**; the play is pre-registered climatic analogues — cocoa-agroforestry
 (downloaded) for humid-tropical, independent Mediterranean + a Tamil-Nadu savanna point
 (~12.82 N, via the MDB request) for cross-climate/few-shot — plus year-2 own-plot loggers.
+**Update 2026-07-22:** the MDB delivery only partly materialised this play — the Tamil-Nadu
+point survives but is thin, and the Mediterranean leg has no VPD-capable data at all.
 
 ## Next: submit
 
