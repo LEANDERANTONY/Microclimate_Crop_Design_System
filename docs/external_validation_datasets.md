@@ -95,7 +95,7 @@ pending the outstanding sets.** Per-dataset detail (machine-checked):
 | `Jean-YvesGoret_1.0` | Humid-tropical (French Guiana) | `SoilTemp2.0_Jun_Jean-YvesGoret` | ✅ Present (64 sites), CC-BY, air at **12 cm**; release tag differs |
 | `JLelis_1.0` | Humid-tropical / Caatinga bridge | `SoilTemp2.0_1.0_JLelis` | ✅ Present (41 sites), air at **150 cm**; confirm citation/licence terms before publication |
 | `DiegoZavaleta_Oct` | Humid-tropical (PE, has RH) | `SoilTemp2.0_1.0_DiegoZavaleta` | ✅ Present (21 sites), CC-BY, air at **100 cm**, RH present; release tag differs |
-| `RajasekaranMurugan_Oct` | Tamil Nadu — closest analogue to the deployment site | `SoilTemp2.0_1.0_RajasekaranMurugan` | ⚠️ Present but **thin: 1 site / 2,232 temperature readings**, air at 10 cm; release tag differs |
+| `RajasekaranMurugan_Oct` | Tamil Nadu — closest analogue to the deployment site | `SoilTemp2.0_1.0_RajasekaranMurugan` | ⚠️ Present but **thin: 1 site / 2,232 temperature readings**, air at 10 cm (unshielded), **no RH**; release tag differs. Delivered series covers **August 2022 only (31 days, hourly)** against a declared 2022-08 → 2023-08 deployment. **Few-shot leg run 2026-07-23 → too thin to answer the question** (see below) |
 | `RaphaelVonBuren_Oct` | Tamil Nadu — co-deposit at the **same** coords (12.820 °N, 79.643 °E) | — | ❌ **Not in delivery** (the *site* is not lost — Murugan covers it — but the extra records are) |
 | *(outside our selection)* | — | one additional dataset | 🚫 **Excluded** under the ADR-016 independence rule — its sites fall inside the SAFE-Borneo extent used in our **training** data, so it takes no part in any analysis. Caught by the **coordinate-based** de-dup rule, not by name. |
 
@@ -122,6 +122,9 @@ time-series** (`Data_source`, `Raw data identifier`, Year/Month/Day/Time, `clim_
   sensors *below* our 15 cm target. This is a **Paper-1 blocker** (see `ROADMAP.md`).
 - **Tamil Nadu few-shot — thin but alive.** 1 site / 2,232 temperature readings is marginal for
   the ~5–25-point few-shot conformal recalibration, and it is our closest analogue to Anaikadu.
+  **Updated 2026-07-23:** the leg was run and the set proved **too thin to answer the question** —
+  see "Tamil Nadu savanna (Murugan)" below. The declared coverage in the metadata (13 months) is
+  not the delivered coverage (1 month); future delivery validation must reconcile the two.
 - **Humid-tropical — usable.** Powers / Goret / Lelis / Zavaleta all have above-ground air
   sensors (15 / 12 / 150 / 100 cm). Note `site_selection.csv` marks these four as
   "train + validation" — using the same sets for training *and* independent external validation
@@ -193,13 +196,86 @@ June-2014 and November-2014 as year 2013, yielding 25,938 duplicate plot-timesta
 test the canopy→offset mapping; without them the feature matrix is degenerate by construction. A
 valid ambient reference for the site (ADR-017 screening) would additionally be needed.
 
+## Tamil Nadu savanna (Murugan) — few-shot leg executed (2026-07-23): too thin to answer
+
+Governing decisions: **ADR-014** (few-shot conformal method), **ADR-016** (independence /
+pre-registration), **ADR-017** (ambient-reference screen), **ADR-018** (what recalibration
+actually delivers). Run: `scripts/run_murugan_fewshot.py`; metrics:
+**`reports/murugan_fewshot_metrics.json`**.
+
+This was the **Tamil-Nadu few-shot leg** — the first test of the ADR-014 few-shot result on
+**real data near the deployment site**, not a within-climate validation. Dataset
+`SoilTemp2.0_1.0_RajasekaranMurugan`, 1 site at **12.8202 °N / 79.6434 °E**, **270.7 km from
+Anaikadu**.
+
+- **Delivered coverage.** The delivered time series covers **August 2022 only — 31 days, hourly,
+  2,232 temperature readings** — while the deposit metadata declares a **2022-08 → 2023-08**
+  deployment; **~12 of the 13 declared months are not present in the delivery**. Recorded as a
+  factual property of the files in hand.
+- **Independence: clean.** Minimum distance to any training site **4,191.2 km**; **0 rows and
+  0 sites dropped** (ADR-016 rule 3).
+- **ADR-017 screen: PASSED.** Site **94.8 m** vs a **~31 km ERA5 box mean of 92.3 m** — the
+  orographic failure mode that invalidated the cocoa run does not operate here.
+- **Verdict: the dataset is too thin to answer the question. This is NOT "recalibration failed".**
+  Under the training (monthly) convention the primary set is **n = 1 row** and the experiment
+  cannot be run at all. A clearly-labelled **secondary daily** analysis gives n = 31 — but 31
+  consecutive days at one site in one month, sharing **one feature vector**, strongly
+  autocorrelated, leaving only **6 evaluation points at k=25**, with **draw-to-draw spread
+  (±0.13–0.18) the same size as the effect claimed**. Pre-committed sufficiency threshold:
+  **n_test ≥ max(k)+10 = 35** independent rows.
+- **Numbers, for the record only (secondary daily, n=31, `pure_xgb`, nominal 0.80).** Cold:
+  dT_max MAE **3.674** / skill **+39.1 %** / coverage **0.81** / width **11.41**; dT_mean MAE
+  **1.964** / skill **+12.4 %** / coverage **0.39**. **The positive skill is an artefact** —
+  observed offsets came out **positive** (dT_max **+3.53**, dT_mean **+0.27 °C**) against training
+  means **−2.04 / −1.01 °C**, so the training-mean baseline is a badly wrong constant locally and a
+  biased model still beats it. dT_max cold coverage 0.81 is accidental — the interval is very wide.
+  Few-shot curve, dT_mean coverage (width): k=0 **0.39 (2.58)**, k=5 **0.81 ± 0.14 (8.86 ± 3.47)**,
+  k=10 **0.83 ± 0.13 (8.74 ± 2.70)**, k=25 **0.80 ± 0.17 (7.18 ± 0.55)**.
+- **Why the offsets flipped sign here — a different cause from cocoa.** Not the ambient reference.
+  **Site physics:** **LAI 0.767** vs a training minimum of **1.607**; open savanna; canopy height
+  **9 m** at the training minimum; and an **unshielded sensor at +10 cm** reading a surface-heated
+  layer (sub-canopy monthly `t_max` **37.0 °C** vs ERA5 **33.5 °C**). Physically expected — but
+  **not the canopy-buffering quantity the model was trained on**.
+- **OOD flag behaved as designed, strongly.** Mean `ood_score` **0.460** (cocoa 0.144), **100 % of
+  rows flagged**, **16 of 24** engineered features outside the training box — the most
+  out-of-distribution external site tested so far.
+
+**What it does show.** (a) The ADR-017 screen and the ADR-016 independence rule are runnable and
+were passed cleanly; (b) the OOD flag correctly refuses confidence at an open-savanna site far
+outside the training envelope; (c) qualitatively, the few-shot curve moves the way ADR-014's
+Mediterranean arm does — restored coverage bought with **wider intervals** (ADR-018).
+
+**What it does not show.** It is **not** evidence that few-shot recalibration works — or fails —
+on real local data; the sample cannot support that either way. It does **not** validate the
+canopy→offset mapping (one coordinate, one feature vector — the cocoa limitation again), and it is
+**not** a within-climate validation of any kind.
+
+**Two methodological catches recorded here for reuse.** (1) `ECMWF/ERA5/DAILY` **ends 2020-07-09**,
+so post-2020 external sets must rebuild the ambient reference from `ERA5/HOURLY` **sampled at the
+ERA5/DAILY grid node** — the two collections sit on a **half-cell-offset grid**, and naive HOURLY
+sampling silently shifts the ~31 km reference cell (measured up to **3.0 °C** on monthly `t_max` at
+La Jarda). Verified to **<3e-4 K** against ERA5/DAILY on overlap months. (2) `build_real_dataset.py`
+falls back to ambient RH when sub-canopy RH is missing; here that would have **manufactured a
+temperature-only pseudo-VPD**, so it was deliberately not used — this deposit has **zero RH rows**
+and **dVPD is simply absent** from the frozen sets and from scoring.
+
+**Other limitations.** Sensor at +10 cm unshielded vs training ~15 cm (SAFE) / ~30 cm (La Jarda);
+savanna is a canopy regime absent from training; **2 sentinel rows dropped** (34,130 °C and
+29,130 °C, neither in the scored sensor); metadata declares `Timezone = UTC` while the diurnal
+cycle indicates IST (daily max/mean insensitive either way, no shift applied); metadata declares
+15-minute resolution, delivered hourly.
+
+**What would make this leg answerable.** The remaining ~12 declared months of the deployment (or
+any second Tamil-Nadu deposit), so the monthly convention yields ≥ 35 independent rows across more
+than one month — and, for the canopy→offset mapping, more than one coordinate.
+
 ## (B) Cross-climate / deployment gap — deferred
 
 | Dataset | Role |
 |---|---|
 | OzFlux/TERN semi-arid (Alice Mulga) & savanna (Howard Springs/Litchfield/Fletcherview) | Best semi-arid analogue, but **above-canopy** flux-tower met — validates the ambient driver, not the under-canopy offset |
 | Indian gridded soil-T/moisture; ERA5-Land, NASA POWER, IMD | Model **inputs/features** for our region — not independent labels |
-| **User's own plot loggers (year 2)** | The definitive semi-arid fix — collapses the deployment gap; few-shot recalibration already shown to work with ~5–25 local points |
+| **User's own plot loggers (year 2)** | The definitive semi-arid fix, by **two distinct routes** (**ADR-018**): as *calibration* data (~5–25 local points) it makes the intervals **honest** — restored coverage, but **wider** intervals, not narrower; as *in-regime **training** data* (retrain with a local source) it is the only route that can **narrow** them (ADR-012: "the fix is data, not a cleverer model") |
 
 There is **no open under-canopy logger dataset for tropical/semi-arid South India** —
 same-region open validation is impossible; (B) is a characterized limitation, not a gap

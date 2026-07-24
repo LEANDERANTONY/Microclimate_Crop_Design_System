@@ -23,3 +23,4 @@ change a decision, write a new ADR that supersedes the old one.
 | [015](ADR-015-modular-publication-program.md) | Split into modular three-paper program; non-destructive monorepo; pre-register external validation | Accepted |
 | [016](ADR-016-external-validation-datasets.md) | External within-climate validation datasets + independence/de-dup rule; cocoa + SoilTemp/MDB acquisition | Accepted |
 | [017](ADR-017-ambient-reference-orographic-limits.md) | Orographic screening rule limiting where the ERA5 free-air ambient reference (ADR-006) applies | Accepted |
+| [018](ADR-018-recalibration-widens-intervals-plot-logger-claim.md) | Few-shot recalibration widens intervals to make them honest (clarifies ADR-014); plot-logger claim split into calibration vs in-regime-training routes | Accepted |

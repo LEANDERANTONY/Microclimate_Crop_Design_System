@@ -2,6 +2,89 @@
 
 Chronological build log. Newest first.
 
+## 2026-07-23 — Tamil-Nadu few-shot run (Murugan): too thin to answer; and ADR-018 corrects the plot-logger claim
+
+The ADR-014 few-shot conformal result was tested for the first time on **real data near the
+deployment site**. **The verdict is that the delivered dataset is too thin to answer the question
+— which is not the same as "recalibration failed".** The run also forced a correction to a
+load-bearing project claim, now recorded as **ADR-018**.
+
+- **The run.** New `scripts/run_murugan_fewshot.py` → `reports/murugan_fewshot_metrics.json`.
+  Dataset `SoilTemp2.0_1.0_RajasekaranMurugan` from the MDB delivery — Tamil Nadu savanna, 1 site
+  at **12.8202 °N / 79.6434 °E**, **270.7 km from Anaikadu**, our closest analogue to the
+  deployment site. Purpose: does the ADR-014 few-shot curve reproduce on genuinely local data?
+- **Delivered coverage (factual property of the delivered files).** The time series covers
+  **August 2022 only — 31 days, hourly, 2,232 temperature readings** — while the deposit metadata
+  declares a 2022-08 → 2023-08 deployment. **~12 of the 13 declared months are not present in the
+  delivery.** Stated here as a property of the files in hand, for reproducibility.
+- **Independence: clean** (ADR-016 rule 3). Minimum distance to any training site **4,191.2 km**;
+  **0 rows and 0 sites dropped**.
+- **ADR-017 screen: PASSED.** Site **94.8 m** (Copernicus DEM) vs a **~31 km ERA5 box mean of
+  92.3 m** — the orographic problem that invalidated the cocoa run does **not** apply here.
+- **Verdict: too thin to run the experiment.** Under the training (monthly) convention the primary
+  set is **n = 1 row** — the few-shot sweep cannot be executed at all. A clearly-labelled
+  **secondary** daily analysis gives n = 31, but these are **31 consecutive days at one site in
+  one month sharing a single feature vector**, strongly autocorrelated, leaving only **6 evaluation
+  points at k=25**, with **draw-to-draw spread (±0.13–0.18) the same size as the effect claimed**.
+  The pre-committed sufficiency threshold was **n_test ≥ max(k)+10 = 35** independent label rows.
+  The secondary numbers below are reported for the record; they cannot carry inference.
+- **Cold baseline (secondary daily, n=31, `pure_xgb`, nominal 0.80):** dT_max MAE **3.674 °C** /
+  skill **+39.1 %** / coverage **0.81** / width **11.41**; dT_mean MAE **1.964 °C** / skill
+  **+12.4 %** / coverage **0.39**. **The positive skill is an artefact, not success** — observed
+  offsets came out positive (dT_max **+3.53**, dT_mean **+0.27 °C**) against training means of
+  **−2.04 / −1.01 °C**, so the training-mean baseline is a badly wrong constant locally and a
+  biased model still "beats" it. The dT_max cold coverage of 0.81 is likewise accidental: the
+  interval is simply very wide.
+- **Why the sign flipped here — a different cause from cocoa.** Not the ambient reference (the
+  ADR-017 screen passes). **Site physics:** **LAI 0.767**, below the training minimum of **1.607**;
+  open savanna; canopy height **9 m**, at the training minimum; and an **unshielded** sensor at
+  **+10 cm** reading a surface-heated layer (sub-canopy monthly `t_max` **37.0 °C** vs ERA5
+  **33.5 °C**). Physically expected — but **not the canopy-buffering quantity the model was trained
+  on**.
+- **The OOD flag worked, hard.** Mean `ood_score` **0.460** (cocoa: 0.144), **100 % of rows
+  flagged**, **16 of 24** engineered features outside the training box. This is the most
+  out-of-distribution external site tested so far, and the system said so.
+- **Few-shot curve (secondary daily, 50 draws, seeds 0–49), dT_mean coverage (width):**
+  k=0 → **0.39 (2.58)**; k=5 → **0.81 ± 0.14 (8.86 ± 3.47)**; k=10 → **0.83 ± 0.13 (8.74 ± 2.70)**;
+  k=25 → **0.80 ± 0.17 (7.18 ± 0.55)**. For dT_max the cold coverage is already 0.81 and
+  recalibration makes it marginally worse. Qualitatively this mirrors ADR-014's Mediterranean arm —
+  but it cannot carry inference, for the reasons above.
+- **ADR-018 — the claim this forced us to restate.** Coverage is restored by **widening**:
+  recalibration makes intervals **honest about an error the model is still making**; it does
+  **not** improve the point prediction and does **not** narrow uncertainty. Our own
+  `reports/mondrian_metrics.json` says the same (dT_max: Mediterranean Spain 0.409 @ 5.605 → k=10
+  0.860 @ **10.931**, ~2× wider; oil-palm open 0.322 @ 3.626 → k=5 0.943 @ **14.152**, ~4× wider;
+  Borneo forest 0.441 @ 2.947 → k=5 0.846 @ **5.092**, ~1.7× wider). **The plot logger is still the
+  decisive remedy — via a different route:** as *calibration* data it makes intervals honest; to
+  actually *narrow* them it must be used as **in-regime training** data (ADR-012's "the fix is data,
+  not a cleverer model"). Practical consequence: a truthful **±~4.4 °C** interval on dT_mean is not
+  design-useful on its own. `ROADMAP.md`, `AGENTS.md` and `docs/PROJECT_CONTEXT.md` restated
+  accordingly; ADR-014 left unedited (append-only).
+- **Two methodological catches worth recording.**
+  1. **ERA5 grid registration.** `ECMWF/ERA5/DAILY` — the training ambient collection — **ends
+     2020-07-09**, so for this 2022 deposit the reference was rebuilt from `ERA5/HOURLY` sampled at
+     the **ERA5/DAILY grid node**, verified to **<3e-4 K** against ERA5/DAILY on overlap months.
+     Naive HOURLY sampling sits on a **half-cell-offset grid** and would have silently shifted the
+     reference cell — measured at up to **3.0 °C** on monthly `t_max` at La Jarda. This applies to
+     **any future post-2020 external set**.
+  2. **The RH fallback was deliberately not used.** `build_real_dataset.py` substitutes ambient RH
+     for missing sub-canopy RH; here that would have **manufactured a temperature-only pseudo-VPD**.
+     This deposit has **zero RH rows**, so **dVPD is absent** from the frozen sets and from scoring,
+     as it should be.
+- **Other limitations recorded.** Sensor at **+10 cm unshielded** vs training ~15 cm (SAFE) /
+  ~30 cm (La Jarda); **savanna is a canopy regime absent from training**; a **single coordinate**
+  means the canopy→offset mapping is **untestable** here — the same limitation as cocoa, so this
+  run does **not** validate that mapping; **2 sentinel rows dropped** (34,130 °C and 29,130 °C,
+  neither in the scored sensor); metadata declares `Timezone = UTC` but the diurnal cycle indicates
+  IST (daily max/mean are insensitive either way, no shift applied); metadata declares 15-minute
+  resolution, delivered hourly.
+- **Validation lesson for the project.** The earlier MDB delivery validation reported per-dataset
+  periods from the **metadata's declared** Start/End fields **without reconciling them against the
+  actual delivered rows**. Future delivery validation must check **declared coverage against
+  delivered coverage** per dataset, and report both. This is how a 13-month deposit was carried in
+  the register as usable until the run reached it.
+- Register updated: `docs/external_validation_datasets.md`; `ROADMAP.md` updated; ADRs now 001–018.
+
 ## 2026-07-23 — First pre-registered external validation (cocoa, Alto Beni): NULL result
 
 The first external test under the ADR-016 pre-registration rule was executed and scored once.

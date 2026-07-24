@@ -19,8 +19,10 @@ what it cannot, label confidence everywhere.
   **hybrid** was built + tested — competitive in-distribution, does NOT rescue cross-climate;
   pure quantile model stays default. `scripts/run_validation.py` → loso/loco_metrics.json.
 - **Few-shot conformal recalibration**: ~5–25 in-regime calibration points restore
-  out-of-climate interval coverage (0.08 → ~0.80); `scripts/mondrian_conformal.py` →
-  `reports/mondrian_metrics.json`. Reframed as few-shot domain adaptation.
+  out-of-climate interval coverage (0.08 → ~0.80) — **by widening the intervals, not by
+  predicting better** (**ADR-018**; e.g. dT_max Mediterranean Spain 0.409 @ width 5.605 → 0.860 @
+  **10.931**). `scripts/mondrian_conformal.py` → `reports/mondrian_metrics.json`. Reframed as
+  few-shot domain adaptation. Quote the width with the coverage, always.
 - **Model-family benchmark (packaged + tested)**: Ridge / Random Forest / Gaussian process /
   mixture-of-experts vs the XGBoost-quantile + physics-hybrid, under LOCO + in-distribution
   holdout. Finding: transfer failure is a data-regime property, not an estimator flaw — only
@@ -53,10 +55,17 @@ what it cannot, label confidence everywhere.
   or warm-night-tropical training source: SoilTemp raw loggers (request emailed) and/or
   the pan-tropical understory maps (30 m South-Asia subset requested from authors). With
   a warm-climate source in-set, the hybrid's backbone would interpolate rather than
-  extrapolate. The definitive fix is the user's **own plot logger (year 1)** — a single
-  season would collapse the offset uncertainty (ADR-008/009/012). (Few-shot / Mondrian
-  conformal recalibration is already implemented and shows ~5–25 local points restore
-  out-of-climate coverage — done.)
+  extrapolate. The definitive fix is still the user's **own plot logger (year 1)**, but be precise
+  about **what it buys and how** (**ADR-018**, restating this claim):
+  - *as **calibration** data* — few-shot / Mondrian recalibration (implemented; `mondrian_conformal.py`)
+    makes the intervals **honest**, by **widening** them until the stated coverage is true. It does
+    **not** improve the point prediction and does **not** narrow uncertainty. A truthful **±~4.4 °C**
+    interval on dT_mean is not design-useful on its own.
+  - *as **in-regime training** data* — folding a local source into training and retraining is the
+    only route that can genuinely **narrow** the interval. This is ADR-012's "the fix is data, not a
+    cleverer model" (ADR-008/009/012/014), and it is a well-grounded expectation, not yet a measured
+    result.
+  Do **not** say a season of logger data would "collapse" the offset uncertainty.
 - **Economics prices to HIGH**: CEDA-Ashoka 3-yr monthly Agmarknet series (site is
   bot-blocked from this environment → user-side CSV export), plus TNAU per-crop cost line
   items for the high-input crops.
@@ -110,19 +119,38 @@ claim and its own validation protocol. Economics is pruned from the lead paper.
     SAFE-Borneo **training** extent and is excluded under the ADR-016 independence rule. The
     de-dup rule must stay **coordinate-first** — release tags differ between request and
     delivery, so name matching alone would not have caught it.
-  - ⚠️ **Tamil-Nadu few-shot is thin, not lost.** `RaphaelVonBuren_Oct` is absent but was a
-    co-deposit at the same coordinates as `RajasekaranMurugan_Oct`, so the site survives —
-    1 site / 2,232 temperature readings, marginal for the ~5–25-point few-shot recalibration
-    and our closest analogue to Anaikadu.
+  - ⚠️ **Tamil-Nadu few-shot leg is DONE and INCONCLUSIVE — the dataset is too thin to answer,
+    which is not the same as "recalibration failed".** Run once on 2026-07-23
+    (`scripts/run_murugan_fewshot.py` → `reports/murugan_fewshot_metrics.json`), site
+    12.8202 °N / 79.6434 °E, **270.7 km from Anaikadu**, our closest analogue to the deployment
+    site. **Independence clean** (min distance 4,191.2 km, 0 sites dropped) and the **ADR-017
+    screen passes** (94.8 m site vs 92.3 m box mean). But the delivered series covers **August 2022
+    only** (31 days, hourly, 2,232 readings) against a declared 2022-08 → 2023-08 deployment, so
+    under the training monthly convention the primary set is **n = 1 row** and the experiment
+    cannot be run; a labelled secondary daily analysis (n = 31) is 31 consecutive days at one site
+    in one month sharing one feature vector, leaving **6 evaluation points at k=25** with
+    draw-to-draw spread the size of the effect (sufficiency threshold was n ≥ 35). The site is also
+    far outside the training envelope — **LAI 0.767** vs training minimum 1.607, open savanna,
+    unshielded sensor at +10 cm — and the **OOD flag caught it hard** (mean `ood_score` **0.460**,
+    **100 % of rows flagged**, 16 of 24 features out of box). Details:
+    `docs/external_validation_datasets.md`. **Not** a validation of the canopy→offset mapping
+    (single coordinate, as at cocoa).
+  - 📏 **Delivery-validation lesson.** The MDB validation reported per-dataset periods from the
+    metadata's **declared** Start/End fields without reconciling them against the **delivered
+    rows**. Future delivery checks must compare declared vs delivered coverage per dataset.
   - ⚠️ **Humid-tropical arm usable** (Powers 15 cm, Goret 12 cm, Lelis 150 cm, Zavaleta 100 cm),
     but `site_selection.csv` marks these four "train + validation" — the train-vs-validate role
     split must be settled before scoring, or the ADR-016 independence claim is compromised.
-  - ➡️ **Next actionable steps** (the cocoa run is no longer among them — it is done):
-    settle the Mediterranean open decision with the MDB team (re-request / substitute /
-    proceed without), settle the train-vs-validate role split on the four humid-tropical sets,
-    and screen any replacement humid-tropical candidate under the ADR-017 gate before freezing
-    it. Then: warm-tropical training source; draft Paper 1 from existing material — with the
-    external-validation section written as the honest null it currently is.
+  - ➡️ **Next actionable steps** (neither the cocoa run nor the Tamil-Nadu few-shot leg is among
+    them — both are done): settle the Mediterranean open decision with the MDB team (re-request /
+    substitute / proceed without), settle the train-vs-validate role split on the four
+    humid-tropical sets, screen any replacement humid-tropical candidate under the ADR-017 gate
+    before freezing it, and ask the MDB team about the remaining ~12 declared months of the
+    Murugan deployment (only 1 of 13 was delivered) — that is what would make the Tamil-Nadu leg
+    answerable. Then: warm-tropical training source; draft Paper 1 from existing material — with
+    the external-validation section written as the honest null it currently is, and the few-shot
+    section written per **ADR-018** (restored coverage at **increased width**, never "collapsed"
+    uncertainty).
 - **Paper 2 — microclimate-aware suitability + inverse design** (disease as a
   modifier). Needs suitability validation against an independent source.
 - **Paper 3 — risk-aware economics** (transparent/uncalibrated). Prices → HIGH.
@@ -137,6 +165,11 @@ point survives but is thin, and the Mediterranean leg has no VPD-capable data at
 set was scored once and is methodologically void (single station coordinate; unrepresentative
 ERA5 ambient reference at a high-relief site — ADR-017). The play now rests on finding an
 ADR-017-screenable replacement analogue and, ultimately, on the year-2 own-plot loggers.
+**Update 2026-07-23 (second):** the Tamil-Nadu few-shot leg was run on the delivered Murugan
+deposit and is **inconclusive — the delivered month of data is too thin to answer the question**
+(not a failure of recalibration). And per **ADR-018**, the own-plot loggers deliver on two separate
+routes: as *calibration* data they make intervals **honest but wider**; only as *in-regime
+training* data can they **narrow** them.
 
 ## Next: submit
 
