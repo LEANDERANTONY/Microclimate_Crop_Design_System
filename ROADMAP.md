@@ -6,7 +6,7 @@ what it cannot, label confidence everywhere.
 
 ## Done (all six layers built, validated, runnable — 35 tests)
 
-- **Repo**: `uv` env + lockfile, `src/` package, ADRs 001–018, DEVLOG, tests.
+- **Repo**: `uv` env + lockfile, `src/` package, ADRs 001–019, DEVLOG, tests.
 - **Layer 1 — microclimate**: Beer–Lambert light + shelterbelt wind (physics);
   XGBoost quantile temp/VPD offsets + conformal intervals; **OOD flag** (ADR-007);
   design→feature mapping grounded on real TN satellite values (ADR-013).
@@ -78,13 +78,18 @@ claim and its own validation protocol. Economics is pruned from the lead paper.
 
 - **Paper 1 — uncertainty-aware microclimate prediction** (foundation; target AFM
   IF 5.7 / Ecological Informatics IF 7.3). External-validation strategy set (ADR-016,
-  `docs/external_validation_datasets.md`). **Honest position as of 2026-07-23: Paper 1 has
-  NO passing external validation.** Both legs are down — the Mediterranean leg is **blocked**
-  (missing AngeloRita sets) and the humid-tropical leg is **methodologically void** (cocoa,
-  below). What exists instead is a characterised failure mode (**ADR-017**) plus independent
-  confirmation that the physical signal is real. The **SoilTemp/MDB delivery arrived 2026-07-22
-  with 7 of the 10 pre-registered datasets** (per-dataset detail:
-  `data/raw/soiltemp_mdb_data/_validation_report.csv`). Current status:
+  `docs/external_validation_datasets.md`). **Honest position as of 2026-08-04: Paper 1 has
+  NO passing external validation — four external attempts, four nulls, each a *different*
+  data-adequacy failure** (cocoa, Murugan, Astroni, JLelis; summary table in
+  `docs/external_validation_datasets.md`). **None is a model failure**; the outcome is a
+  **data-availability limitation** of the open datasets, now gated going forward by the
+  **ADR-019** pre-freeze data-adequacy checklist. What exists instead is a set of characterised
+  failure modes (ADR-017 orographic; ADR-019 checklist) plus independent confirmation that the
+  physical signal is real (cocoa raw data). The **strategic response is an OPEN DECISION for the
+  project owner** (see the fork below). The **SoilTemp/MDB delivery arrived 2026-07-22 with 7 of
+  the 10 pre-registered datasets** (per-dataset detail:
+  `data/raw/soiltemp_mdb_data/_validation_report.csv`); the Astroni set was supplied later.
+  Current status:
   - ✅ **Cocoa (Alto Beni) external run is DONE — and returned a NULL result.** Executed and
     scored once on 2026-07-23 (`scripts/run_cocoa_validation.py` →
     `reports/cocoa_external_metrics.json`; frozen set 192 rows / 18 plots / 22 months;
@@ -103,18 +108,45 @@ claim and its own validation protocol. Economics is pruned from the lead paper.
     orographic mechanism does not operate in the flat Cauvery delta (site 22.8 m vs 14.7 m box
     mean across 42.7 m relief, vs cocoa's +277.6 m across 1,570.7 m), so existing Anaikadu
     results stand.
-  - 🧪 **New gate before any future freeze (ADR-017).** Screen every candidate external-validation
-    site *before* freezing it: reject sites where the ~31 km ERA5 cell is unrepresentative
-    (high-relief terrain / valley position — check site elevation vs box mean and box relief),
-    and confirm the source publishes **per-plot coordinates** so the feature matrix is not
-    degenerate. Recorded in `docs/external_validation_datasets.md` (pre-registration rule 5).
-  - 🚫 **Independent Mediterranean VPD validation is BLOCKED.** Both `AngeloRita` sets —
-    the only pre-registered Mediterranean sources with RH at 15 cm air — are not yet in hand
-    (followed up with the MDB team). The Mediterranean data we do have (Peñuelas 5 cm,
-    Santoianni 10 cm) carries temperature only, and even a dT-only test would rest on sensors
-    below our 15 cm reference. **Open decision** (proceed without it / substitute a source /
-    wait for the outstanding sets) — a follow-up **ADR will likely be needed**; ADR-016 is
-    unamended.
+  - ❌ **Astroni (Mediterranean dVPD attempt) is DONE — and returned a METHODOLOGICAL NULL.** Run
+    once on 2026-08-04 (`scripts/run_astroni_validation.py` → `reports/astroni_external_metrics.json`;
+    frozen 35 site-months / 4 sites AS01–AS04, 2023 Feb–Oct; independence clean, 1,773 km). This
+    was the **only intended independent Mediterranean dVPD test**. **MODIS LAI/FPAR is masked
+    crater-wide** — null at all four pixels while 250 m NDVI resolves — so the dominant canopy
+    predictor (`lai_x_height`, ADR-006) is absent and the canopy→offset mapping is untestable; the
+    **RH/dVPD site (AS01) is among the masked**, so dVPD cannot be delivered. The ADR-017 orographic
+    screen **passed** (−51 m), so this is a canopy-feature-retrievability failure, not orographic.
+    `dT_mean −1.005 °C` matches the training mean and coverage is 0.89, but with R² < 0 and LAI
+    masked this is buffering *magnitude* transferring, **not** canopy skill; metrics scored once are
+    non-comparable; OOD flagged 100 % of rows.
+  - ❌ **JLelis (humid-tropical dT attempt) is DONE — NULL, blocked at freeze.** Run once on
+    2026-08-04 (`scripts/run_jlelis_validation.py` → `reports/jlelis_external_metrics.json`; no
+    frozen parquet, 0 scoreable rows; independence clean, 5,840 km; 17 sites, Caatinga, Brazil). The
+    declared **+150 cm air** `_T1` sensor delivered **zero values**; the only delivered temperature
+    is the **−10 cm soil** `_T3` channel, so no comparable air-offset label can be formed and
+    substituting soil temperature is refused (ADR-016/ADR-006). Halted before Earth Engine and
+    scoring. No RH channel → dVPD impossible regardless. Licence field still reads "No".
+  - 🧪 **New gate before any future freeze — ADR-019 pre-freeze data-adequacy checklist** (extends
+    ADR-016; incorporates the ADR-017 orographic screen as one item). Every candidate must clear,
+    *before* freezing: (1) per-plot coordinates in the right CRS (non-degenerate matrix); (2) the
+    ADR-017 orographic screen; (3) canopy-feature retrievability (MODIS LAI/FPAR actually non-null);
+    (4) declared-vs-delivered channel coverage; (5) reference-height match (air near ~15–30 cm, not
+    soil or 150 cm); (6) licence usable. The four nulls are its evidence base. Recorded in
+    `docs/external_validation_datasets.md` (pre-registration rule 5).
+  - 🔀 **OPEN DECISION for the owner — the strategic fork (NOT decided here).** With no passing
+    external validation across four attempts, the response is a project-owner call between:
+    **(A)** reframe Paper 1 around the within-training results + the characterised failure modes as
+    a methods contribution; **(B)** keep hunting for an ADR-019-checklist-passing external source;
+    **(C)** lean on the deployment plot logger (as calibration and eventually in-regime training
+    data, ADR-018). ADR-019 adopts the checklist and records the evidence; it does not choose the
+    fork.
+  - 🚫 **Independent Mediterranean VPD validation could NOT be delivered.** The Astroni
+    RH-bearing set was later supplied and **run once (2026-08-04) → METHODOLOGICAL NULL** (LAI/FPAR
+    masked crater-wide; the dVPD site AS01 among the masked — see the Astroni bullet above). The
+    other Mediterranean data (Peñuelas 5 cm, Santoianni 10 cm) carries temperature only, below our
+    15 cm reference. So the intended independent Mediterranean dVPD test does not exist from the
+    available sources. This now folds into the four-null pattern and the ADR-019 checklist rather
+    than remaining a standalone blocker.
   - ⚠️ **Scope control:** one dataset outside our approved selection sits inside the
     SAFE-Borneo **training** extent and is excluded under the ADR-016 independence rule. The
     de-dup rule must stay **coordinate-first** — release tags differ between request and
@@ -141,16 +173,17 @@ claim and its own validation protocol. Economics is pruned from the lead paper.
   - ⚠️ **Humid-tropical arm usable** (Powers 15 cm, Goret 12 cm, Lelis 150 cm, Zavaleta 100 cm),
     but `site_selection.csv` marks these four "train + validation" — the train-vs-validate role
     split must be settled before scoring, or the ADR-016 independence claim is compromised.
-  - ➡️ **Next actionable steps** (neither the cocoa run nor the Tamil-Nadu few-shot leg is among
-    them — both are done): settle the Mediterranean open decision with the MDB team (re-request /
-    substitute / proceed without), settle the train-vs-validate role split on the four
-    humid-tropical sets, screen any replacement humid-tropical candidate under the ADR-017 gate
-    before freezing it, and ask the MDB team about the remaining ~12 declared months of the
-    Murugan deployment (only 1 of 13 was delivered) — that is what would make the Tamil-Nadu leg
-    answerable. Then: warm-tropical training source; draft Paper 1 from existing material — with
-    the external-validation section written as the honest null it currently is, and the few-shot
-    section written per **ADR-018** (restored coverage at **increased width**, never "collapsed"
-    uncertainty).
+  - ➡️ **Next actionable steps** (none of the four external runs is among them — all are done):
+    **resolve the A/B/C strategic fork with the project owner** (the live decision), then whatever
+    it implies — for (B), screen any replacement external candidate under the **ADR-019 pre-freeze
+    checklist** before freezing it (per-plot coords, orography, non-masked canopy features,
+    delivered-vs-declared coverage, air reference height, licence); settle the train-vs-validate
+    role split on the four humid-tropical sets; ask the MDB team about the remaining ~12 declared
+    months of the Murugan deployment and the delivery of JLelis's declared +150 cm air channel.
+    Then: warm-tropical training source; draft Paper 1 from existing material — with the
+    external-validation section written as the honest four-null it currently is (data-availability
+    limitation, not model failure), and the few-shot section written per **ADR-018** (restored
+    coverage at **increased width**, never "collapsed" uncertainty).
 - **Paper 2 — microclimate-aware suitability + inverse design** (disease as a
   modifier). Needs suitability validation against an independent source.
 - **Paper 3 — risk-aware economics** (transparent/uncalibrated). Prices → HIGH.
@@ -170,6 +203,15 @@ deposit and is **inconclusive — the delivered month of data is too thin to ans
 (not a failure of recalibration). And per **ADR-018**, the own-plot loggers deliver on two separate
 routes: as *calibration* data they make intervals **honest but wider**; only as *in-regime
 training* data can they **narrow** them.
+**Update 2026-08-04:** two more external sets were run — **Astroni** (Mediterranean dVPD attempt)
+and **JLelis** (humid-tropical dT attempt) — and **both returned nulls**, for a masked dominant
+canopy predictor (MODIS LAI/FPAR, crater-wide) and a declared-but-undelivered +150 cm air channel
+(only −10 cm soil delivered) respectively. That makes **four external attempts, four nulls, four
+distinct data-adequacy failure modes** — none a model failure. The pattern is recorded as
+**ADR-019** (a mandatory pre-freeze data-adequacy checklist extending ADR-016 and folding in the
+ADR-017 orographic screen). **Paper 1 has no passing external validation; this is a characterised
+data-availability limitation.** The strategic response (A reframe / B keep hunting / C plot logger)
+is an **open decision for the owner**.
 
 ## Next: submit
 

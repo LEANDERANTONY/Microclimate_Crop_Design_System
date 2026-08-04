@@ -5,10 +5,12 @@ honest. Two distinct questions, two distinct data needs:
 
 - **(A) Within-climate generalization** — does the model work on *new, independent
   sites in the climates it was trained on* (humid-tropical, Mediterranean)? This is
-  the legitimate **positive** claim. **Status 2026-07-23: no runnable test in hand** —
-  the humid-tropical leg (cocoa) was executed and returned a null result on
-  methodological grounds, and the Mediterranean leg is blocked pending outstanding
-  datasets. See the dated sections below.
+  the legitimate **positive** claim. **Status 2026-08-04: no passing external test** —
+  **four** independent external sets have now been taken through the ADR-016 discipline
+  and **all four returned nulls, each for a different data-adequacy reason** (see the
+  "External-validation attempts to date" summary and the dated sections below). None is
+  a model failure; the outcome is a **data-availability limitation** of the open datasets,
+  now gated going forward by the **ADR-019** pre-freeze data-adequacy checklist.
 - **(B) Cross-climate transfer / deployment gap** — does it transfer to an *unseen*
   climate (semi-arid Pattukkottai/Anaikadu)? This is the **honest negative** /
   deferred-deployment story. No same-region open data exists.
@@ -16,6 +18,30 @@ honest. Two distinct questions, two distinct data needs:
 Validating in (A) does **not** validate (B). Paper 1's claim is "generalizes within
 trained climates"; the semi-arid farm relevance waits for the user's own sensors or
 for adding a semi-arid source to *training*.
+
+---
+
+## External-validation attempts to date (2026-08-04): four attempts, four nulls
+
+Four independent external sets have been taken through the ADR-016 pre-registration
+discipline. **All four returned nulls, each for a *different* data-adequacy reason
+discovered only at or after freeze.** None is a model deficiency; each is a property of
+what the open dataset delivers versus what its metadata declares. This is the evidence
+base for **ADR-019** (the pre-freeze data-adequacy checklist).
+
+| # | Set (date) | Climate arm | Failure mode | Independence |
+|---|---|---|---|---|
+| 1 | **Cocoa, Alto Beni** (2026-07-23) | Humid-tropical | Single station coordinate → degenerate feature matrix; **and** ERA5 free-air cold-biased ~7.5 °C at a high-relief valley, flipping the label sign (ADR-017) | Clean, 8,685 km |
+| 2 | **Murugan, Tamil Nadu** (2026-07-23) | Cross-climate / few-shot | Declared 2022-08→2023-08; only **1 month delivered**; single site → too thin (n=1 monthly row) | Clean, 4,191 km |
+| 3 | **Astroni, Naples** (2026-08-04) | Mediterranean (intended dVPD test) | **MODIS LAI/FPAR masked crater-wide**; the dominant canopy predictor is null at all 4 pixels, and the RH/dVPD site (AS01) is among the masked | Clean, 1,773 km |
+| 4 | **JLelis, Caatinga** (2026-08-04) | Humid-tropical | Declared **+150 cm air** sensor delivered **zero values**; only **−10 cm soil** delivered → no comparable air-offset label | Clean, 5,840 km |
+
+The five distinct requirements behind these modes — per-plot coordinates, an
+orographically representative ERA5 cell, retrievable canopy features, delivered (not just
+declared) channel coverage, and a reference-height air sensor — are exactly the items of
+the **ADR-019 pre-freeze checklist**. Screening for any subset does not catch the others,
+which is why each set failed differently. **Bottom line: Paper 1 has NO passing external
+validation; this is a characterised data-availability limitation, not a model failure.**
 
 ---
 
@@ -87,13 +113,13 @@ pending the outstanding sets.** Per-dataset detail (machine-checked):
 
 | Requested dataset | Role | Delivered as | Status |
 |---|---|---|---|
-| `AngeloRita_Astroni_Oct` | Mediterranean — **primary** (15 cm air + RH → VPD) | — | ❌ **MISSING from delivery** |
+| `AngeloRita_Astroni_Oct` | Mediterranean — **primary** (15 cm air + RH → VPD) | later supplied as `AngeloRita_Astroni.xlsx` | ⚠️ Subsequently in hand (4 sites AS01–AS04, 2023 Feb–Oct, 15 cm shielded air; AS01 also RH at 15 cm). **Run 2026-08-04 → METHODOLOGICAL NULL:** MODIS LAI/FPAR masked crater-wide, so the canopy→offset mapping is untestable and the dVPD site (AS01) is among the masked (see below) |
 | `AngeloRita_Oct` | Mediterranean (15 cm air + RH → VPD) | — | ❌ **MISSING from delivery** |
 | `JosepPenuelas_1.0` | Mediterranean | `SoilTemp2.0_Jun_JosepPenuelas` | ⚠️ Present (48 sites), CC-BY — but nearest air sensor **5 cm**, **no RH** (no VPD); version suffix differs |
 | `LuciaSantoianni_Oct` | Mediterranean — secondary | `SoilTemp2.0_Jun_LuciaSantoianni` | ⚠️ Present (50 sites), CC-BY — max air sensor **10 cm**, **no RH** (no VPD); version suffix differs |
 | `JenniferPowers_Oct` | Humid-tropical (CR dry forest) | `SoilTemp2.0_1.0_JenniferPowers` | ✅ Present (24 sites), CC-BY, air at **15 cm**; version suffix differs |
 | `Jean-YvesGoret_1.0` | Humid-tropical (French Guiana) | `SoilTemp2.0_Jun_Jean-YvesGoret` | ✅ Present (64 sites), CC-BY, air at **12 cm**; release tag differs |
-| `JLelis_1.0` | Humid-tropical / Caatinga bridge | `SoilTemp2.0_1.0_JLelis` | ✅ Present (41 sites), air at **150 cm**; confirm citation/licence terms before publication |
+| `JLelis_1.0` | Humid-tropical / Caatinga bridge | `SoilTemp2.0_1.0_JLelis` (relicensed `JLelis.xlsx`) | ❌ **Run 2026-08-04 → NULL, blocked at freeze.** 17 sites (the "41" was 41 *channels*); the declared +150 cm `_T1` air sensor delivered **zero values**, only −10 cm `_T3` **soil** delivered → no comparable air-offset label (see below). Licence field still reads "No" |
 | `DiegoZavaleta_Oct` | Humid-tropical (PE, has RH) | `SoilTemp2.0_1.0_DiegoZavaleta` | ✅ Present (21 sites), CC-BY, air at **100 cm**, RH present; release tag differs |
 | `RajasekaranMurugan_Oct` | Tamil Nadu — closest analogue to the deployment site | `SoilTemp2.0_1.0_RajasekaranMurugan` | ⚠️ Present but **thin: 1 site / 2,232 temperature readings**, air at 10 cm (unshielded), **no RH**; release tag differs. Delivered series covers **August 2022 only (31 days, hourly)** against a declared 2022-08 → 2023-08 deployment. **Few-shot leg run 2026-07-23 → too thin to answer the question** (see below) |
 | `RaphaelVonBuren_Oct` | Tamil Nadu — co-deposit at the **same** coords (12.820 °N, 79.643 °E) | — | ❌ **Not in delivery** (the *site* is not lost — Murugan covers it — but the extra records are) |
@@ -269,6 +295,80 @@ cycle indicates IST (daily max/mean insensitive either way, no shift applied); m
 any second Tamil-Nadu deposit), so the monthly convention yields ≥ 35 independent rows across more
 than one month — and, for the canopy→offset mapping, more than one coordinate.
 
+## Astroni (Naples crater) — Mediterranean dVPD attempt (2026-08-04): METHODOLOGICAL NULL
+
+Governing decisions: **ADR-016** (independence / pre-registration), **ADR-017** (ambient-reference
+screen), **ADR-019** (pre-freeze data-adequacy checklist). Run:
+`scripts/run_astroni_validation.py`; metrics: **`reports/astroni_external_metrics.json`**; frozen
+set `data/processed/astroni_external_test.parquet` (gitignored).
+
+This was intended as the **only independent Mediterranean dVPD test**. Dataset
+`data/raw/soiltemp_mdb_data/AngeloRita_Astroni.xlsx` — an independent Mediterranean holm-oak crater
+near Naples, Italy; **4 sites (AS01–AS04)** at 40.84–40.85 °N, 14.15–14.16 °E, **2023 (Feb–Oct)**;
+**35 site-months / 4 sites**, with **dVPD rows = 8 (AS01 only)**, air at **15 cm shielded**.
+
+- **Independence: clean.** Minimum distance to any training site **1,773 km** (nearest: La Jarda),
+  0 rows / 0 sites dropped. EPSG 4326 verified (not the projected-coordinate trap).
+- **Cause of the null: MODIS LAI/FPAR (MOD15A2H, 500 m) is masked crater-wide.** Null retrieval at
+  **all four** Astroni pixels in 2023 (independently re-verified: LAI null at all four, while the
+  250 m NDVI resolves normally at 0.64–0.81, and LAI is non-null at both training sites). The
+  `lai_x_height` interaction is the model's **top dT_max feature** (ADR-006), and the training build
+  drops NaN-LAI rows, so the **canopy→offset mapping is untestable here**. Critically, **AS01 — the
+  only site carrying RH at +15 cm, i.e. the dVPD site — is among the masked**, so the intended
+  independent Mediterranean dVPD validation **cannot be delivered from this set**. This is a
+  mechanistically new failure mode: a masked dominant predictor (checklist item 3, ADR-019).
+- **ADR-017 orographic screen: PASSED.** Site 85 m vs a ~31 km ERA5 box mean of 35 m (diff −51 m),
+  under the 100 m threshold — so the null is **not** an orographic-reference failure.
+- **Offset sign — read carefully.** `dT_mean` came out **−1.005 °C**, matching the training mean
+  (−1.01) almost exactly (per-site −0.90 to −1.22), with **calibrated coverage 0.89 (≥ 0.80
+  nominal)**. But **R² < 0 and LAI is masked**, so this reflects the near-constant buffering
+  *magnitude* transferring, **not** demonstrated canopy skill. `dT_max` came out **+2.97 °C
+  (positive, inverted vs training −2.04)** — a near-surface point-sensor-vs-coarse-free-air-max
+  scale effect, the same as the prior externals, **not** orographic.
+- **Metrics: scored once but degenerate / non-comparable.** NaN LAI was fed to XGBoost's native
+  missing-value handling for a "secondary" all-sites view; the convention-exact primary view
+  collapsed to AS04's 9 rows on an artefactual edge-bled LAI. Report them as measuring **buffering
+  transfer + LAI absence, not canopy skill**. The OOD flag fired on **100 % of rows**.
+- **Provenance note (methodological, for reuse).** The ERA5-2023 ambient reference was
+  reconstructed from `ERA5/HOURLY` sampled at the `ERA5/DAILY` grid node (the ADR-006 post-2020
+  convention, since `ECMWF/ERA5/DAILY` ends 2020-07-09), verified to **9e-5 K** against ERA5/DAILY
+  on pre-2020 overlap months.
+
+**What would make this set testable.** Non-masked canopy features at the crater pixels (a finer LAI
+product, or in-situ LAI/openness), which the 500 m MOD15A2H algorithm does not provide for this
+urban-embedded forest crater. Without them the dominant predictor is absent and the dVPD site with
+it.
+
+## JLelis (Caatinga dry forest) — humid-tropical dT attempt (2026-08-04): NULL, blocked at freeze
+
+Governing decisions: **ADR-016** (independence / pre-registration), **ADR-006** (air-reference
+convention), **ADR-019** (pre-freeze data-adequacy checklist). Run:
+`scripts/run_jlelis_validation.py`; metrics: **`reports/jlelis_external_metrics.json`**;
+`data/processed/jlelis_test_manifest.json` (gitignored). **No frozen parquet — 0 scoreable rows.**
+
+Dataset `data/raw/soiltemp_mdb_data/JLelis.xlsx` (the relicensed file) — Caatinga dry forest,
+Brazil; **17 sites** (the earlier "41" was 41 *channels* = 17 sites × up to 3 declared channels),
+−8.17 to −7.37 °N, −37.18 to −36.28 °E, 2017–2021.
+
+- **Independence: clean.** Minimum distance to any training site **5,840 km**, 0 dropped. EPSG 4326
+  verified.
+- **Cause of the null: a declared-vs-delivered channel defect.** The pre-registered sub-canopy air
+  reference — the `_T1` sensor **declared at +150 cm** — carries **zero delivered values** (12
+  placeholder rows, all empty; independently re-verified). The only delivered temperature is the
+  `_T3` channel at **−10 cm — soil** (779,678 values). Building an air-offset label from soil
+  temperature would be non-comparable and is **refused under ADR-016 / ADR-006**. The run halted
+  **before Earth Engine and before scoring**. There is no RH channel either, so dVPD is impossible
+  regardless. This exercises checklist items 4 (declared-vs-delivered coverage) and 5
+  (reference-height match) of ADR-019.
+- **Neutral technical notes** (stated without blame): metadata `Elevation` blank;
+  `Timezone = Local`, `Time_difference = −3`; the file's `Licence` field still reads "No" (the
+  re-share was permission-level; the file metadata was unchanged); the `_T1` (+150 cm air) and
+  `_Soil moisture` channels are declared in metadata but were not delivered.
+
+**What would make this set testable.** Delivery of the declared +150 cm air channel with actual
+values (still above the ~15–30 cm training reference height, so height comparability would remain a
+caveat), plus a usable licence on the delivered file.
+
 ## (B) Cross-climate / deployment gap — deferred
 
 | Dataset | Role |
@@ -294,11 +394,12 @@ to paper over.
    future re-test of this dataset requires a **new frozen set** built once these limitations are addressed.
    The dataset can only ever test the canopy→offset mapping if **per-plot coordinates** become
    available; a valid ambient reference for the site is a further prerequisite.
-2. **Secondary (Mediterranean):** the SoilTemp/MDB request was delivered 2026-07-22, but the
-   two RH-bearing sets are not yet in hand, so **no independent Mediterranean VPD test is
-   currently available**. The leg is **blocked pending an owner decision**, not silently
-   dropped. With the cocoa (humid-tropical) leg now void as well, **Paper 1 has no passing
-   external validation** — see `ROADMAP.md`.
+2. **Secondary (Mediterranean):** the Astroni RH-bearing set was subsequently supplied and
+   **run once on 2026-08-04 → METHODOLOGICAL NULL** — MODIS LAI/FPAR masked crater-wide, and
+   the one dVPD site (AS01) among the masked, so no independent Mediterranean dVPD test can be
+   delivered from it (see the Astroni section above). With the humid-tropical legs (cocoa,
+   JLelis) also void, **Paper 1 has no passing external validation across all four attempts** —
+   a data-availability limitation, not a model failure (**ADR-019**; see `ROADMAP.md`).
 3. For any SoilTemp-derived set (pan-tropical TMS included), **de-duplicate by site
    coordinates against `data/processed/all_label_sites.csv`** before scoring; drop any
    site within ~1 km of a training site. **In the 2026-07-22 delivery this rule excludes one
@@ -307,13 +408,27 @@ to paper over.
    have caught it.
 4. Declare the held-out sites in methods and compute external metrics **once**, after
    freezing. Report honestly regardless of outcome.
-5. **Screen candidate sites before freezing (ADR-017).** Two checks the cocoa run showed are
-   not optional: (a) **ambient-reference applicability** — reject sites where the ~31 km ERA5
-   free-air cell is unrepresentative, i.e. high-relief terrain / valley positions (compare site
-   elevation against the box mean and the box relief); (b) **feature-matrix non-degeneracy** —
-   confirm the published data carry **per-plot coordinates**, so the canopy features actually
-   vary across plots. A set failing either check cannot test the canopy→offset mapping and
-   should not be frozen as a test.
+5. **Clear the ADR-019 pre-freeze data-adequacy checklist before freezing.** The four external
+   nulls each failed a *different* data-adequacy requirement invisible until freeze, so a single
+   consolidated checklist (which folds in the ADR-017 orographic screen as one item) must clear
+   **before** any set is frozen and scored:
+   1. **Per-plot coordinates, correct CRS** (EPSG 4326 or convert — guard the projected-coordinate
+      trap); distinct per-plot coordinates so the feature matrix is non-degenerate. *(Cocoa,
+      Murugan.)*
+   2. **Orographic representativeness (ADR-017)** — reject sites where the ~31 km ERA5 free-air
+      cell is unrepresentative (|box-mean − site elevation| ≳ 150 m / high-relief valley
+      positions). *(Cocoa.)*
+   3. **Canopy-feature retrievability** — the dominant predictors (MODIS LAI/FPAR especially) must
+      be **actually non-null** at the sites, not merely nominally available. *(Astroni.)*
+   4. **Declared-vs-delivered coverage** — the required channels must carry actual delivered
+      values with adequate temporal span, verified against the delivered time series, not the
+      metadata. *(Murugan, JLelis.)*
+   5. **Reference-height match** — the above-ground **air** sensor near the ~15–30 cm training
+      reference, not soil (−10 cm) or far above (150 cm). *(JLelis.)*
+   6. **Licence actually usable** — confirmed on the delivered file, not only the request.
+      *(JLelis.)*
+   A set failing any item cannot test the canopy→offset mapping (or is non-comparable) and is
+   recorded as a data-adequacy null rather than frozen as a test.
 
 ## Sources
 

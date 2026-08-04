@@ -2,6 +2,109 @@
 
 Chronological build log. Newest first.
 
+## 2026-08-04 — Two more external runs (Astroni + JLelis): both NULL; four-null pattern → ADR-019 pre-freeze checklist
+
+Two further pre-registered external validation sets were taken through the ADR-016 discipline.
+**Both returned nulls, each for a different data-adequacy reason**, bringing the count to
+**four external attempts, four nulls, four distinct failure modes**. **None is a model
+deficiency** — every one is a property of what the available open datasets deliver versus what
+their metadata declares. The pattern is now recorded as **ADR-019** (a mandatory pre-freeze
+data-adequacy checklist that extends ADR-016 and folds in the ADR-017 orographic screen).
+
+- **Run A — Astroni (Mediterranean VPD attempt): METHODOLOGICAL NULL.** Dataset
+  `data/raw/soiltemp_mdb_data/AngeloRita_Astroni.xlsx` — an independent Mediterranean holm-oak
+  crater near Naples, Italy; **4 sites (AS01–AS04)**, 40.84–40.85 °N, 14.15–14.16 °E, **2023
+  (Feb–Oct)**. Run: `scripts/run_astroni_validation.py` → `reports/astroni_external_metrics.json`;
+  frozen `data/processed/astroni_external_test.parquet` (gitignored), **35 site-months / 4 sites;
+  dVPD rows = 8 (AS01 only)**. This was intended as the **only independent Mediterranean dVPD
+  test**.
+  - **Cause of the null: MODIS LAI/FPAR (MOD15A2H, 500 m) is masked crater-wide** — null
+    retrieval at all four Astroni pixels in 2023 (independently re-verified: LAI null at all
+    four, while 250 m NDVI resolves 0.64–0.81, and LAI is non-null at both training sites). The
+    `lai_x_height` interaction is the model's top dT_max feature (ADR-006), and the training
+    build drops NaN-LAI rows, so **the canopy→offset mapping is untestable here**. Critically,
+    **AS01 — the only site carrying RH at +15 cm (the dVPD site) — is among the masked**, so the
+    intended independent Mediterranean dVPD validation cannot be delivered from this set. This is
+    a **mechanistically new failure mode**: a masked dominant predictor.
+  - **ADR-017 orographic screen PASSED** (site 85 m vs ~31 km ERA5 box mean 35 m, diff −51 m). So
+    the null is **not** an orographic-reference failure — it is a canopy-feature-retrievability
+    failure.
+  - **Independence clean:** min distance **1,773 km** (nearest training site La Jarda), 0 dropped.
+    EPSG 4326 verified (not the projected-coordinate trap). The ERA5-2023 ambient reference was
+    reconstructed from `ERA5/HOURLY` sampled at the `ERA5/DAILY` grid node (the ADR-006 post-2020
+    convention; `ECMWF/ERA5/DAILY` ends 2020-07-09), verified to **9e-5 K** on pre-2020 overlap
+    months.
+  - **Offset sign — read carefully.** `dT_mean = −1.005 °C` matches training (−1.01) almost
+    exactly, per-site −0.90 to −1.22, with **calibrated coverage 0.89 (≥ 0.80 nominal)** — but
+    **R² < 0 and LAI is masked**, so this is the near-constant buffering *magnitude* transferring,
+    **NOT demonstrated canopy skill**. `dT_max` came out **+2.97 °C (positive, inverted vs
+    training)** — a near-surface point-sensor-vs-coarse-free-air-max scale effect, the same as the
+    prior externals, **not** orographic.
+  - **Metrics were scored once but are degenerate / non-comparable** (NaN LAI was fed to XGBoost's
+    native missing-value handling for a "secondary" all-sites view; the convention-exact primary
+    collapsed to AS04's 9 rows on an artefactual edge-bled LAI). They are reported as
+    scored-but-non-comparable, measuring **buffering transfer + LAI absence, not canopy skill**.
+    The OOD flag fired on **100 % of rows**.
+
+- **Run B — JLelis (humid-tropical dT attempt): NULL, blocked at freeze (delivery defect).**
+  Dataset `data/raw/soiltemp_mdb_data/JLelis.xlsx` (the relicensed file) — Caatinga dry forest,
+  Brazil; **17 sites** (the earlier "41" was 41 *channels* = 17 sites × up to 3 declared
+  channels), −8.17 to −7.37 °N, −37.18 to −36.28 °E, 2017–2021. Run:
+  `scripts/run_jlelis_validation.py` → `reports/jlelis_external_metrics.json`;
+  `data/processed/jlelis_test_manifest.json` (gitignored). **No frozen parquet — 0 scoreable
+  rows.**
+  - **Cause of the null: a declared-vs-delivered channel defect.** The pre-registered sub-canopy
+    air reference — the `_T1` sensor **declared at +150 cm** — carries **zero delivered values**
+    (12 placeholder rows, all empty; independently re-verified). The only delivered temperature is
+    the `_T3` channel at **−10 cm — soil** (779,678 values). Building an air-offset label from soil
+    temperature would be non-comparable and is **refused under ADR-016 / ADR-006**. The run halted
+    **before Earth Engine and before scoring**. There is no RH channel either, so dVPD is
+    impossible regardless.
+  - **Independence clean:** min distance **5,840 km**, 0 dropped, EPSG 4326 verified.
+  - **Neutral technical notes** (stated without blame): metadata `Elevation` blank;
+    `Timezone = Local`, `Time_difference = −3`; the file's `Licence` field still reads "No" (the
+    re-share was permission-level; the file metadata was unchanged); the `_T1` (+150 cm air) and
+    `_Soil moisture` channels are declared in metadata but were not delivered.
+
+- **The four-null pattern (this is ADR-019).** Four pre-registered external attempts, four nulls,
+  each a **different** data-adequacy failure found only at/after freeze:
+  1. **Cocoa** (2026-07-23) — single station coordinate (degenerate feature matrix) + ERA5
+     orographic reference failure at a high-relief valley (ADR-017).
+  2. **Murugan** (2026-07-23) — declared 2022-08→2023-08 but only 1 month delivered; single site.
+  3. **Astroni** (2026-08-04) — dominant canopy predictor (MODIS LAI/FPAR) masked crater-wide;
+     the RH/dVPD site among the masked.
+  4. **JLelis** (2026-08-04) — declared +150 cm air sensor, only −10 cm soil delivered.
+  Screening for any subset of these modes does not catch the others.
+
+- **Honest process lesson (recorded).** The pre-check that preceded these runs screened
+  LAI-retrievability, orography, coordinates and *declared* measurements, but **not**
+  delivered-vs-declared per-channel time-series coverage — the exact lesson the Murugan run had
+  already surfaced. That gap is why JLelis reached a full run before the missing air channel was
+  found. **ADR-019's checklist closes it** (item 4: verify per-channel non-null delivered values
+  and delivered span against the delivered time series, not the metadata).
+
+- **ADR-019 (new).** A mandatory **pre-freeze data-adequacy checklist**, all items required before
+  any external set is frozen and scored: (1) per-plot coordinates in the right CRS (non-degenerate
+  feature matrix); (2) the ADR-017 orographic screen; (3) canopy-feature retrievability (MODIS
+  LAI/FPAR actually non-null); (4) declared-vs-delivered coverage; (5) reference-height match
+  (air near ~15–30 cm, not soil or 150 cm); (6) licence actually usable. It **extends** ADR-016's
+  pre-registration protocol and **incorporates the ADR-017 screen as one item**; it does **not**
+  edit or supersede either. The four nulls are its evidence base (indicative, not calibrated —
+  four sets cannot calibrate thresholds).
+
+- **Standing position (unchanged in kind, sharper in statement).** **Paper 1 has NO passing
+  external validation**, and this is a **data-availability limitation of the open datasets**, not
+  a model failure: external validation has been defeated dataset-by-dataset by data-adequacy
+  requirements invisible until freeze. The within-training LOSO results (ADR-006/012) are
+  unaffected and the OOD flag behaved as designed on every external set. **The strategic response
+  — (A) reframe Paper 1 around within-training results + the characterised failure modes as a
+  methods contribution, (B) keep hunting for a checklist-passing external source, or (C) lean on
+  the deployment plot logger (ADR-018) — is an OPEN DECISION for the project owner and is NOT
+  decided here.**
+
+- Register updated: `docs/external_validation_datasets.md`; `ROADMAP.md` updated; ADR index +
+  `AGENTS.md` / `docs/PROJECT_CONTEXT.md` (local-only) refreshed. ADRs now **001–019**.
+
 ## 2026-07-23 — Tamil-Nadu few-shot run (Murugan): too thin to answer; and ADR-018 corrects the plot-logger claim
 
 The ADR-014 few-shot conformal result was tested for the first time on **real data near the

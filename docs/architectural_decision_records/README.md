@@ -24,3 +24,4 @@ change a decision, write a new ADR that supersedes the old one.
 | [016](ADR-016-external-validation-datasets.md) | External within-climate validation datasets + independence/de-dup rule; cocoa + SoilTemp/MDB acquisition | Accepted |
 | [017](ADR-017-ambient-reference-orographic-limits.md) | Orographic screening rule limiting where the ERA5 free-air ambient reference (ADR-006) applies | Accepted |
 | [018](ADR-018-recalibration-widens-intervals-plot-logger-claim.md) | Few-shot recalibration widens intervals to make them honest (clarifies ADR-014); plot-logger claim split into calibration vs in-regime-training routes | Accepted |
+| [019](ADR-019-external-validation-data-adequacy-checklist.md) | Pre-freeze data-adequacy checklist for external validation (extends ADR-016; incorporates the ADR-017 orographic screen); four external nulls as its evidence base | Accepted |

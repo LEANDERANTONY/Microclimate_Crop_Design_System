@@ -1,0 +1,723 @@
+{
+  "_meta": {
+    "scored_at": "2026-08-04T19:10:29",
+    "experiment": "independent Mediterranean within-climate external validation (Astroni crater, Naples) of the canopy->offset model (ADR-016 discipline); intended as the only external dVPD test",
+    "data_source": "AngeloRita_Astroni",
+    "test_set": "data\\processed\\astroni_external_test.parquet",
+    "frozen_rows": 35,
+    "frozen_sites": 4,
+    "canopy_complete_rows": 9,
+    "test_period": [
+      "2023-02",
+      "2023-10"
+    ],
+    "train_rows": 2764,
+    "train_sites": 596,
+    "protocol": "external hold-out; model fit on ALL training rows (group-aware conformal calibration), scored once",
+    "baseline": "training-mean offset (identical to validation.py)",
+    "scored_targets": [
+      "dT_max",
+      "dT_mean",
+      "dVPD"
+    ],
+    "headline": "METHODOLOGICAL NULL -- MOD15A2H LAI/FPAR (the dominant canopy predictor) has ZERO valid retrievals crater-wide, so no site has a valid canopy feature vector; the canopy->offset mapping is untestable and the intended dVPD validation cannot be delivered. See lai_masking_evidence and raw_offset_diagnostics.",
+    "manifest": "data\\processed\\astroni_test_manifest.json"
+  },
+  "lai_masking_evidence": {
+    "product": "MODIS/061/MOD15A2H Lai_500m/Fpar_500m (500 m), 2023 annual mean",
+    "per_site": {
+      "AST_AS02": {
+        "lai_valid_composites_2023": null,
+        "lai_native_pixel_reduceRegion": null,
+        "lai_used_reduceRegions_scale250": null,
+        "fapar_used_reduceRegions_scale250": null,
+        "ndvi_used": 0.7811043478260871
+      },
+      "AST_AS03": {
+        "lai_valid_composites_2023": null,
+        "lai_native_pixel_reduceRegion": null,
+        "lai_used_reduceRegions_scale250": null,
+        "fapar_used_reduceRegions_scale250": null,
+        "ndvi_used": 0.7857826086956522
+      },
+      "AST_AS04": {
+        "lai_valid_composites_2023": null,
+        "lai_native_pixel_reduceRegion": null,
+        "lai_used_reduceRegions_scale250": 4.202173913043478,
+        "fapar_used_reduceRegions_scale250": 0.7871739130434783,
+        "ndvi_used": 0.8125347826086957
+      },
+      "AST_AS01": {
+        "lai_valid_composites_2023": null,
+        "lai_native_pixel_reduceRegion": null,
+        "lai_used_reduceRegions_scale250": null,
+        "fapar_used_reduceRegions_scale250": null,
+        "ndvi_used": 0.6427913043478262
+      }
+    },
+    "sites_with_ANY_valid_lai_pixel": 0,
+    "verdict": "MOD15A2H LAI/FPAR has ZERO valid retrievals at every Astroni pixel in 2023 (urban-embedded forest crater; the 500 m LAI algorithm masks these pixels). NDVI (MOD13Q1 250 m) resolves normally. Any non-NaN lai a reduceRegions call returns is an edge artifact bled from a neighbouring pixel, NOT a site measurement."
+  },
+  "raw_offset_diagnostics": {
+    "dT_all_sites": {
+      "n": 35,
+      "sites": 4,
+      "dT_max_mean": 2.966,
+      "dT_mean_mean": -1.005,
+      "training_means": {
+        "dT_max": -2.04,
+        "dT_mean": -1.01
+      },
+      "per_site": {
+        "AST_AS01": {
+          "n": 8,
+          "dT_max_mean": 1.745,
+          "dT_mean_mean": -0.945
+        },
+        "AST_AS02": {
+          "n": 9,
+          "dT_max_mean": 3.228,
+          "dT_mean_mean": -0.9
+        },
+        "AST_AS03": {
+          "n": 9,
+          "dT_max_mean": 4.834,
+          "dT_mean_mean": -0.951
+        },
+        "AST_AS04": {
+          "n": 9,
+          "dT_max_mean": 1.922,
+          "dT_mean_mean": -1.215
+        }
+      }
+    },
+    "dVPD_AS01": {
+      "n": 8,
+      "dVPD_mean_kPa": 0.2488,
+      "dVPD_min_kPa": -0.0133,
+      "dVPD_max_kPa": 0.3802,
+      "sub_rh_mean_pct": 71.78
+    }
+  },
+  "provenance": {
+    "epsg": [
+      4326
+    ],
+    "coord_frame_guard": "PASSED (EPSG 4326, lat/lon in [40,41]x[14,15])",
+    "n_sites": 4,
+    "air_T_ref_height_cm": 15,
+    "sensor_map": [
+      {
+        "site_id": "AS02",
+        "raw_data_identifier": "94232609_T3",
+        "measurement": "Temperature",
+        "height_cm": 15.0,
+        "shielding": "YES",
+        "logger": "TMS4",
+        "time_difference_h": 0.0,
+        "lat": 40.849125,
+        "lon": 14.1509,
+        "elev_m": 82.0
+      },
+      {
+        "site_id": "AS03",
+        "raw_data_identifier": "94232637_T3",
+        "measurement": "Temperature",
+        "height_cm": 15.0,
+        "shielding": "YES",
+        "logger": "TMS4",
+        "time_difference_h": 0.0,
+        "lat": 40.847449,
+        "lon": 14.14991,
+        "elev_m": 68.0
+      },
+      {
+        "site_id": "AS04",
+        "raw_data_identifier": "94232629_T3",
+        "measurement": "Temperature",
+        "height_cm": 15.0,
+        "shielding": "YES",
+        "logger": "TMS4",
+        "time_difference_h": 0.0,
+        "lat": 40.843795,
+        "lon": 14.150487,
+        "elev_m": 71.0
+      },
+      {
+        "site_id": "AS01",
+        "raw_data_identifier": "21498664_Temperature",
+        "measurement": "Temperature",
+        "height_cm": 15.0,
+        "shielding": "YES",
+        "logger": "MX2301A",
+        "time_difference_h": 2.0,
+        "lat": 40.84065,
+        "lon": 14.158469,
+        "elev_m": 95.0
+      }
+    ],
+    "rh_sites": [
+      {
+        "site_id": "AS01",
+        "raw_data_identifier": "21498664_Relative humidity",
+        "height_cm": 15.0
+      }
+    ],
+    "measurement_ranges": {
+      "Dew point": {
+        "n": 31649,
+        "min": -3.815,
+        "max": 25.342
+      },
+      "RH": {
+        "n": 31649,
+        "min": 24.62,
+        "max": 99.43
+      },
+      "Temperature": {
+        "n": 331553,
+        "min": 0.938,
+        "max": 42.312
+      }
+    },
+    "sentinel_screen": {
+      "plausible_T_window_C": [
+        -40.0,
+        65.0
+      ],
+      "plausible_RH_window_pct": [
+        0.0,
+        100.0
+      ],
+      "temp_rows_dropped": 0,
+      "rh_rows_dropped": 0
+    },
+    "timezone_diagnostic": {
+      "note": "metadata Timezone=UTC for all; Time_difference=0 for AS02/03/04 (TMS-4) and =2 for AS01. Solar noon at 14.15 E is ~11:03 UTC. Daily max/mean over a full stamped day are insensitive to a 2 h stamp offset; used as-is.",
+      "per_site": {
+        "AS02": {
+          "raw_data_identifier": "94232609_T3",
+          "metadata_time_difference_h": 0.0,
+          "peak_stamp_hour": 12,
+          "min_stamp_hour": 4
+        },
+        "AS03": {
+          "raw_data_identifier": "94232637_T3",
+          "metadata_time_difference_h": 0.0,
+          "peak_stamp_hour": 13,
+          "min_stamp_hour": 4
+        },
+        "AS04": {
+          "raw_data_identifier": "94232629_T3",
+          "metadata_time_difference_h": 0.0,
+          "peak_stamp_hour": 12,
+          "min_stamp_hour": 4
+        },
+        "AS01": {
+          "raw_data_identifier": "21498664_Temperature",
+          "metadata_time_difference_h": 2.0,
+          "peak_stamp_hour": 11,
+          "min_stamp_hour": 4
+        }
+      }
+    },
+    "label_summary": {
+      "dT_site_month_rows": 35,
+      "sites": [
+        "AST_AS01",
+        "AST_AS02",
+        "AST_AS03",
+        "AST_AS04"
+      ],
+      "months_range": [
+        "2023-02",
+        "2023-10"
+      ],
+      "rh_site_month_rows": 8,
+      "rh_site": [
+        "AST_AS01"
+      ],
+      "per_site_months": {
+        "AST_AS01": 8,
+        "AST_AS02": 9,
+        "AST_AS03": 9,
+        "AST_AS04": 9
+      }
+    }
+  },
+  "dedup": {
+    "rule": "drop external sites within 1.0 km of any training site",
+    "training_sites_checked": 276,
+    "external_sites_checked": 4,
+    "min_distance_km": 1773.3,
+    "nearest_training_site": "LJ_UP_LF21",
+    "rows_dropped": 0,
+    "sites_dropped": 0
+  },
+  "feature_spread": {
+    "n_rows": 35,
+    "n_sites": 4,
+    "n_unique_full_feature_rows_all": 35,
+    "n_unique_by_static_feature": {
+      "lai": 1,
+      "canopy_height": 4,
+      "ndvi": 4,
+      "fapar": 1,
+      "elevation": 4,
+      "slope": 1,
+      "twi": 1,
+      "soc": 4,
+      "clay": 3
+    },
+    "canopy_complete_rows": 9,
+    "canopy_complete_sites": [
+      "AST_AS04"
+    ],
+    "static_feature_values_per_site": {
+      "AST_AS01": {
+        "lai": null,
+        "canopy_height": 26.0,
+        "ndvi": 0.64279,
+        "fapar": null,
+        "elevation": 95.12405,
+        "slope": 0.0,
+        "twi": 4.60517,
+        "soc": 739.0,
+        "clay": 294.0
+      },
+      "AST_AS02": {
+        "lai": null,
+        "canopy_height": 20.0,
+        "ndvi": 0.7811,
+        "fapar": null,
+        "elevation": 64.69209,
+        "slope": 0.0,
+        "twi": 4.60517,
+        "soc": 856.0,
+        "clay": 283.0
+      },
+      "AST_AS03": {
+        "lai": null,
+        "canopy_height": 23.0,
+        "ndvi": 0.78578,
+        "fapar": null,
+        "elevation": 64.97668,
+        "slope": 0.0,
+        "twi": 4.60517,
+        "soc": 853.0,
+        "clay": 283.0
+      },
+      "AST_AS04": {
+        "lai": 4.20217,
+        "canopy_height": 22.0,
+        "ndvi": 0.81253,
+        "fapar": 0.78717,
+        "elevation": 51.28589,
+        "slope": 0.0,
+        "twi": 4.60517,
+        "soc": 866.0,
+        "clay": 290.0
+      }
+    },
+    "note": "canopy_height, ndvi, elevation, soc DO vary across the 4 sites (4 distinct vectors) -- a real improvement over cocoa's single vector -- but lai/fapar, and hence the lai_x_height interaction (the dominant dT_max feature in training, ADR-006), are MASKED at every site."
+  },
+  "adr017_orographic": {
+    "status": "PASSED at pre-screen (recorded, not re-run as a gate)",
+    "per_site": {
+      "AST_AS02": {
+        "site_meta_elev_m": 82.0,
+        "site_dem_elev_m": 64.69209289550781,
+        "era5_cell_mean_dem_elev_m": 49.13920457561324,
+        "cell_mean_minus_site_dem_m": -15.6
+      },
+      "AST_AS03": {
+        "site_meta_elev_m": 68.0,
+        "site_dem_elev_m": 64.9766845703125,
+        "era5_cell_mean_dem_elev_m": 49.13920457561324,
+        "cell_mean_minus_site_dem_m": -15.8
+      },
+      "AST_AS04": {
+        "site_meta_elev_m": 71.0,
+        "site_dem_elev_m": 51.285892486572266,
+        "era5_cell_mean_dem_elev_m": 49.13920457561324,
+        "cell_mean_minus_site_dem_m": -2.1
+      },
+      "AST_AS01": {
+        "site_meta_elev_m": 95.0,
+        "site_dem_elev_m": 95.1240463256836,
+        "era5_cell_mean_dem_elev_m": 49.13920457561324,
+        "cell_mean_minus_site_dem_m": -46.0
+      }
+    },
+    "threshold_m": 100
+  },
+  "ambient_equivalence_check": {
+    "2013-06": {
+      "mean_2m_air_temperature": 0.0,
+      "maximum_2m_air_temperature": 3.1e-05,
+      "minimum_2m_air_temperature": 3.1e-05,
+      "dewpoint_2m_temperature": 0.0,
+      "u_component_of_wind_10m": 7e-06,
+      "v_component_of_wind_10m": -9e-06,
+      "total_precipitation": 1e-06
+    },
+    "2019-08": {
+      "mean_2m_air_temperature": 3.1e-05,
+      "maximum_2m_air_temperature": 3.1e-05,
+      "minimum_2m_air_temperature": -9.2e-05,
+      "dewpoint_2m_temperature": 0.108307,
+      "u_component_of_wind_10m": -1e-05,
+      "v_component_of_wind_10m": 1.5e-05,
+      "total_precipitation": -0.0
+    }
+  },
+  "dT_max": {
+    "primary_convention_exact": {
+      "n_test": 9,
+      "n_sites": 1,
+      "n_unique_feature_rows": 9,
+      "obs_offset_mean": 1.9216495345285205,
+      "obs_offset_std": 1.042643222719498,
+      "pure_xgb": {
+        "n_test": 9,
+        "MAE": 3.5957858022965326,
+        "RMSE": 3.786511500122208,
+        "interval_coverage": 0.1111111111111111,
+        "interval_nominal": 0.8,
+        "interval_width": 3.9609951972961426,
+        "baseline_MAE": 3.965050692185192,
+        "skill_vs_baseline": 0.09312992911199147,
+        "R2_oos": 0.1470106465108113,
+        "obs_mean": 1.9216495345285205,
+        "obs_std": 1.042643222719498,
+        "pred_mean": -1.6741362810134888,
+        "pred_std": 0.24932710826396942,
+        "bias_pred_minus_obs": -3.5957858022965326,
+        "seconds": 0.8,
+        "per_site": {
+          "AST_AS04": {
+            "n": 9,
+            "MAE": 3.5957858022965326,
+            "interval_coverage": 0.1111111111111111
+          }
+        },
+        "ood": {
+          "definition": "fraction of engineered features outside the training min/max box (models.QuantileModel.ood_score)",
+          "flag_threshold": 0.15,
+          "external_mean": 0.2638888888888889,
+          "external_min": 0.25,
+          "external_max": 0.2916666666666667,
+          "external_frac_flagged": 1.0,
+          "train_mean": 0.0,
+          "features_out_of_range": [
+            "cover_x_solar",
+            "diurnal_range",
+            "elevation",
+            "slope",
+            "solar",
+            "t_max",
+            "t_min",
+            "twi"
+          ],
+          "caveat": "NaN features (masked lai/fapar) compare False and are counted IN-range, so ood_score UNDER-counts on the LAI-masked set"
+        }
+      },
+      "hybrid": {
+        "n_test": 9,
+        "MAE": 3.256449376075771,
+        "RMSE": 3.500698665445664,
+        "interval_coverage": 0.1111111111111111,
+        "interval_nominal": 0.8,
+        "interval_width": 5.142651526088054,
+        "baseline_MAE": 3.965050692185192,
+        "skill_vs_baseline": 0.17871179238793078,
+        "R2_oos": 0.270921135951086,
+        "obs_mean": 1.9216495345285205,
+        "obs_std": 1.042643222719498,
+        "pred_mean": -1.3347998415472506,
+        "pred_std": 0.46022253730097823,
+        "bias_pred_minus_obs": -3.256449376075771,
+        "seconds": 0.8,
+        "per_site": {
+          "AST_AS04": {
+            "n": 9,
+            "MAE": 3.256449376075771,
+            "interval_coverage": 0.1111111111111111
+          }
+        }
+      }
+    },
+    "secondary_lai_masked_all_sites": {
+      "n_test": 35,
+      "n_sites": 4,
+      "n_unique_feature_rows": 35,
+      "obs_offset_mean": 2.9662240673002844,
+      "obs_offset_std": 1.578661823890728,
+      "pure_xgb": {
+        "n_test": 35,
+        "MAE": 4.3448664850036405,
+        "RMSE": 4.60773974987006,
+        "interval_coverage": 0.37142857142857144,
+        "interval_nominal": 0.8,
+        "interval_width": 5.77963399887085,
+        "baseline_MAE": 5.009625224956956,
+        "skill_vs_baseline": 0.13269630163981527,
+        "R2_oos": 0.23043109582661758,
+        "obs_mean": 2.9662240673002844,
+        "obs_std": 1.578661823890728,
+        "pred_mean": -1.3786424398422241,
+        "pred_std": 0.42929941415786743,
+        "bias_pred_minus_obs": -4.3448664850036405,
+        "seconds": 0.7,
+        "per_site": {
+          "AST_AS01": {
+            "n": 8,
+            "MAE": 3.025192815791897,
+            "interval_coverage": 1.0
+          },
+          "AST_AS02": {
+            "n": 9,
+            "MAE": 4.490961927510197,
+            "interval_coverage": 0.4444444444444444
+          },
+          "AST_AS03": {
+            "n": 9,
+            "MAE": 6.120894986725743,
+            "interval_coverage": 0.0
+          },
+          "AST_AS04": {
+            "n": 9,
+            "MAE": 3.5957858022965326,
+            "interval_coverage": 0.1111111111111111
+          }
+        },
+        "ood": {
+          "definition": "fraction of engineered features outside the training min/max box (models.QuantileModel.ood_score)",
+          "flag_threshold": 0.15,
+          "external_mean": 0.2011904761904762,
+          "external_min": 0.16666666666666666,
+          "external_max": 0.2916666666666667,
+          "external_frac_flagged": 1.0,
+          "train_mean": 0.0,
+          "features_out_of_range": [
+            "cover_x_solar",
+            "diurnal_range",
+            "elevation",
+            "slope",
+            "solar",
+            "t_max",
+            "t_min",
+            "twi"
+          ],
+          "caveat": "NaN features (masked lai/fapar) compare False and are counted IN-range, so ood_score UNDER-counts on the LAI-masked set"
+        }
+      },
+      "hybrid": {
+        "skipped": "HybridQuantileModel Ridge backbone rejects NaN (masked lai/fapar); only pure_xgb scored"
+      }
+    }
+  },
+  "dT_mean": {
+    "primary_convention_exact": {
+      "n_test": 9,
+      "n_sites": 1,
+      "n_unique_feature_rows": 9,
+      "obs_offset_mean": -1.2152104186550372,
+      "obs_offset_std": 0.8121741730281651,
+      "pure_xgb": {
+        "n_test": 9,
+        "MAE": 0.4830225951797876,
+        "RMSE": 0.885088207403331,
+        "interval_coverage": 0.8888888888888888,
+        "interval_nominal": 0.8,
+        "interval_width": 1.8977584838867188,
+        "baseline_MAE": 0.6394736419567056,
+        "skill_vs_baseline": 0.24465597408862438,
+        "R2_oos": -0.11945409174331556,
+        "obs_mean": -1.2152104186550372,
+        "obs_std": 0.8121741730281651,
+        "pred_mean": -1.5449873208999634,
+        "pred_std": 0.1538999080657959,
+        "bias_pred_minus_obs": -0.32977684926301976,
+        "seconds": 0.7,
+        "per_site": {
+          "AST_AS04": {
+            "n": 9,
+            "MAE": 0.4830225951797876,
+            "interval_coverage": 0.8888888888888888
+          }
+        },
+        "ood": {
+          "definition": "fraction of engineered features outside the training min/max box (models.QuantileModel.ood_score)",
+          "flag_threshold": 0.15,
+          "external_mean": 0.2638888888888889,
+          "external_min": 0.25,
+          "external_max": 0.2916666666666667,
+          "external_frac_flagged": 1.0,
+          "train_mean": 0.0,
+          "features_out_of_range": [
+            "cover_x_solar",
+            "diurnal_range",
+            "elevation",
+            "slope",
+            "solar",
+            "t_max",
+            "t_min",
+            "twi"
+          ],
+          "caveat": "NaN features (masked lai/fapar) compare False and are counted IN-range, so ood_score UNDER-counts on the LAI-masked set"
+        }
+      },
+      "hybrid": {
+        "n_test": 9,
+        "MAE": 0.6957975104636464,
+        "RMSE": 0.945029338556246,
+        "interval_coverage": 0.7777777777777778,
+        "interval_nominal": 0.8,
+        "interval_width": 1.6679302855785827,
+        "baseline_MAE": 0.6394736419567056,
+        "skill_vs_baseline": -0.08807848332043378,
+        "R2_oos": -0.27621475716981814,
+        "obs_mean": -1.2152104186550372,
+        "obs_std": 0.8121741730281651,
+        "pred_mean": -1.013744079704435,
+        "pred_std": 0.1499317085580393,
+        "bias_pred_minus_obs": 0.20146633895060206,
+        "seconds": 0.8,
+        "per_site": {
+          "AST_AS04": {
+            "n": 9,
+            "MAE": 0.6957975104636464,
+            "interval_coverage": 0.7777777777777778
+          }
+        }
+      }
+    },
+    "secondary_lai_masked_all_sites": {
+      "n_test": 35,
+      "n_sites": 4,
+      "n_unique_feature_rows": 35,
+      "obs_offset_mean": -1.004536001254291,
+      "obs_offset_std": 0.7160927674590594,
+      "pure_xgb": {
+        "n_test": 35,
+        "MAE": 0.4122351686583121,
+        "RMSE": 0.7605391224979792,
+        "interval_coverage": 0.8857142857142857,
+        "interval_nominal": 0.8,
+        "interval_width": 2.410217761993408,
+        "baseline_MAE": 0.45582412259178745,
+        "skill_vs_baseline": 0.09562669409778335,
+        "R2_oos": -0.1277561724886631,
+        "obs_mean": -1.004536001254291,
+        "obs_std": 0.7160927674590594,
+        "pred_mean": -1.150856614112854,
+        "pred_std": 0.28527209162712097,
+        "bias_pred_minus_obs": -0.14632053962999944,
+        "seconds": 0.7,
+        "per_site": {
+          "AST_AS01": {
+            "n": 8,
+            "MAE": 0.22723008880808648,
+            "interval_coverage": 0.875
+          },
+          "AST_AS02": {
+            "n": 9,
+            "MAE": 0.41653590417212843,
+            "interval_coverage": 0.8888888888888888
+          },
+          "AST_AS03": {
+            "n": 9,
+            "MAE": 0.5015959664898875,
+            "interval_coverage": 0.8888888888888888
+          },
+          "AST_AS04": {
+            "n": 9,
+            "MAE": 0.4830225951797876,
+            "interval_coverage": 0.8888888888888888
+          }
+        },
+        "ood": {
+          "definition": "fraction of engineered features outside the training min/max box (models.QuantileModel.ood_score)",
+          "flag_threshold": 0.15,
+          "external_mean": 0.2011904761904762,
+          "external_min": 0.16666666666666666,
+          "external_max": 0.2916666666666667,
+          "external_frac_flagged": 1.0,
+          "train_mean": 0.0,
+          "features_out_of_range": [
+            "cover_x_solar",
+            "diurnal_range",
+            "elevation",
+            "slope",
+            "solar",
+            "t_max",
+            "t_min",
+            "twi"
+          ],
+          "caveat": "NaN features (masked lai/fapar) compare False and are counted IN-range, so ood_score UNDER-counts on the LAI-masked set"
+        }
+      },
+      "hybrid": {
+        "skipped": "HybridQuantileModel Ridge backbone rejects NaN (masked lai/fapar); only pure_xgb scored"
+      }
+    }
+  },
+  "dVPD": {
+    "primary_convention_exact": {
+      "n_test": 0,
+      "not_scoreable": "dVPD needs +15 cm RH (AS01 only); AS01 fails the training canopy-completeness rule (masked lai) so it is absent from the convention-exact view -- dVPD is not model-scoreable under the training convention. See raw_offset_diagnostics.dVPD_AS01."
+    },
+    "secondary_lai_masked_all_sites": {
+      "n_test": 8,
+      "n_sites": 1,
+      "n_unique_feature_rows": 8,
+      "obs_offset_mean": 0.2488014029845361,
+      "obs_offset_std": 0.12973789420676626,
+      "pure_xgb": {
+        "n_test": 8,
+        "MAE": 0.5078053532674673,
+        "RMSE": 0.5169090321988695,
+        "interval_coverage": 0.875,
+        "interval_nominal": 0.8,
+        "interval_width": 0.906714916229248,
+        "baseline_MAE": 0.53370113684951,
+        "skill_vs_baseline": 0.04852113251043089,
+        "R2_oos": 0.11427722813874397,
+        "obs_mean": 0.2488014029845361,
+        "obs_std": 0.12973789420676626,
+        "pred_mean": -0.2590039372444153,
+        "pred_std": 0.07549691945314407,
+        "bias_pred_minus_obs": -0.5078053532674673,
+        "seconds": 0.7,
+        "per_site": {
+          "AST_AS01": {
+            "n": 8,
+            "MAE": 0.5078053532674673,
+            "interval_coverage": 0.875
+          }
+        },
+        "ood": {
+          "definition": "fraction of engineered features outside the training min/max box (models.QuantileModel.ood_score)",
+          "flag_threshold": 0.15,
+          "external_mean": 0.17708333333333331,
+          "external_min": 0.16666666666666666,
+          "external_max": 0.20833333333333334,
+          "external_frac_flagged": 1.0,
+          "train_mean": 0.0,
+          "features_out_of_range": [
+            "diurnal_range",
+            "slope",
+            "solar",
+            "t_min",
+            "twi"
+          ],
+          "caveat": "NaN features (masked lai/fapar) compare False and are counted IN-range, so ood_score UNDER-counts on the LAI-masked set"
+        }
+      },
+      "hybrid": {
+        "skipped": "HybridQuantileModel Ridge backbone rejects NaN (masked lai/fapar); only pure_xgb scored"
+      }
+    }
+  }
+}

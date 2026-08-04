@@ -1,0 +1,280 @@
+{
+  "_meta": {
+    "scored_at": "2026-08-04T19:33:50",
+    "experiment": "independent Caatinga dry-forest (Brazil) external validation of the canopy->offset model (ADR-016 discipline)",
+    "data_source": "JLelis",
+    "result": "NULL -- BLOCKED AT FREEZE (delivery defect)",
+    "scored_targets": [
+      "dT_max",
+      "dT_mean"
+    ],
+    "headline": "The pre-committed sub-canopy AIR reference (+150 cm _T1 shielded sensor) has ZERO delivered values: all 12 declared _T1 channels appear as single placeholder NaN rows. The only delivered temperature is the _T3 soil probe (-10 cm), a physically distinct quantity. No training-convention air-offset label can be formed; substituting soil temperature is refused under ADR-016 (comparability) and the ADR-006 ambient convention.",
+    "manifest": "data\\processed\\jlelis_test_manifest.json",
+    "frozen_test_set": null,
+    "scored": false
+  },
+  "blocker": {
+    "status": "BLOCKED_AT_FREEZE",
+    "reason": "declared-vs-delivered delivery defect",
+    "detail": "The pre-committed sub-canopy AIR reference (+150 cm _T1 shielded sensor) has ZERO delivered values: all 12 declared _T1 channels appear as single placeholder NaN rows. The only delivered temperature is the _T3 soil probe (-10 cm), a physically distinct quantity. No training-convention air-offset label can be formed; substituting soil temperature is refused under ADR-016 (comparability) and the ADR-006 ambient convention.",
+    "dVPD": "not computable (no relative-humidity channel) and NOT manufactured",
+    "earth_engine": "NOT called -- there is no scoreable test set to build features for"
+  },
+  "provenance": {
+    "coord_frame_guard": "PASSED (EPSG 4326, median lat/lon (-7.655,-36.671) inside Brazil box)",
+    "epsg": [
+      4326
+    ],
+    "study_lat_range": [
+      -8.166,
+      -7.365
+    ],
+    "study_lon_range": [
+      -37.1778,
+      -36.28
+    ],
+    "n_distinct_rids": 41,
+    "n_distinct_sites": 17,
+    "channels_by_suffix_measurement_height": [
+      {
+        "suffix": "Soil moisture",
+        "Microclimate_measurement": "Soil moisture",
+        "Sensor_height": -10,
+        "n": 12
+      },
+      {
+        "suffix": "T1",
+        "Microclimate_measurement": "Temperature",
+        "Sensor_height": 150,
+        "n": 12
+      },
+      {
+        "suffix": "T3",
+        "Microclimate_measurement": "Temperature",
+        "Sensor_height": -10,
+        "n": 16
+      },
+      {
+        "suffix": "T3",
+        "Microclimate_measurement": "Temperature",
+        "Sensor_height": -6,
+        "n": 1
+      }
+    ],
+    "pre_committed_air_sensor": {
+      "suffix": "T1",
+      "declared_height_cm": 150,
+      "declared_measurement": "Temperature",
+      "n_declared_channels": 12,
+      "n_channels_with_ANY_delivered_value": 0,
+      "delivered_nonnull_total": 0,
+      "per_channel": [
+        {
+          "rid": "ES7_T1",
+          "site": "ES7",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES8_T1",
+          "site": "ES8",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES12_T1",
+          "site": "ES12",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES9_T1",
+          "site": "ES9",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES3_T1",
+          "site": "ES3",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES10_T1",
+          "site": "ES10",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES11_T1",
+          "site": "ES11",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES5_T1",
+          "site": "ES5",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES6_T1",
+          "site": "ES6",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES4_T1",
+          "site": "ES4",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES1_T1",
+          "site": "ES1",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        },
+        {
+          "rid": "ES2_T1",
+          "site": "ES2",
+          "height_cm": 150.0,
+          "total_rows": 1,
+          "nonnull": 0
+        }
+      ]
+    },
+    "delivered_soil_sensor": {
+      "suffix": "T3",
+      "declared_measurement": "Temperature",
+      "declared_height_cm": [
+        -10,
+        -6
+      ],
+      "note": "SOIL / ground probe (negative height), physically distinct from the canopy-buffered AIR temperature the model was trained on",
+      "n_channels": 17,
+      "n_channels_with_delivered_values": 17,
+      "delivered_nonnull_total": 779678
+    },
+    "clim_ts_values_dtype": "float64",
+    "declared_vs_delivered": "clim_ts_values is native float64; the +150 cm _T1 air channels and the _Soil moisture channels each appear as a SINGLE placeholder NaN row -- a genuine data absence, not a decimal-parsing artefact"
+  },
+  "dedup_air_sites": {
+    "rule": "drop external sites within 1.0 km of any training site",
+    "air_sites_checked": 12,
+    "training_sites_checked": 276,
+    "min_distance_km": 5839.6,
+    "rows_dropped": 0,
+    "note": "independence is clean, but the _T1 air series carries zero delivered values, so no air-offset test can be frozen from these sites"
+  },
+  "delivered_soil_characterisation": {
+    "sensor": "_T3 soil / ground temperature at -10 cm (declared)",
+    "n_sites_with_data": 17,
+    "n_site_months_ge5days": 759,
+    "period": [
+      "2017-01",
+      "2021-12"
+    ],
+    "soil_t_max_mean_C_overall": 32.23,
+    "soil_t_mean_mean_C_overall": 28.96,
+    "per_site": {
+      "ES1": {
+        "months_ge5days": 53,
+        "soil_t_max_mean_C": 33.44,
+        "soil_t_mean_mean_C": 29.78
+      },
+      "ES10": {
+        "months_ge5days": 56,
+        "soil_t_max_mean_C": 32.1,
+        "soil_t_mean_mean_C": 29.27
+      },
+      "ES11": {
+        "months_ge5days": 60,
+        "soil_t_max_mean_C": 28.29,
+        "soil_t_mean_mean_C": 25.9
+      },
+      "ES12": {
+        "months_ge5days": 57,
+        "soil_t_max_mean_C": 31.0,
+        "soil_t_mean_mean_C": 28.55
+      },
+      "ES13": {
+        "months_ge5days": 16,
+        "soil_t_max_mean_C": 19.46,
+        "soil_t_mean_mean_C": 18.85
+      },
+      "ES14": {
+        "months_ge5days": 16,
+        "soil_t_max_mean_C": 22.36,
+        "soil_t_mean_mean_C": 21.48
+      },
+      "ES15": {
+        "months_ge5days": 16,
+        "soil_t_max_mean_C": 26.25,
+        "soil_t_mean_mean_C": 25.45
+      },
+      "ES16": {
+        "months_ge5days": 16,
+        "soil_t_max_mean_C": 30.0,
+        "soil_t_mean_mean_C": 27.49
+      },
+      "ES17": {
+        "months_ge5days": 16,
+        "soil_t_max_mean_C": 40.92,
+        "soil_t_mean_mean_C": 29.32
+      },
+      "ES2": {
+        "months_ge5days": 57,
+        "soil_t_max_mean_C": 35.31,
+        "soil_t_mean_mean_C": 30.66
+      },
+      "ES3": {
+        "months_ge5days": 57,
+        "soil_t_max_mean_C": 33.39,
+        "soil_t_mean_mean_C": 29.76
+      },
+      "ES4": {
+        "months_ge5days": 55,
+        "soil_t_max_mean_C": 34.12,
+        "soil_t_mean_mean_C": 30.76
+      },
+      "ES5": {
+        "months_ge5days": 58,
+        "soil_t_max_mean_C": 34.47,
+        "soil_t_mean_mean_C": 31.49
+      },
+      "ES6": {
+        "months_ge5days": 57,
+        "soil_t_max_mean_C": 32.97,
+        "soil_t_mean_mean_C": 29.97
+      },
+      "ES7": {
+        "months_ge5days": 57,
+        "soil_t_max_mean_C": 31.88,
+        "soil_t_mean_mean_C": 28.8
+      },
+      "ES8": {
+        "months_ge5days": 55,
+        "soil_t_max_mean_C": 32.52,
+        "soil_t_mean_mean_C": 29.63
+      },
+      "ES9": {
+        "months_ge5days": 57,
+        "soil_t_max_mean_C": 33.82,
+        "soil_t_mean_mean_C": 29.41
+      }
+    },
+    "interpretation": "This is SOIL/ground temperature, not sub-canopy AIR temperature. It cannot be scored against an air-temperature offset model without manufacturing a non-comparable label; reported for completeness only."
+  }
+}
